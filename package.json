@@ -1,8 +1,8 @@
 {
   "type": "module",
-  "name": "typescript-template",
+  "name": "crdts",
   "version": "1.0.0",
-  "description": "A template for NodeJS projects using typescript.",
+  "description": "A group of useful CRDTs and interfaces.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
