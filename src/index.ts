@@ -1,1 +1,1 @@
-// Export your project files here.
+export { CRDTMap } from "./CRDTMap.js";
