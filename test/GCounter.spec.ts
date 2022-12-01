@@ -118,4 +118,24 @@ describe("Synchronizing", () => {
 		expect(counters[0].toValue()).toBe(30);
 		expect(counters[1].toValue()).toBe(30);
 	});
+
+	it("Syncs n counters", () => {
+		const numberOfCounters = 20;
+		const counters: GCounter[] = [];
+		const sum = numberOfCounters * (numberOfCounters + 1) / 2;
+
+		for (let i = 1; i <= numberOfCounters; i++) {
+			const counter = new GCounter({ id: `test-${i}` });
+
+			counter.increment(i);
+
+			counters.push(counter);
+		}
+
+		syncCounters(counters);
+
+		for (const counter of counters) {
+			expect(counter.toValue()).toBe(sum);
+		}
+	});
 });
