@@ -3,7 +3,7 @@ import { StateCRDT } from "./StateCRDT.js";
 
 export class GCounter extends StateCRDT<number> implements CRDT, GC {
   constructor(config: CRDTConfig) {
-    super(config, (a: number, b:number) => a > b);
+    super(config, (a: number, b:number) => a > b, 0);
   }
 
   toValue(): number {

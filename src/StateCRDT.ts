@@ -5,11 +5,14 @@ import * as cborg from "cborg";
 export class StateCRDT<T> extends CRDTClass implements Omit<CRDT, "toValue"> {
   protected readonly data = new Map<string, T>();
   private readonly compare: (a: T, b: T) => boolean;
+  private readonly defaultValue?: T;
 
-  constructor (config: CRDTConfig, compare: (a: T, b: T) => boolean) {
+  constructor (config: CRDTConfig, compare: (a: T, b: T) => boolean, defaultValue?: T) {
     super(config);
 
+    // Compare should return true if a is greater than b.
     this.compare = compare;
+    this.defaultValue = defaultValue;
   }
 
   sync(data?: Uint8Array): Uint8Array | undefined {
@@ -62,7 +65,7 @@ export class StateCRDT<T> extends CRDTClass implements Omit<CRDT, "toValue"> {
 
   // Returns true if the value passed is larger than the one stored.
   private compareSelf (key: string, value: T) {
-    const lValue = this.data.get(key);
+    const lValue = this.data.get(key) ?? this.defaultValue;
 
     return lValue == null || this.compare(value, lValue);
   }
