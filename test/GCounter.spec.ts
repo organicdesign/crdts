@@ -31,3 +31,17 @@ describe("Isolation", () => {
 		expect(counter.toValue()).toBe(sum);
 	});
 });
+
+describe("Broadcast", () => {
+	it("Broadcasts every time it increments", () => {
+		const broadcast = jest.fn();
+		const counter = new GCounter({ id: "test", broadcast });
+		const times = 5;
+
+		for (let i = 0; i < times; i++) {
+			counter.increment(1);
+		}
+
+		expect(broadcast).toBeCalledTimes(times);
+	});
+});
