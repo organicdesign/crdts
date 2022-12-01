@@ -56,9 +56,9 @@ export class StateCRDT<T> extends CRDTClass implements Omit<CRDT, "toValue"> {
   onBroadcast(data: Uint8Array): void {
     const obj = cborg.decode(data);
 
-    for (const [key, rValue] of obj.entries()) {
-      if (this.compareSelf(key, rValue)) {
-        this.data.set(key, rValue);
+    for (const [key, rValue] of Object.entries(obj)) {
+      if (this.compareSelf(key, rValue as T)) {
+        this.data.set(key, rValue as T);
       }
     }
   }
