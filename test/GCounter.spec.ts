@@ -138,4 +138,67 @@ describe("Synchronizing", () => {
 			expect(counter.toValue()).toBe(sum);
 		}
 	});
+
+	it("Syncs 2 counters over broadcast", () => {
+		const numberOfCounters = 2;
+		const counters: GCounter[] = [];
+
+		const broadcast = (counterRef: {counter?: GCounter}) => (data: Uint8Array) => {
+			for (const counter of counters) {
+				// Don't broadcast to self.
+				if (counter === counterRef.counter) {
+					continue;
+				}
+
+				counter.onBroadcast(data);
+			}
+		};
+
+		for (let i = 1; i <= numberOfCounters; i++) {
+			let counterRef: {counter?: GCounter} = {};
+			const counter = new GCounter({ id: `test-${i}`, broadcast: broadcast(counterRef) });
+			counterRef.counter = counter;
+
+			counters.push(counter);
+		}
+
+		counters[0].increment(12);
+		counters[1].increment(18);
+
+		expect(counters[0].toValue()).toBe(30);
+		expect(counters[1].toValue()).toBe(30);
+	});
+
+	it("Syncs n counters over broadcast", () => {
+		const numberOfCounters = 20;
+		const counters: GCounter[] = [];
+		const sum = numberOfCounters * (numberOfCounters + 1) / 2;
+
+		const broadcast = (counterRef: {counter?: GCounter}) => (data: Uint8Array) => {
+			for (const counter of counters) {
+				// Don't broadcast to self.
+				if (counter === counterRef.counter) {
+					continue;
+				}
+
+				counter.onBroadcast(data);
+			}
+		};
+
+		for (let i = 1; i <= numberOfCounters; i++) {
+			let counterRef: {counter?: GCounter} = {};
+			const counter = new GCounter({ id: `test-${i}`, broadcast: broadcast(counterRef) });
+			counterRef.counter = counter;
+
+			counters.push(counter);
+		}
+
+		for (let i = 0; i < counters.length; i++) {
+			counters[i].increment(i + 1);
+		}
+
+		for (const counter of counters) {
+			expect(counter.toValue()).toBe(sum);
+		}
+	});
 });
