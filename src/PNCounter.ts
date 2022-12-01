@@ -3,6 +3,11 @@ import { CRDT as ICRDT, CRDTConfig, PNCounter as IPNCounter } from "./interfaces
 import { GCounter } from "./GCounter.js";
 import { CRDT } from "./CRDT.js";
 
+enum CounterType {
+  PCounter,
+  NCounter
+}
+
 export class PNCounter extends CRDT implements ICRDT, IPNCounter {
   private pCounter: GCounter;
   private nCounter: GCounter;
@@ -10,7 +15,7 @@ export class PNCounter extends CRDT implements ICRDT, IPNCounter {
   constructor(config: CRDTConfig) {
     super(config);
 
-    const createConfig = (type: "p" | "n") => ({
+    const createConfig = (type: CounterType) => ({
       ...config,
       broadcast: (data: Uint8Array) => {
         this.tryBroadcast(cborg.encode({
@@ -20,8 +25,8 @@ export class PNCounter extends CRDT implements ICRDT, IPNCounter {
       }
     });
 
-    this.pCounter = new GCounter(createConfig("p"));
-    this.nCounter = new GCounter(createConfig("n"));
+    this.pCounter = new GCounter(createConfig(CounterType.PCounter));
+    this.nCounter = new GCounter(createConfig(CounterType.NCounter));
   }
 
   sync(data?: Uint8Array): Uint8Array | undefined {
@@ -48,9 +53,9 @@ export class PNCounter extends CRDT implements ICRDT, IPNCounter {
   }
 
   onBroadcast(data: Uint8Array): void {
-    const { type, data: subData }: { type: "p" | "n", data: Uint8Array } = cborg.decode(data);
+    const { type, data: subData }: { type: CounterType, data: Uint8Array } = cborg.decode(data);
 
-    if (type === "p") {
+    if (type === CounterType.PCounter) {
       this.pCounter.onBroadcast(subData);
     } else {
       this.nCounter.onBroadcast(subData);
