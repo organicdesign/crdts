@@ -1,6 +1,6 @@
 import { CRDT as CRDTClass } from "./CRDT.js";
 import type { CRDT, CRDTConfig } from "./interfaces";
-import cborg from "cborg";
+import * as cborg from "cborg";
 
 export class StateCRDT<T> extends CRDTClass implements Omit<CRDT, "toValue"> {
   protected readonly data = new Map<string, T>();
