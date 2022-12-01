@@ -1,5 +1,38 @@
 import { GCounter } from "../src/GCounter.js";
 
+const syncCounter = (counter1: GCounter, counter2: GCounter) => {
+	let data = counter1.sync();
+	let i = 0;
+
+	while (data != null) {
+		if (i > 100) {
+			throw new Error("Infinite sync loop detected.");
+		}
+
+		const response = counter2.sync(data);
+
+		if (response == null) {
+			break;
+		}
+
+		data = counter1.sync(response);
+
+		i++;
+	}
+};
+
+const syncCounters = (counters: GCounter[]) => {
+	for (const counter1 of counters) {
+		for (const counter2 of counters) {
+			if (counter1 === counter2) {
+				continue;
+			}
+
+			syncCounter(counter1, counter2);
+		}
+	}
+};
+
 describe("Isolation", () => {
 	it("Starts at 0", () => {
 		const counter = new GCounter({ id: "test" });
@@ -67,5 +100,22 @@ describe("Broadcast", () => {
 		}
 
 		expect(broadcast).not.toBeCalled();
+	});
+});
+
+describe("Synchronizing", () => {
+	it("Syncs 2 counters", () => {
+		const counters = [
+			new GCounter({ id: "test-1" }),
+			new GCounter({ id: "test-2" })
+		];
+
+		counters[0].increment(12);
+		counters[1].increment(18);
+
+		syncCounters(counters);
+
+		expect(counters[0].toValue()).toBe(30);
+		expect(counters[1].toValue()).toBe(30);
 	});
 });
