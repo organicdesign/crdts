@@ -21,8 +21,20 @@ describe("Isolation", () => {
 
 	it("Adds floats", () => {
 		const counter = new GCounter({ id: "test" });
-		const integers = [1, 100.23, 53.000001, 0.12];
-		const sum = integers.reduce((p, c) => p + c, 0);
+		const floats = [1, 100.23, 53.000001, 0.12];
+		const sum = floats.reduce((p, c) => p + c, 0);
+
+		for (const float of floats) {
+			counter.increment(float);
+		}
+
+		expect(counter.toValue()).toBe(sum);
+	});
+
+	it("Does not use negative values", () => {
+		const counter = new GCounter({ id: "test" });
+		const integers = [1, -2, 100,  -3, 53];
+		const sum = integers.filter(i => i > 0).reduce((p, c) => p + c, 0);
 
 		for (const integer of integers) {
 			counter.increment(integer);
@@ -43,5 +55,17 @@ describe("Broadcast", () => {
 		}
 
 		expect(broadcast).toBeCalledTimes(times);
+	});
+
+	it("Does not broadcast when 0 or a negative value is passed", () => {
+		const broadcast = jest.fn();
+		const counter = new GCounter({ id: "test", broadcast });
+		const values = [0, -1, -100];
+
+		for (const value of values) {
+			counter.increment(value);
+		}
+
+		expect(broadcast).not.toBeCalled();
 	});
 });
