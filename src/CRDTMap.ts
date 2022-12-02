@@ -68,8 +68,14 @@ export class CRDTMap extends CRDT implements ICRDT, GMap<ICRDT> {
     }
   }
 
-  toValue(): Map<string, ICRDT> {
-    return new Map(this.data);
+  toValue(): Map<string, unknown> {
+    const output = new Map<string, unknown>();
+
+    for (const [key, crdt] of this.data.entries()) {
+      output.set(key, crdt.toValue());
+    }
+
+    return output;
   }
 
   serialize(): Uint8Array {
