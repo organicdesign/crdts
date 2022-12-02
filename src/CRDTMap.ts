@@ -2,22 +2,22 @@ import * as cborg from "cborg";
 import { CRDT } from "./CRDT.js"
 import type { CRDT as ICRDT, GMap, CRDTConfig } from "./interfaces.js";
 
-export class CRDTMap extends CRDT implements ICRDT, GMap<ICRDT> {
-  private data = new Map<string, ICRDT>();
+export class CRDTMap<T extends ICRDT=ICRDT> extends CRDT implements ICRDT, GMap<ICRDT> {
+  private data = new Map<string, T>();
 
   constructor (config: CRDTConfig) {
     super(config);
   }
 
-  [Symbol.iterator](): IterableIterator<[string, ICRDT]> {
+  [Symbol.iterator](): IterableIterator<[string, T]> {
     return this.data[Symbol.iterator]();
   }
 
-  forEach(callbackfn: (value: ICRDT, key: string, map: Map<string, ICRDT>) => void, thisArg?: any): void {
+  forEach(callbackfn: (value: T, key: string, map: Map<string, T>) => void, thisArg?: any): void {
     return this.data.forEach(callbackfn, thisArg);
   }
 
-  get(key: string): ICRDT | undefined {
+  get(key: string): T | undefined {
     return this.data.get(key);
   }
 
@@ -25,7 +25,7 @@ export class CRDTMap extends CRDT implements ICRDT, GMap<ICRDT> {
     return this.data.has(key);
   }
 
-  set(key: string, value: ICRDT): Map<string, ICRDT> {
+  set(key: string, value: T): Map<string, T> {
     value.addBroadcaster?.((data: Uint8Array) => {
       this.broadcast(cborg.encode({
         [key]: data
@@ -38,7 +38,7 @@ export class CRDTMap extends CRDT implements ICRDT, GMap<ICRDT> {
     return this.data.size;
   }
 
-  entries(): IterableIterator<[string, ICRDT]> {
+  entries(): IterableIterator<[string, T]> {
     return this.data.entries();
   }
 
@@ -46,7 +46,7 @@ export class CRDTMap extends CRDT implements ICRDT, GMap<ICRDT> {
     return this.data.keys();
   }
 
-  values(): IterableIterator<ICRDT> {
+  values(): IterableIterator<T> {
     return this.data.values();
   }
 
