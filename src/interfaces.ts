@@ -22,8 +22,9 @@ export interface PNCounter extends GCounter {
 }
 
 export interface Register<T> {
-  get (): T
+  get (): T | undefined
   set (value: T): void
+  clear (): void
 }
 
 export type GMap<T extends CRDT=CRDT> = Omit<Map<string, T>, "clear" | "delete" | typeof Symbol.toStringTag>;

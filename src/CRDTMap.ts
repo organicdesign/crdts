@@ -3,7 +3,7 @@ import { CRDT } from "./CRDT.js"
 import type { CRDT as ICRDT, GMap, CRDTConfig } from "./interfaces.js";
 
 export class CRDTMap<T extends ICRDT=ICRDT> extends CRDT implements ICRDT, GMap<ICRDT> {
-  private data = new Map<string, T>();
+  protected data = new Map<string, T>();
 
   constructor (config: CRDTConfig) {
     super(config);
