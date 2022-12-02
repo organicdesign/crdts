@@ -1,9 +1,13 @@
 import * as cborg from "cborg";
 import { CRDT } from "./CRDT.js"
-import type { CRDT as ICRDT, GMap } from "./interfaces.js";
+import type { CRDT as ICRDT, GMap, CRDTConfig } from "./interfaces.js";
 
 export class CRDTMap extends CRDT implements ICRDT, GMap<ICRDT> {
   private data = new Map<string, ICRDT>();
+
+  constructor (config: CRDTConfig) {
+    super(config);
+  }
 
   [Symbol.iterator](): IterableIterator<[string, ICRDT]> {
     return this.data[Symbol.iterator]();
@@ -22,6 +26,11 @@ export class CRDTMap extends CRDT implements ICRDT, GMap<ICRDT> {
   }
 
   set(key: string, value: ICRDT): Map<string, ICRDT> {
+    value.addBroadcaster?.((data: Uint8Array) => {
+      this.broadcast(cborg.encode({
+        [key]: data
+      }))
+    });
     return new Map(this.data.set(key, value));
   }
 
@@ -88,7 +97,11 @@ export class CRDTMap extends CRDT implements ICRDT, GMap<ICRDT> {
     return cborg.encode(obj);
   }
 
-  onBroadcast?(data: Uint8Array): void {
-    throw new Error("Method not implemented.");
+  onBroadcast(data: Uint8Array): void {
+    const decoded: Record<string, Uint8Array> = cborg.decode(data);
+
+    for (const [key, value] of Object.entries(decoded)) {
+      this.get(key)?.onBroadcast?.(value);
+    }
   }
 }
