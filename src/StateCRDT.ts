@@ -47,7 +47,7 @@ export class StateCRDT<T> extends CRDTClass implements Omit<CRDT, "toValue"> {
     if (this.compareSelf(id, value)) {
       this.data.set(id, value);
 
-      this.tryBroadcast(cborg.encode({
+      this.broadcast(cborg.encode({
         [id]: value
       }));
     }

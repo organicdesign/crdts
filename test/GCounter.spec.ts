@@ -1,5 +1,7 @@
 import { GCounter } from "../src/GCounter.js";
 
+import * as cborg from "cborg";
+
 const syncCounter = (counter1: GCounter, counter2: GCounter) => {
 	let data = counter1.sync();
 	let i = 0;
@@ -80,8 +82,10 @@ describe("Isolation", () => {
 describe("Broadcast", () => {
 	it("Broadcasts every time it increments", () => {
 		const broadcast = jest.fn();
-		const counter = new GCounter({ id: "test", broadcast });
+		const counter = new GCounter({ id: "test" });
 		const times = 5;
+
+		counter.addBroadcaster(broadcast);
 
 		for (let i = 0; i < times; i++) {
 			counter.increment(1);
@@ -92,8 +96,10 @@ describe("Broadcast", () => {
 
 	it("Does not broadcast when 0 or a negative value is passed", () => {
 		const broadcast = jest.fn();
-		const counter = new GCounter({ id: "test", broadcast });
+		const counter = new GCounter({ id: "test" });
 		const values = [0, -1, -100];
+
+		counter.addBroadcaster(broadcast);
 
 		for (const value of values) {
 			counter.increment(value);
@@ -143,21 +149,22 @@ describe("Synchronizing", () => {
 		const numberOfCounters = 2;
 		const counters: GCounter[] = [];
 
-		const broadcast = (counterRef: {counter?: GCounter}) => (data: Uint8Array) => {
-			for (const counter of counters) {
+		const createBroadcast = (counter: GCounter) => (data: Uint8Array) => {
+			for (const rCounter of counters) {
 				// Don't broadcast to self.
-				if (counter === counterRef.counter) {
+				if (rCounter === counter) {
 					continue;
 				}
 
-				counter.onBroadcast(data);
+				rCounter.onBroadcast(data);
 			}
 		};
 
 		for (let i = 1; i <= numberOfCounters; i++) {
 			let counterRef: {counter?: GCounter} = {};
-			const counter = new GCounter({ id: `test-${i}`, broadcast: broadcast(counterRef) });
-			counterRef.counter = counter;
+			const counter = new GCounter({ id: `test-${i}` });
+
+			counter.addBroadcaster(createBroadcast(counter));
 
 			counters.push(counter);
 		}
@@ -174,21 +181,21 @@ describe("Synchronizing", () => {
 		const counters: GCounter[] = [];
 		const sum = numberOfCounters * (numberOfCounters + 1) / 2;
 
-		const broadcast = (counterRef: {counter?: GCounter}) => (data: Uint8Array) => {
-			for (const counter of counters) {
+		const createBroadcast = (counter: GCounter) => (data: Uint8Array) => {
+			for (const rCounter of counters) {
 				// Don't broadcast to self.
-				if (counter === counterRef.counter) {
+				if (rCounter === counter) {
 					continue;
 				}
 
-				counter.onBroadcast(data);
+				rCounter.onBroadcast(data);
 			}
 		};
 
 		for (let i = 1; i <= numberOfCounters; i++) {
-			let counterRef: {counter?: GCounter} = {};
-			const counter = new GCounter({ id: `test-${i}`, broadcast: broadcast(counterRef) });
-			counterRef.counter = counter;
+			const counter = new GCounter({ id: `test-${i}` });
+
+			counter.addBroadcaster(createBroadcast(counter));
 
 			counters.push(counter);
 		}

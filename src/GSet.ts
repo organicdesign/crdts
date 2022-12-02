@@ -14,7 +14,7 @@ export class GSet<T> extends CRDT implements ICRDT, IGSet<T> {
 
     const encoded = cborg.encode(value);
 
-    this.tryBroadcast(encoded);
+    this.broadcast(encoded);
 
     return this.toValue();
   }

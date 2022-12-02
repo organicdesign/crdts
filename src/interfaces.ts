@@ -3,11 +3,11 @@ export interface CRDT {
 	toValue (): unknown
   serialize (): Uint8Array
   onBroadcast? (data: Uint8Array): void
+  addBroadcaster? (broadcaster: (data: Uint8Array) => void): void
 }
 
 export interface CRDTConfig {
-	id: string,
-	broadcast? (data: Uint8Array): void
+	id: string
 }
 
 export type deserialize = <T extends CRDT=CRDT>(data: Uint8Array) => T;

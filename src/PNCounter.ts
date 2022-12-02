@@ -15,18 +15,16 @@ export class PNCounter extends CRDT implements ICRDT, IPNCounter {
   constructor(config: CRDTConfig) {
     super(config);
 
-    const createConfig = (type: CounterType) => ({
-      ...config,
-      broadcast: (data: Uint8Array) => {
-        this.tryBroadcast(cborg.encode({
-          type,
-          data
-        }));
-      }
-    });
+    this.pCounter = new GCounter(config);
+    this.nCounter = new GCounter(config);
 
-    this.pCounter = new GCounter(createConfig(CounterType.PCounter));
-    this.nCounter = new GCounter(createConfig(CounterType.NCounter));
+    this.pCounter.addBroadcaster((data: Uint8Array) => this.broadcast(
+      cborg.encode({ type: CounterType.PCounter, data})
+    ));
+
+    this.nCounter.addBroadcaster((data: Uint8Array) => this.broadcast(
+      cborg.encode({ type: CounterType.NCounter, data})
+    ));
   }
 
   sync(data?: Uint8Array): Uint8Array | undefined {
