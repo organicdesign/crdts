@@ -1,38 +1,19 @@
-import type { CRDT } from "./interfaces";
+import * as cborg from "cborg";
+import { CRDT } from "./CRDT.js"
+import type { CRDT as ICRDT, GMap } from "./interfaces.js";
 
-export class CRDTMap implements CRDT, Omit<Map<string, CRDT>, "clear" | "delete"> {
-  private data = new Map<string, CRDT>();
+export class CRDTMap extends CRDT implements ICRDT, GMap<ICRDT> {
+  private data = new Map<string, ICRDT>();
 
-  constructor (settings) {
-    // settings.broadcast
-    // settings.id
+  [Symbol.iterator](): IterableIterator<[string, ICRDT]> {
+    return this.data[Symbol.iterator]();
   }
 
-  serialize(): Uint8Array {
-    throw new Error("Method not implemented.");
+  forEach(callbackfn: (value: ICRDT, key: string, map: Map<string, ICRDT>) => void, thisArg?: any): void {
+    return this.data.forEach(callbackfn, thisArg);
   }
 
-  sync(data?: Uint8Array): Uint8Array {
-    throw new Error("Method not implemented.");
-  }
-
-  toValue (): Map<string, unknown> {
-    const output = new Map<string, unknown>();
-
-    for (const [key, value] of this.data) {
-      output.set(key, value?.toValue());
-    }
-
-    return output;
-  }
-
-  forEach(callbackfn: (value: CRDT, key: string, map: Map<string, CRDT>) => void, thisArg?: any): void {
-    for (const [key, value] of this.data) {
-      callbackfn(value, key, thisArg ?? this.data);
-    }
-  }
-
-  get(key: string): CRDT | undefined {
+  get(key: string): ICRDT | undefined {
     return this.data.get(key);
   }
 
@@ -40,29 +21,68 @@ export class CRDTMap implements CRDT, Omit<Map<string, CRDT>, "clear" | "delete"
     return this.data.has(key);
   }
 
-  set(key: string, value: CRDT): Map<string, CRDT> {
-    return this.data.set(key, value);
+  set(key: string, value: ICRDT): Map<string, ICRDT> {
+    return new Map(this.data.set(key, value));
   }
 
-  get size (): number {
+  get size(): number {
     return this.data.size;
   }
 
-  entries(): IterableIterator<[string, CRDT]> {
+  entries(): IterableIterator<[string, ICRDT]> {
     return this.data.entries();
   }
 
   keys(): IterableIterator<string> {
-    return this.data.keys()
+    return this.data.keys();
   }
 
-  values(): IterableIterator<CRDT> {
+  values(): IterableIterator<ICRDT> {
     return this.data.values();
   }
 
-  [Symbol.iterator](): IterableIterator<[string, CRDT]> {
-    return this.entries();
+  sync(data?: Uint8Array): Uint8Array | undefined {
+    if (data == null) {
+      const obj: Record<string, Uint8Array> = {};
+
+      for (const [key, crdt] of this.data.entries()) {
+        obj[key] = crdt.sync() as Uint8Array;
+      }
+
+      return cborg.encode(obj);
+    }
+
+    const decoded = cborg.decode(data) as Record<string, Uint8Array>;
+    const obj: Record<string, Uint8Array> = {};
+
+    for (const [key, subdata] of Object.entries(decoded)) {
+      const result = this.data.get(key)?.sync(subdata);
+
+      if (result != null) {
+        obj[key] = result;
+      }
+    }
+
+    if (Object.values(obj).length > 0) {
+      return cborg.encode(obj);
+    }
   }
 
-  [Symbol.toStringTag]: string;
+  toValue(): Map<string, ICRDT> {
+    return new Map(this.data);
+  }
+
+  serialize(): Uint8Array {
+    const obj: Record<string, Uint8Array> = {};
+
+    for (const [key, crdt] of this.data.entries()) {
+      obj[key] = crdt.serialize();
+    }
+
+    return cborg.encode(obj);
+  }
+
+  onBroadcast?(data: Uint8Array): void {
+    throw new Error("Method not implemented.");
+  }
 }
