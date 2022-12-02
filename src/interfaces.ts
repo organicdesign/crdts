@@ -8,6 +8,7 @@ export interface CRDT {
 
 export interface CRDTConfig {
 	id: string
+  generateTimestamp?: () => string
 }
 
 export type deserialize = <T extends CRDT=CRDT>(data: Uint8Array) => T;

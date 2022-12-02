@@ -16,6 +16,10 @@ export class CRDT {
     return this.config.id;
   }
 
+  protected get generateTimestamp () {
+    return this.config.generateTimestamp ?? (() => Date.now().toString(16));
+  }
+
   protected broadcast (data: Uint8Array) {
     for (const broadcaster of this.broadcasters) {
       broadcaster(data);

@@ -1,6 +1,5 @@
-import { GCounter } from "../src/GCounter.js";
-
 import * as cborg from "cborg";
+import { GCounter } from "../src/GCounter.js";
 
 const syncCounter = (counter1: GCounter, counter2: GCounter) => {
 	let data = counter1.sync();
