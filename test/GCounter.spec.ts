@@ -1,38 +1,5 @@
-import * as cborg from "cborg";
 import { GCounter } from "../src/GCounter.js";
-
-const syncCounter = (counter1: GCounter, counter2: GCounter) => {
-	let data = counter1.sync();
-	let i = 0;
-
-	while (data != null) {
-		if (i > 100) {
-			throw new Error("Infinite sync loop detected.");
-		}
-
-		const response = counter2.sync(data);
-
-		if (response == null) {
-			break;
-		}
-
-		data = counter1.sync(response);
-
-		i++;
-	}
-};
-
-const syncCounters = (counters: GCounter[]) => {
-	for (const counter1 of counters) {
-		for (const counter2 of counters) {
-			if (counter1 === counter2) {
-				continue;
-			}
-
-			syncCounter(counter1, counter2);
-		}
-	}
-};
+import { syncCrdts } from "../src/utils.js";
 
 describe("Isolation", () => {
 	it("Starts at 0", () => {
@@ -118,7 +85,7 @@ describe("Synchronizing", () => {
 		counters[0].increment(12);
 		counters[1].increment(18);
 
-		syncCounters(counters);
+		syncCrdts(counters);
 
 		expect(counters[0].toValue()).toBe(30);
 		expect(counters[1].toValue()).toBe(30);
@@ -137,7 +104,7 @@ describe("Synchronizing", () => {
 			counters.push(counter);
 		}
 
-		syncCounters(counters);
+		syncCrdts(counters);
 
 		for (const counter of counters) {
 			expect(counter.toValue()).toBe(sum);
@@ -160,7 +127,6 @@ describe("Synchronizing", () => {
 		};
 
 		for (let i = 1; i <= numberOfCounters; i++) {
-			let counterRef: {counter?: GCounter} = {};
 			const counter = new GCounter({ id: `test-${i}` });
 
 			counter.addBroadcaster(createBroadcast(counter));
