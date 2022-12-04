@@ -1,6 +1,6 @@
 import { MultiCRDT } from "./MultiCRDT.js";
 import { LWWRegister } from "./LWWRegister.js";
-import type { CRDT as ICRDT, PNMap } from "./interfaces.js";
+import type { CRDT as ICRDT, PNMap, CRDTConfig } from "./interfaces.js";
 
 export class LWWMap<T> extends MultiCRDT<LWWRegister<T>> implements ICRDT, PNMap<T> {
   [Symbol.iterator](): IterableIterator<[string, T]> {
@@ -13,6 +13,10 @@ export class LWWMap<T> extends MultiCRDT<LWWRegister<T>> implements ICRDT, PNMap
     }
 
     return itr();
+  }
+
+  constructor (config: CRDTConfig) {
+    super(config, () => new LWWRegister(this.config));
   }
 
   clear(): void {

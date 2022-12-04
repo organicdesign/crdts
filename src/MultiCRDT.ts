@@ -1,9 +1,16 @@
 import * as cborg from "cborg";
 import { CRDT } from "./CRDT.js"
-import type { CRDT as ICRDT, GMap, CRDTConfig } from "./interfaces.js";
+import type { CRDT as ICRDT, CRDTConfig } from "./interfaces.js";
 
 export class MultiCRDT<T extends ICRDT=ICRDT> extends CRDT implements ICRDT {
   protected data = new Map<string, T>();
+  private create: (() => T) | undefined;
+
+  constructor (config: CRDTConfig, create?: () => T) {
+    super(config);
+
+    this.create = create;
+  }
 
   protected assign (key: string, crdt: T) {
     crdt.addBroadcaster?.((data: Uint8Array) => {
@@ -38,6 +45,10 @@ export class MultiCRDT<T extends ICRDT=ICRDT> extends CRDT implements ICRDT {
     const obj: Record<string, Uint8Array> = {};
 
     for (const [key, subdata] of Object.entries(decoded)) {
+      if (!this.data.has(key) && this.create != null) {
+        this.assign(key, this.create());
+      }
+
       const result = this.data.get(key)?.sync(subdata);
 
       if (result != null) {

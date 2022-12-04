@@ -1,4 +1,3 @@
-import * as cborg from "cborg";
 import { MultiCRDT } from "./MultiCRDT.js"
 import type { CRDT as ICRDT, GMap, CRDTConfig } from "./interfaces.js";
 
