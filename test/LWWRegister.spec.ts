@@ -1,5 +1,5 @@
 import { LWWRegister } from "../src/LWWRegister.js";
-import { createSyncTests } from "./utils.js";
+import createSyncTests from "./sync.js";
 
 const generateTimestamp = (() => {
 	let last = 0;

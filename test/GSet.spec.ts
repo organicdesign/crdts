@@ -1,5 +1,5 @@
 import { GSet } from "../src/GSet.js";
-import { createSyncTests } from "./utils.js";
+import createSyncTests from "./sync.js";
 
 describe("Synchronizing", () => {
 	createSyncTests(

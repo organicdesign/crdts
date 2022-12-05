@@ -1,5 +1,5 @@
 import { PNCounter } from "../src/PNCounter.js";
-import { createSyncTests } from "./utils.js";
+import createSyncTests from "./sync.js";
 
 describe("Isolation", () => {
 	it("Starts at 0", () => {

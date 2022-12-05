@@ -1,7 +1,7 @@
 import { syncCrdts } from "../src/utils.js";
 import type { CRDT } from "../src/interfaces.js";
 
-export const createSyncTests = <T extends CRDT=CRDT>(
+export default <T extends CRDT=CRDT>(
   name: string,
   create: (id: string) => T,
   action: (crdt: T, index: number) => void,
