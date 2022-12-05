@@ -3,7 +3,7 @@ import { createSyncTests } from "./utils.js";
 
 describe("Synchronizing", () => {
 	createSyncTests(
-		"counter",
+		"set",
 		(id: string) => new GSet({ id }),
 		(crdt: GSet<unknown>, index: number) => crdt.add(`item-${index}`),
 		true
