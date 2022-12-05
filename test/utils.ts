@@ -28,7 +28,7 @@ export const createSyncTests = <T extends CRDT=CRDT>(
     const result = crdts[0].toValue();
 
     for (const crdt of crdts) {
-      expect(crdt.toValue()).toBe(result);
+      expect(crdt.toValue()).toStrictEqual(result);
     }
   };
 
@@ -61,7 +61,7 @@ export const createSyncTests = <T extends CRDT=CRDT>(
     const value = crdts[0].toValue();
 
     for (const crdt of crdts) {
-      expect(crdt.toValue()).toBe(value);
+      expect(crdt.toValue()).toStrictEqual(value);
     }
   }
 
