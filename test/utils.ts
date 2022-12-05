@@ -5,7 +5,6 @@ export const createSyncTests = <T extends CRDT=CRDT>(
   name: string,
   create: (id: string) => T,
   action: (crdt: T, index: number) => void,
-  broadcast?: boolean,
   instanceCount?: number
 ) => {
   if (instanceCount == null) {
@@ -73,7 +72,9 @@ export const createSyncTests = <T extends CRDT=CRDT>(
     runSyncTest(20);
   });
 
-  if (broadcast) {
+  const dummy = create("dummy");
+
+  if (dummy.addBroadcaster != null && dummy.onBroadcast != null) {
     it(`Syncs 2 ${name}s over broadcast`, () => {
       runBroadcastTest(2);
     });

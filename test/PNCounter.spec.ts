@@ -76,7 +76,6 @@ describe("Synchronizing", () => {
 	createSyncTests(
 		"counter",
 		(id: string) => new PNCounter({ id }),
-		(crdt: PNCounter, index: number) => index % 2 === 0 ? crdt.increment(index + 1) : crdt.decrement(index + 1),
-		true
+		(crdt: PNCounter, index: number) => index % 2 === 0 ? crdt.increment(index + 1) : crdt.decrement(index + 1)
 	);
 });

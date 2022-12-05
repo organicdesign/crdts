@@ -43,8 +43,4 @@ export class LWWRegister<T> extends CRDT implements ICRDT, Register<T> {
       timestamp: this.timestamp
     });
   }
-
-  onBroadcast?(data: Uint8Array): void {
-    throw new Error("Method not implemented.");
-  }
 }
