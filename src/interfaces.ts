@@ -1,7 +1,7 @@
 export interface CRDT {
 	sync (data?: Uint8Array): Uint8Array | undefined
 	toValue (): unknown
-  serialize (): Uint8Array
+  serialize? (): Uint8Array
   onBroadcast? (data: Uint8Array): void
   addBroadcaster? (broadcaster: (data: Uint8Array) => void): void
 }
@@ -11,7 +11,9 @@ export interface CRDTConfig {
   generateTimestamp?: () => string
 }
 
-export type deserialize = <T extends CRDT=CRDT>(data: Uint8Array) => T;
+export type CreateCRDT<T extends CRDT=CRDT> = (config: CRDTConfig) => T;
+
+export type Deserialize<T extends CRDT=CRDT> = (data: Uint8Array) => T;
 
 export interface GCounter {
   increment (quantity: number): void

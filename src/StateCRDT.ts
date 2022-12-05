@@ -17,7 +17,7 @@ export class StateCRDT<T> extends CRDTClass implements Omit<CRDT, "toValue"> {
 
   sync(data?: Uint8Array): Uint8Array | undefined {
     if (data == null) {
-      return this.serialize();
+      return this.createSyncObj();
     }
 
     const obj: Record<string, T> = cborg.decode(data);
@@ -32,6 +32,15 @@ export class StateCRDT<T> extends CRDTClass implements Omit<CRDT, "toValue"> {
   }
 
   serialize(): Uint8Array {
+    const data = {
+      id: this.id,
+      sync: this.createSyncObj()
+    };
+
+    return cborg.encode(data);
+  }
+
+  private createSyncObj () {
     const obj: Record<string, T> = {};
 
     for (const [key, value] of this.data) {

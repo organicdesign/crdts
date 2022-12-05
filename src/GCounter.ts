@@ -1,4 +1,5 @@
-import { CRDT, CRDTConfig, GCounter as GC } from "./interfaces.js";
+import * as cborg from "cborg";
+import type { CRDT, CRDTConfig, GCounter as GC, Deserialize, CreateCRDT } from "./interfaces.js";
 import { StateCRDT } from "./StateCRDT.js";
 
 export class GCounter extends StateCRDT<number> implements CRDT, GC {
@@ -22,3 +23,14 @@ export class GCounter extends StateCRDT<number> implements CRDT, GC {
     this.update(nValue);
   }
 }
+
+export const createGCounter: CreateCRDT<GCounter> = (config: CRDTConfig) => new GCounter(config);
+
+export const deserializeGCounter: Deserialize<GCounter> = (data: Uint8Array) => {
+  const { id, sync }: { id: string, sync: Uint8Array } = cborg.decode(data);
+  const counter = new GCounter({ id });
+
+  counter.sync(sync);
+
+  return counter;
+};
