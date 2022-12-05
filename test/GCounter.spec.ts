@@ -1,5 +1,5 @@
 import { GCounter } from "../src/GCounter.js";
-import { syncCrdts } from "../src/utils.js";
+import { createSyncTests } from "./utils.js";
 
 describe("Isolation", () => {
 	it("Starts at 0", () => {
@@ -76,101 +76,10 @@ describe("Broadcast", () => {
 });
 
 describe("Synchronizing", () => {
-	it("Syncs 2 counters", () => {
-		const counters = [
-			new GCounter({ id: "test-1" }),
-			new GCounter({ id: "test-2" })
-		];
-
-		counters[0].increment(12);
-		counters[1].increment(18);
-
-		syncCrdts(counters);
-
-		expect(counters[0].toValue()).toBe(30);
-		expect(counters[1].toValue()).toBe(30);
-	});
-
-	it("Syncs n counters", () => {
-		const numberOfCounters = 20;
-		const counters: GCounter[] = [];
-		const sum = numberOfCounters * (numberOfCounters + 1) / 2;
-
-		for (let i = 1; i <= numberOfCounters; i++) {
-			const counter = new GCounter({ id: `test-${i}` });
-
-			counter.increment(i);
-
-			counters.push(counter);
-		}
-
-		syncCrdts(counters);
-
-		for (const counter of counters) {
-			expect(counter.toValue()).toBe(sum);
-		}
-	});
-
-	it("Syncs 2 counters over broadcast", () => {
-		const numberOfCounters = 2;
-		const counters: GCounter[] = [];
-
-		const createBroadcast = (counter: GCounter) => (data: Uint8Array) => {
-			for (const rCounter of counters) {
-				// Don't broadcast to self.
-				if (rCounter === counter) {
-					continue;
-				}
-
-				rCounter.onBroadcast(data);
-			}
-		};
-
-		for (let i = 1; i <= numberOfCounters; i++) {
-			const counter = new GCounter({ id: `test-${i}` });
-
-			counter.addBroadcaster(createBroadcast(counter));
-
-			counters.push(counter);
-		}
-
-		counters[0].increment(12);
-		counters[1].increment(18);
-
-		expect(counters[0].toValue()).toBe(30);
-		expect(counters[1].toValue()).toBe(30);
-	});
-
-	it("Syncs n counters over broadcast", () => {
-		const numberOfCounters = 20;
-		const counters: GCounter[] = [];
-		const sum = numberOfCounters * (numberOfCounters + 1) / 2;
-
-		const createBroadcast = (counter: GCounter) => (data: Uint8Array) => {
-			for (const rCounter of counters) {
-				// Don't broadcast to self.
-				if (rCounter === counter) {
-					continue;
-				}
-
-				rCounter.onBroadcast(data);
-			}
-		};
-
-		for (let i = 1; i <= numberOfCounters; i++) {
-			const counter = new GCounter({ id: `test-${i}` });
-
-			counter.addBroadcaster(createBroadcast(counter));
-
-			counters.push(counter);
-		}
-
-		for (let i = 0; i < counters.length; i++) {
-			counters[i].increment(i + 1);
-		}
-
-		for (const counter of counters) {
-			expect(counter.toValue()).toBe(sum);
-		}
-	});
+	createSyncTests(
+		"counter",
+		(id: string) => new GCounter({ id }),
+		(crdt: GCounter, index: number) => crdt.increment(index + 1),
+		true
+	);
 });
