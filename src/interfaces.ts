@@ -27,6 +27,12 @@ export interface Register<T> {
   clear (): void
 }
 
+export interface MVRegister<T> {
+	get (): T[] | undefined
+	set (value: T): void
+	clear (): void
+}
+
 export type GMap<T extends CRDT=CRDT> = Omit<Map<string, T>, "clear" | "delete" | typeof Symbol.toStringTag>;
 export type PNMap<T> = Omit<Map<string, T>, typeof Symbol.toStringTag>;
 
