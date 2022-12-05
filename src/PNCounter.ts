@@ -35,12 +35,21 @@ export class PNCounter extends CRDT implements ICRDT, IPNCounter {
       ]);
     }
 
-    const [pData, nData]: [Uint8Array, Uint8Array] = cborg.decode(data);
+    let [pData, nData]: [Uint8Array?, Uint8Array?] = cborg.decode(data);
 
-    return cborg.encode([
-      this.pCounter.sync(pData),
-      this.nCounter.sync(nData)
-    ]);
+    if (pData != null) {
+      pData = this.pCounter.sync(pData);
+    }
+
+    if (nData != null) {
+      nData = this.nCounter.sync(nData);
+    }
+
+    if (pData == null && nData == null) {
+      return;
+    }
+
+    return cborg.encode([pData, nData]);
   }
 
   serialize(): Uint8Array {
