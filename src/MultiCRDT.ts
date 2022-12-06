@@ -75,7 +75,9 @@ export class MultiCRDT<T extends ICRDT=ICRDT> extends CRDT implements ICRDT {
     const obj: Record<string, Uint8Array> = {};
 
     for (const [key, crdt] of this.data.entries()) {
-      obj[key] = crdt.serialize();
+      if (crdt.serialize) {
+        obj[key] = crdt.serialize();
+      }
     }
 
     return cborg.encode(obj);
@@ -85,7 +87,14 @@ export class MultiCRDT<T extends ICRDT=ICRDT> extends CRDT implements ICRDT {
     const decoded: Record<string, Uint8Array> = cborg.decode(data);
 
     for (const [key, value] of Object.entries(decoded)) {
-      this.data.get(key)?.onBroadcast?.(value);
+      let subCrdt = this.data.get(key);
+
+      if (subCrdt == null && this.create) {
+        subCrdt = this.create();
+        this.assign(key, subCrdt);
+      }
+
+      subCrdt?.onBroadcast?.(value);
     }
   }
 }
