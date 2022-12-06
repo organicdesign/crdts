@@ -1,6 +1,4 @@
-import createSyncTests from "./sync.js";
-import createSerialTests from "./serialize.js";
-import createBroadcastTests from "./broadcast.js";
+import createCRDTTests from "./crdt.js";
 import type { PNCounter, CRDT, Deserialize } from "../src/interfaces.js";
 
 export default (create: (id: string) => PNCounter & CRDT, deserialize?: Deserialize<PNCounter & CRDT> ) => {
@@ -45,49 +43,9 @@ export default (create: (id: string) => PNCounter & CRDT, deserialize?: Deserial
   	});
   });
 
-  describe("Sync", () => {
-  	createSyncTests(
-  		(id: string) => create(id),
-  		(crdt: PNCounter & CRDT, index: number) => crdt.increment(index + 1)
-  	);
-  });
-
-  const dummy = create("dummy");
-
-  if (dummy.addBroadcaster != null && dummy.onBroadcast != null) {
-    describe("Broadcast", () => {
-    	it("Does not broadcast when 0 or negative values are passed", () => {
-    		const broadcast = jest.fn();
-    		const counter = create("test");
-    		const values = [0, -1, -100];
-
-    		counter.addBroadcaster!(broadcast);
-
-    		for (const value of values) {
-    			counter.increment(value);
-    		}
-
-    		for (const value of values) {
-    			counter.decrement(value);
-    		}
-
-    		expect(broadcast).not.toBeCalled();
-    	});
-
-    	createBroadcastTests(
-    		(id: string) => create(id),
-    		(crdt: PNCounter & CRDT, index: number) => index % 2 === 0 ? crdt.increment(index + 1) : crdt.decrement(index + 1)
-    	);
-    });
-  }
-
-  if (dummy.serialize != null && deserialize != null) {
-    describe("Serialization", () => {
-    	createSerialTests(
-    		(id: string) => create(id),
-    		(crdt: PNCounter & CRDT, index: number) => index % 2 === 0 ? crdt.increment(index + 1) : crdt.decrement(index + 1),
-    		deserialize
-    	);
-    });
-  }
+  createCRDTTests(
+    create,
+    (crdt: PNCounter & CRDT, index: number) => crdt.increment(index + 1),
+    deserialize
+  );
 };
