@@ -1,5 +1,6 @@
-import { GCounter } from "../src/GCounter.js";
+import { GCounter, deserializeGCounter } from "../src/GCounter.js";
 import createSyncTests from "./sync.js";
+import createSerialTests from "./serialize.js";
 
 describe("Isolation", () => {
 	it("Starts at 0", () => {
@@ -80,5 +81,13 @@ describe("Synchronizing", () => {
 		"counter",
 		(id: string) => new GCounter({ id }),
 		(crdt: GCounter, index: number) => crdt.increment(index + 1)
+	);
+});
+
+describe("Serialization", () => {
+	createSerialTests(
+		(id: string) => new GCounter({ id }),
+		(crdt: GCounter, index: number) => crdt.increment(index + 1),
+		deserializeGCounter
 	);
 });
