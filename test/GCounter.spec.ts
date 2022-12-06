@@ -78,7 +78,6 @@ describe("Broadcast", () => {
 
 describe("Synchronizing", () => {
 	createSyncTests(
-		"counter",
 		(id: string) => new GCounter({ id }),
 		(crdt: GCounter, index: number) => crdt.increment(index + 1)
 	);

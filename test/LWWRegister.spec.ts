@@ -9,7 +9,6 @@ const generateTimestamp = (() => {
 
 describe("Synchronizing", () => {
 	createSyncTests(
-		"register",
 		(id: string) => new LWWRegister({ id, generateTimestamp }),
 		(crdt: LWWRegister<unknown>, index: number) => crdt.set(`item-${index}`)
 	);

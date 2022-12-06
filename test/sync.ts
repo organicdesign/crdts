@@ -2,7 +2,6 @@ import { syncCrdts } from "../src/utils.js";
 import type { CRDT } from "../src/interfaces.js";
 
 export default <T extends CRDT=CRDT>(
-  name: string,
   create: (id: string) => T,
   action: (crdt: T, index: number) => void,
   instanceCount?: number
@@ -10,6 +9,8 @@ export default <T extends CRDT=CRDT>(
   if (instanceCount == null) {
     instanceCount = 20;
   }
+
+  const name = create("dummy").constructor.name;
 
   const runSyncTest = (count: number) => {
     const crdts: T[] = [];
