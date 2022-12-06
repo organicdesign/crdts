@@ -1,15 +1,7 @@
-import { LWWRegister } from "../src/LWWRegister.js";
-import createSyncTests from "./sync.js";
+import { createLWWRegister } from "../src/LWWRegister.js";
+import createClock from "./logical-clock.js";
+import createTests from "./lww-register.js";
 
-const generateTimestamp = (() => {
-	let last = 0;
+const generateTimestamp = createClock();
 
-	return () => (++last).toString(16);
-})();
-
-describe("Synchronizing", () => {
-	createSyncTests(
-		(id: string) => new LWWRegister({ id, generateTimestamp }),
-		(crdt: LWWRegister<unknown>, index: number) => crdt.set(`item-${index}`)
-	);
-});
+createTests((id: string) => createLWWRegister({ id, generateTimestamp }));
