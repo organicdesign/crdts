@@ -21,14 +21,14 @@ export default <T extends CRDT=CRDT>(
           continue;
         }
 
-        rCrdt.onBroadcast?.(data);
+        rCrdt.onBroadcast!(data);
       }
     };
 
     for (let i = 1; i <= count; i++) {
       const crdt = create(`test-${i}`);
 
-      crdt.addBroadcaster?.(createBroadcast(crdt));
+      crdt.addBroadcaster!(createBroadcast(crdt));
 
       crdts.push(crdt);
     }
@@ -43,6 +43,20 @@ export default <T extends CRDT=CRDT>(
       expect(crdt.toValue()).toStrictEqual(value);
     }
   }
+
+  it("Broadcasts every time an action is made", () => {
+    const broadcast = jest.fn();
+    const crdt = create("test");
+    const times = 5;
+
+    crdt.addBroadcaster!(broadcast);
+
+    for (let i = 0; i < times; i++) {
+      action(crdt, i);
+    }
+
+    expect(broadcast).toBeCalledTimes(times);
+  });
 
   it(`Syncs 2 ${name}s over broadcast`, () => {
     runBroadcastTest(2);

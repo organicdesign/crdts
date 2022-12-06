@@ -48,20 +48,6 @@ describe("Isolation", () => {
 });
 
 describe("Broadcast", () => {
-	it("Broadcasts every time it increments", () => {
-		const broadcast = jest.fn();
-		const counter = new GCounter({ id: "test" });
-		const times = 5;
-
-		counter.addBroadcaster(broadcast);
-
-		for (let i = 0; i < times; i++) {
-			counter.increment(1);
-		}
-
-		expect(broadcast).toBeCalledTimes(times);
-	});
-
 	it("Does not broadcast when 0 or a negative value is passed", () => {
 		const broadcast = jest.fn();
 		const counter = new GCounter({ id: "test" });
@@ -75,17 +61,15 @@ describe("Broadcast", () => {
 
 		expect(broadcast).not.toBeCalled();
 	});
-});
 
-describe("Sync", () => {
-	createSyncTests(
+	createBroadcastTests(
 		(id: string) => new GCounter({ id }),
 		(crdt: GCounter, index: number) => crdt.increment(index + 1)
 	);
 });
 
-describe("Broadcast", () => {
-	createBroadcastTests(
+describe("Sync", () => {
+	createSyncTests(
 		(id: string) => new GCounter({ id }),
 		(crdt: GCounter, index: number) => crdt.increment(index + 1)
 	);
