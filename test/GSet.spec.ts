@@ -1,5 +1,5 @@
 import { createGSet } from "../src/GSet.js";
-import createGSetTests from "./g-set.js";
+import createTests from "./g-set.js";
 
 
-createGSetTests((id:string) => createGSet({ id }));
+createTests((id:string) => createGSet({ id }));

@@ -1,4 +1,4 @@
 import { createGCounter, deserializeGCounter } from "../src/GCounter.js";
-import createGCoutnerTests from "./g-counter.js";
+import createTests from "./g-counter.js";
 
-createGCoutnerTests((id:string) => createGCounter({ id }), deserializeGCounter);
+createTests((id:string) => createGCounter({ id }), deserializeGCounter);
