@@ -1,5 +1,5 @@
 import * as cborg from "cborg";
-import { CRDT as ICRDT, CRDTConfig, PNCounter as IPNCounter } from "./interfaces.js";
+import { CRDT as ICRDT, CRDTConfig, PNCounter as IPNCounter, CreateCRDT } from "./interfaces.js";
 import { GCounter } from "./GCounter.js";
 import { CRDT } from "./CRDT.js";
 
@@ -81,3 +81,5 @@ export class PNCounter extends CRDT implements ICRDT, IPNCounter {
     this.nCounter.increment(quantity);
   }
 }
+
+export const createPNCounter: CreateCRDT<PNCounter> = (config: CRDTConfig) => new PNCounter(config);
