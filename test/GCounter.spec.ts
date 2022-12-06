@@ -1,6 +1,7 @@
 import { GCounter, deserializeGCounter } from "../src/GCounter.js";
 import createSyncTests from "./sync.js";
 import createSerialTests from "./serialize.js";
+import createBroadcastTests from "./broadcast.js";
 
 describe("Isolation", () => {
 	it("Starts at 0", () => {
@@ -76,8 +77,15 @@ describe("Broadcast", () => {
 	});
 });
 
-describe("Synchronizing", () => {
+describe("Sync", () => {
 	createSyncTests(
+		(id: string) => new GCounter({ id }),
+		(crdt: GCounter, index: number) => crdt.increment(index + 1)
+	);
+});
+
+describe("Broadcast", () => {
+	createBroadcastTests(
 		(id: string) => new GCounter({ id }),
 		(crdt: GCounter, index: number) => crdt.increment(index + 1)
 	);
