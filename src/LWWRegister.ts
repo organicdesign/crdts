@@ -13,6 +13,11 @@ export class LWWRegister<T> extends CRDT implements ICRDT, Register<T> {
   set(value: T): void {
     this.data = value;
     this.timestamp = this.generateTimestamp();
+
+    this.broadcast(cborg.encode({
+      value,
+      timestamp: this.timestamp
+    }));
   }
 
   clear(): void {
@@ -42,6 +47,10 @@ export class LWWRegister<T> extends CRDT implements ICRDT, Register<T> {
       value: this.data,
       timestamp: this.timestamp
     });
+  }
+
+  onBroadcast (data: Uint8Array) {
+    this.sync(data);
   }
 }
 
