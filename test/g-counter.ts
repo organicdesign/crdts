@@ -32,7 +32,8 @@ export default (create: (id: string) => GCounter & CRDT, deserialize: Deserializ
   			counter.increment(float);
   		}
 
-  		expect(counter.toValue()).toBe(sum);
+  		// Ensure consistent precision on floats.
+  		expect(Math.floor((counter.toValue() as number) * 10000) / 10000).toBe(Math.floor(sum * 10000) / 10000);
   	});
 
   	it("Does not use negative values", () => {
@@ -48,27 +49,6 @@ export default (create: (id: string) => GCounter & CRDT, deserialize: Deserializ
   	});
   });
 
-  describe("Broadcast", () => {
-  	it("Does not broadcast when 0 or a negative value is passed", () => {
-  		const broadcast = jest.fn();
-  		const counter = create("test");
-  		const values = [0, -1, -100];
-
-  		counter.addBroadcaster!(broadcast);
-
-  		for (const value of values) {
-  			counter.increment(value);
-  		}
-
-  		expect(broadcast).not.toBeCalled();
-  	});
-
-  	createBroadcastTests(
-  		(id: string) => create(id),
-  		(crdt: GCounter & CRDT, index: number) => crdt.increment(index + 1)
-  	);
-  });
-
   describe("Sync", () => {
   	createSyncTests(
   		(id: string) => create(id),
@@ -76,11 +56,38 @@ export default (create: (id: string) => GCounter & CRDT, deserialize: Deserializ
   	);
   });
 
-  describe("Serialization", () => {
-  	createSerialTests(
-  		(id: string) => create(id),
-  		(crdt: GCounter & CRDT, index: number) => crdt.increment(index + 1),
-  		deserialize
-  	);
-  });
+  const dummy = create("dummy");
+
+  if (dummy.addBroadcaster != null && dummy.onBroadcast != null) {
+    describe("Broadcast", () => {
+    	it("Does not broadcast when 0 or a negative value is passed", () => {
+    		const broadcast = jest.fn();
+    		const counter = create("test");
+    		const values = [0, -1, -100];
+
+    		counter.addBroadcaster!(broadcast);
+
+    		for (const value of values) {
+    			counter.increment(value);
+    		}
+
+    		expect(broadcast).not.toBeCalled();
+    	});
+
+    	createBroadcastTests(
+    		(id: string) => create(id),
+    		(crdt: GCounter & CRDT, index: number) => crdt.increment(index + 1)
+    	);
+    });
+  }
+
+  if (dummy.serialize != null && deserialize != null) {
+    describe("Serialization", () => {
+    	createSerialTests(
+    		(id: string) => create(id),
+    		(crdt: GCounter & CRDT, index: number) => crdt.increment(index + 1),
+    		deserialize
+    	);
+    });
+  }
 };
