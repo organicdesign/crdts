@@ -3,7 +3,7 @@ import createSerialTests from "./serialize.js";
 import createBroadcastTests from "./broadcast.js";
 import type { GCounter, CRDT, Deserialize } from "../src/interfaces.js";
 
-export default (create: (id: string) => GCounter & CRDT, deserialize: Deserialize<GCounter & CRDT> ) => {
+export default (create: (id: string) => GCounter & CRDT, deserialize?: Deserialize<GCounter & CRDT> ) => {
   describe("Counter", () => {
   	it("Starts at 0", () => {
   		const counter = create("test");

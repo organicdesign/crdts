@@ -1,9 +1,5 @@
-import { GSet } from "../src/GSet.js";
-import createSyncTests from "./sync.js";
+import { createGSet } from "../src/GSet.js";
+import createGSetTests from "./g-set.js";
 
-describe("Synchronizing", () => {
-	createSyncTests(
-		(id: string) => new GSet({ id }),
-		(crdt: GSet<unknown>, index: number) => crdt.add(`item-${index}`)
-	);
-});
+
+createGSetTests((id:string) => createGSet({ id }));
