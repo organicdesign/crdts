@@ -93,3 +93,5 @@ export class LWWMap<T> extends MultiCRDT<LWWRegister<T>> implements ICRDT, PNMap
     return output;
   }
 }
+
+export const createLWWMap = <T>(config: CRDTConfig) => new LWWMap<T>(config);

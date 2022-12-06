@@ -1,8 +1,8 @@
 import * as cborg from "cborg";
-import type { CRDT as ICRDT, GSet as IGSet } from "./interfaces.js";
+import type { CRDT as ICRDT, GSet as IGSet, CRDTConfig } from "./interfaces.js";
 import { CRDT } from "./CRDT.js";
 
-export class GSet<T> extends CRDT implements ICRDT, IGSet<T> {
+export class GSet<T=unknown> extends CRDT implements ICRDT, IGSet<T> {
   private data = new Set<T>();
 
   [Symbol.iterator](): IterableIterator<T> {
@@ -69,3 +69,5 @@ export class GSet<T> extends CRDT implements ICRDT, IGSet<T> {
     this.data.add(value);
   }
 }
+
+export const createGSet = <T>(config: CRDTConfig) => new GSet<T>(config);
