@@ -38,3 +38,6 @@ export class CRDTMap<T extends ICRDT=ICRDT> extends MultiCRDT<T> implements ICRD
     return this.data.values();
   }
 }
+
+
+export const createCRDTMap = <T extends ICRDT=ICRDT>(config: CRDTConfig) => new CRDTMap<T>(config);

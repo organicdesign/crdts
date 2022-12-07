@@ -34,7 +34,7 @@ export class PNCounter extends CRDT implements ICRDT, IPNCounter {
         this.nCounter.sync()
       ]);
     }
-
+    
     let [pData, nData]: [Uint8Array?, Uint8Array?] = cborg.decode(data);
 
     if (pData != null) {
