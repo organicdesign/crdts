@@ -35,7 +35,7 @@ export interface MVRegister<T> {
 	clear (): void
 }
 
-export type MMap<T extends CRDT=CRDT> = Omit<Map<string, T>, "clear" | "delete" | typeof Symbol.toStringTag>;
+export type MMap<T> = Omit<Map<string, T>, "clear" | "delete" | typeof Symbol.toStringTag>;
 export type BMap<T> = Omit<Map<string, T>, typeof Symbol.toStringTag>;
 
 export type MSet<T> = Omit<Set<T>, "clear" | "delete" | typeof Symbol.toStringTag>;

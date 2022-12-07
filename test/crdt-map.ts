@@ -48,8 +48,8 @@ const createDummyCRDT = (): CRDT & Actionable => {
 };
 
 export default (
-  create: (id: string) => MMap & CRDT,
-  deserialize?: Deserialize<MMap & CRDT>
+  create: (id: string) => MMap<CRDT> & CRDT,
+  deserialize?: Deserialize<MMap<CRDT> & CRDT>
 ) => {
   const createWithDummies = (id: string) => {
     const crdt = create(id);
