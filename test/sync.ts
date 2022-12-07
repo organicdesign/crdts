@@ -2,41 +2,41 @@ import { syncCrdts } from "../src/utils.js";
 import type { CRDT } from "../src/interfaces.js";
 
 export default <T extends CRDT=CRDT>(
-  create: (id: string) => T,
-  action: (crdt: T, index: number) => void,
-  instanceCount?: number
+	create: (id: string) => T,
+	action: (crdt: T, index: number) => void,
+	instanceCount?: number
 ) => {
-  if (instanceCount == null) {
-    instanceCount = 20;
-  }
+	if (instanceCount == null) {
+		instanceCount = 20;
+	}
 
-  const name = create("dummy").constructor.name;
+	const name = create("dummy").constructor.name;
 
-  const runSyncTest = (count: number) => {
-    const crdts: T[] = [];
+	const runSyncTest = (count: number) => {
+		const crdts: T[] = [];
 
-    for (let i = 1; i <= count; i++) {
-      const crdt = create(`test-${i}`);
+		for (let i = 1; i <= count; i++) {
+			const crdt = create(`test-${i}`);
 
-      action(crdt, i);
+			action(crdt, i);
 
-      crdts.push(crdt);
-    }
+			crdts.push(crdt);
+		}
 
-    syncCrdts(crdts);
+		syncCrdts(crdts);
 
-    const result = crdts[0].toValue();
+		const result = crdts[0].toValue();
 
-    for (const crdt of crdts) {
-      expect(crdt.toValue()).toStrictEqual(result);
-    }
-  };
+		for (const crdt of crdts) {
+			expect(crdt.toValue()).toStrictEqual(result);
+		}
+	};
 
-  it(`Syncs 2 ${name}s`, () => {
-    runSyncTest(2);
-  });
+	it(`Syncs 2 ${name}s`, () => {
+		runSyncTest(2);
+	});
 
-  it(`Syncs ${instanceCount} ${name}s`, () => {
-    runSyncTest(20);
-  });
+	it(`Syncs ${instanceCount} ${name}s`, () => {
+		runSyncTest(20);
+	});
 };

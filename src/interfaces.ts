@@ -1,14 +1,14 @@
 export interface CRDT {
 	sync (data?: Uint8Array): Uint8Array | undefined
 	toValue (): unknown
-  serialize? (): Uint8Array
-  onBroadcast? (data: Uint8Array): void
-  addBroadcaster? (broadcaster: (data: Uint8Array) => void): void
+	serialize? (): Uint8Array
+	onBroadcast? (data: Uint8Array): void
+	addBroadcaster? (broadcaster: (data: Uint8Array) => void): void
 }
 
 export interface CRDTConfig {
 	id: string
-  generateTimestamp?: () => string
+	generateTimestamp?: () => string
 }
 
 export type CreateCRDT<T extends CRDT=CRDT> = (config: CRDTConfig) => T;
@@ -16,17 +16,17 @@ export type CreateCRDT<T extends CRDT=CRDT> = (config: CRDTConfig) => T;
 export type Deserialize<T extends CRDT=CRDT> = (data: Uint8Array) => T;
 
 export interface MCounter {
-  increment (quantity: number): void
+	increment (quantity: number): void
 }
 
 export interface BCounter extends MCounter {
-  decrement (quantity: number): void
+	decrement (quantity: number): void
 }
 
 export interface Register<T> {
-  get (): T | undefined
-  set (value: T): void
-  clear (): void
+	get (): T | undefined
+	set (value: T): void
+	clear (): void
 }
 
 export interface MVRegister<T> {
