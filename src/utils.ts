@@ -1,6 +1,6 @@
 import type { CRDT } from "./interfaces.js";
 
-export const syncCrdt = (crdt1: CRDT, crdt2: CRDT) => {
+export const syncCrdt = (crdt1: CRDT, crdt2: CRDT): void => {
 	let data = crdt1.sync();
 	let i = 0;
 
@@ -21,7 +21,7 @@ export const syncCrdt = (crdt1: CRDT, crdt2: CRDT) => {
 	}
 };
 
-export const syncCrdts = (crdts: CRDT[]) => {
+export const syncCrdts = (crdts: CRDT[]): void => {
 	for (const crdt1 of crdts) {
 		for (const crdt2 of crdts) {
 			if (crdt1 === crdt2) {
