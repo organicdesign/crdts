@@ -1,4 +1,4 @@
-import { CRDTConfig } from "./interfaces.js";
+import type { CRDTConfig } from "crdt-interfaces";
 
 export class CRDT {
 	protected readonly config: CRDTConfig;

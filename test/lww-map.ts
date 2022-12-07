@@ -1,5 +1,5 @@
 import createCRDTTests from "./crdt.js";
-import type { BMap, CRDT, Deserialize } from "../src/interfaces.js";
+import type { BMap, CRDT, Deserialize } from "crdt-interfaces";
 
 export default (
 	create: (id: string) => BMap<unknown> & CRDT,

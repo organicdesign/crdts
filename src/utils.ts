@@ -1,4 +1,4 @@
-import type { CRDT } from "./interfaces.js";
+import type { CRDT } from "crdt-interfaces";
 
 export const syncCrdt = (crdt1: CRDT, crdt2: CRDT): void => {
 	let data = crdt1.sync();

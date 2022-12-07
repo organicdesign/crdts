@@ -1,5 +1,5 @@
 import createCRDTTests from "./crdt.js";
-import type { BCounter, CRDT, Deserialize } from "../src/interfaces.js";
+import type { BCounter, CRDT, Deserialize } from "crdt-interfaces";
 
 export default (create: (id: string) => BCounter & CRDT, deserialize?: Deserialize<BCounter & CRDT> ) => {
 	describe("Counter", () => {

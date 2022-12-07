@@ -1,5 +1,5 @@
 import * as cborg from "cborg";
-import { CRDT as ICRDT, CRDTConfig, BCounter, CreateCRDT } from "./interfaces.js";
+import { CRDT as ICRDT, CRDTConfig, BCounter, CreateCRDT } from "crdt-interfaces";
 import { GCounter } from "./GCounter.js";
 import { CRDT } from "./CRDT.js";
 

@@ -1,6 +1,6 @@
 import * as cborg from "cborg";
 import { CRDT } from "./CRDT.js";
-import type { CRDT as ICRDT, CRDTConfig } from "./interfaces.js";
+import type { CRDT as ICRDT, CRDTConfig } from "crdt-interfaces";
 
 export class MultiCRDT<T extends ICRDT=ICRDT> extends CRDT implements ICRDT {
 	protected data = new Map<string, T>();

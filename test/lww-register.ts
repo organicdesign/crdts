@@ -1,5 +1,5 @@
 import createCRDTTests from "./crdt.js";
-import type { Register, CRDT, Deserialize } from "../src/interfaces.js";
+import type { Register, CRDT, Deserialize } from "crdt-interfaces";
 
 export default (create: (id: string) => Register<unknown> & CRDT, deserialize?: Deserialize<Register<unknown> & CRDT> ) => {
 	createCRDTTests(

@@ -1,5 +1,5 @@
 import createCRDTTests from "./crdt.js";
-import type { MCounter, CRDT, Deserialize } from "../src/interfaces.js";
+import type { MCounter, CRDT, Deserialize } from "crdt-interfaces";
 
 export default (
 	create: (id: string) => MCounter & CRDT,

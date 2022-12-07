@@ -1,5 +1,5 @@
 import createCRDTTests from "./crdt.js";
-import type { MSet, CRDT, Deserialize } from "../src/interfaces.js";
+import type { MSet, CRDT, Deserialize } from "crdt-interfaces";
 
 export default (
 	create: (id: string) => MSet<unknown> & CRDT,

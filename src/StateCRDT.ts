@@ -1,5 +1,5 @@
 import { CRDT as CRDTClass } from "./CRDT.js";
-import type { CRDT, CRDTConfig } from "./interfaces";
+import type { CRDT, CRDTConfig } from "crdt-interfaces";
 import * as cborg from "cborg";
 
 export class StateCRDT<T> extends CRDTClass implements Omit<CRDT, "toValue"> {

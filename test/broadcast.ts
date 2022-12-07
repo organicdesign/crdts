@@ -1,4 +1,4 @@
-import type { CRDT } from "../src/interfaces.js";
+import type { CRDT } from "crdt-interfaces";
 
 export default <T extends CRDT=CRDT>(
 	create: (id: string) => T,

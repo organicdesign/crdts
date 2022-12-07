@@ -1,5 +1,5 @@
 import createCRDTTests from "./crdt.js";
-import type { MMap, CRDT, Deserialize } from "../src/interfaces.js";
+import type { MMap, CRDT, Deserialize } from "crdt-interfaces";
 
 interface Actionable {
 	action (index: number): void
