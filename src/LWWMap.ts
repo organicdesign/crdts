@@ -1,8 +1,8 @@
 import { MultiCRDT } from "./MultiCRDT.js";
 import { LWWRegister } from "./LWWRegister.js";
-import type { CRDT as ICRDT, PNMap, CRDTConfig } from "./interfaces.js";
+import type { CRDT as ICRDT, BMap, CRDTConfig } from "./interfaces.js";
 
-export class LWWMap<T> extends MultiCRDT<LWWRegister<T>> implements ICRDT, PNMap<T> {
+export class LWWMap<T> extends MultiCRDT<LWWRegister<T>> implements ICRDT, BMap<T> {
   [Symbol.iterator](): IterableIterator<[string, T]> {
     const data = this.data;
 

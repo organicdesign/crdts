@@ -1,7 +1,10 @@
 import createCRDTTests from "./crdt.js";
-import type { GCounter, CRDT, Deserialize } from "../src/interfaces.js";
+import type { MCounter, CRDT, Deserialize } from "../src/interfaces.js";
 
-export default (create: (id: string) => GCounter & CRDT, deserialize?: Deserialize<GCounter & CRDT> ) => {
+export default (
+  create: (id: string) => MCounter & CRDT,
+  deserialize?: Deserialize<MCounter & CRDT>
+) => {
   describe("Counter", () => {
   	it("Starts at 0", () => {
   		const counter = create("test");
@@ -49,7 +52,7 @@ export default (create: (id: string) => GCounter & CRDT, deserialize?: Deseriali
 
   createCRDTTests(
     create,
-    (crdt: GCounter & CRDT, index: number) => crdt.increment(index + 1),
+    (crdt: MCounter & CRDT, index: number) => crdt.increment(index + 1),
     deserialize
   );
 };

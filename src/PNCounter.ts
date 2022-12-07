@@ -1,5 +1,5 @@
 import * as cborg from "cborg";
-import { CRDT as ICRDT, CRDTConfig, PNCounter as IPNCounter, CreateCRDT } from "./interfaces.js";
+import { CRDT as ICRDT, CRDTConfig, BCounter, CreateCRDT } from "./interfaces.js";
 import { GCounter } from "./GCounter.js";
 import { CRDT } from "./CRDT.js";
 
@@ -8,7 +8,7 @@ enum CounterType {
   NCounter
 }
 
-export class PNCounter extends CRDT implements ICRDT, IPNCounter {
+export class PNCounter extends CRDT implements ICRDT, BCounter {
   private pCounter: GCounter;
   private nCounter: GCounter;
 
@@ -34,7 +34,7 @@ export class PNCounter extends CRDT implements ICRDT, IPNCounter {
         this.nCounter.sync()
       ]);
     }
-    
+
     let [pData, nData]: [Uint8Array?, Uint8Array?] = cborg.decode(data);
 
     if (pData != null) {

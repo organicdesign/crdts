@@ -1,8 +1,8 @@
 import * as cborg from "cborg";
-import type { CRDT, CRDTConfig, GCounter as GC, Deserialize, CreateCRDT } from "./interfaces.js";
+import type { CRDT, CRDTConfig, MCounter, Deserialize, CreateCRDT } from "./interfaces.js";
 import { StateCRDT } from "./StateCRDT.js";
 
-export class GCounter extends StateCRDT<number> implements CRDT, GC {
+export class GCounter extends StateCRDT<number> implements CRDT, MCounter {
   constructor(config: CRDTConfig) {
     super(config, (a: number, b:number) => a > b, 0);
   }

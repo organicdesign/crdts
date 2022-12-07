@@ -1,10 +1,13 @@
 import createCRDTTests from "./crdt.js";
-import type { GSet, CRDT, Deserialize } from "../src/interfaces.js";
+import type { MSet, CRDT, Deserialize } from "../src/interfaces.js";
 
-export default (create: (id: string) => GSet<unknown> & CRDT, deserialize?: Deserialize<GSet<unknown> & CRDT> ) => {
+export default (
+  create: (id: string) => MSet<unknown> & CRDT,
+  deserialize?: Deserialize<MSet<unknown> & CRDT>
+) => {
   createCRDTTests(
     create,
-    (crdt: GSet<unknown> & CRDT, index: number) => crdt.add(index + 1),
+    (crdt: MSet<unknown> & CRDT, index: number) => crdt.add(index + 1),
     deserialize
   );
 };
