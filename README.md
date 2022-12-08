@@ -1,4 +1,4 @@
-# typescript-template
+# CRDTs
 
 A group of useful CRDTs implementing interfaces from crdt-interfaces.
 
