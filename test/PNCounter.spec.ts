@@ -1,4 +1,4 @@
 import { createPNCounter } from "../src/PNCounter.js";
-import createTests from "./pn-counter.js";
+import { createPNCounterTest } from "crdt-tests";
 
-createTests((id: string) => createPNCounter({ id }));
+createPNCounterTest((id: string) => createPNCounter({ id }));

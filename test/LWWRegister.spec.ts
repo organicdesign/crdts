@@ -1,7 +1,7 @@
 import { createLWWRegister } from "../src/LWWRegister.js";
 import createClock from "./logical-clock.js";
-import createTests from "./lww-register.js";
+import { createLWWRegisterTest } from "crdt-tests";
 
 const generateTimestamp = createClock();
 
-createTests((id: string) => createLWWRegister({ id, generateTimestamp }));
+createLWWRegisterTest((id: string) => createLWWRegister({ id, generateTimestamp }));

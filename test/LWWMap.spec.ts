@@ -1,7 +1,7 @@
 import { createLWWMap } from "../src/LWWMap.js";
 import createClock from "./logical-clock.js";
-import createTests from "./lww-map.js";
+import { createLWWMapTest } from "crdt-tests";
 
 const generateTimestamp = createClock();
 
-createTests((id: string) => createLWWMap({ id, generateTimestamp }));
+createLWWMapTest((id: string) => createLWWMap({ id, generateTimestamp }));

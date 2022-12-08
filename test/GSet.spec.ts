@@ -1,4 +1,4 @@
 import { createGSet } from "../src/GSet.js";
-import createTests from "./g-set.js";
+import { createGSetTest } from "crdt-tests";
 
-createTests((id: string) => createGSet({ id }));
+createGSetTest((id: string) => createGSet({ id }));

@@ -1,5 +1,4 @@
 import { createCRDTMap } from "../src/CRDTMap.js";
-import createTests from "./crdt-map.js";
+import { createCRDTMapTest } from "crdt-tests";
 
-
-createTests((id: string) => createCRDTMap({ id }));
+createCRDTMapTest((id: string) => createCRDTMap({ id }));
