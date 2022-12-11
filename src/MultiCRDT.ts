@@ -1,6 +1,6 @@
 import * as cborg from "cborg";
 import { CRDT } from "./CRDT.js";
-import type { CRDT as ICRDT, CRDTConfig } from "crdt-interfaces";
+import type { CRDT as ICRDT, CRDTConfig, SyncContext } from "crdt-interfaces";
 
 export class MultiCRDT<T extends ICRDT=ICRDT> extends CRDT implements ICRDT {
 	protected data = new Map<string, T>();
@@ -30,12 +30,12 @@ export class MultiCRDT<T extends ICRDT=ICRDT> extends CRDT implements ICRDT {
 		return this.data.keys();
 	}
 
-	sync(data?: Uint8Array): Uint8Array | undefined {
+	sync(data: Uint8Array | undefined, context: SyncContext): Uint8Array | undefined {
 		if (data == null) {
 			const obj: Record<string, Uint8Array> = {};
 
 			for (const [key, crdt] of this.data.entries()) {
-				obj[key] = crdt.sync() as Uint8Array;
+				obj[key] = crdt.sync(data, context) as Uint8Array;
 			}
 
 			return cborg.encode(obj);
@@ -49,7 +49,7 @@ export class MultiCRDT<T extends ICRDT=ICRDT> extends CRDT implements ICRDT {
 				this.assign(key, this.create());
 			}
 
-			const result = this.data.get(key)?.sync(subdata);
+			const result = this.data.get(key)?.sync(subdata, context);
 
 			if (result != null) {
 				obj[key] = result;
