@@ -12,7 +12,7 @@ export class CRDT {
 		this.broadcasters.push(broadcaster);
 	}
 
-	protected get id () {
+	get id () : Uint8Array {
 		return this.config.id;
 	}
 
