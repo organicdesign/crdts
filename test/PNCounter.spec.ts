@@ -1,4 +1,4 @@
 import { createPNCounter } from "../src/PNCounter.js";
 import { createPNCounterTest } from "crdt-tests";
 
-createPNCounterTest((id: string) => createPNCounter({ id }));
+createPNCounterTest((id: Uint8Array) => createPNCounter({ id }));

@@ -4,4 +4,4 @@ import { createLWWMapTest } from "crdt-tests";
 
 const generateTimestamp = createClock();
 
-createLWWMapTest((id: string) => createLWWMap({ id, generateTimestamp }));
+createLWWMapTest((id: Uint8Array) => createLWWMap({ id, generateTimestamp }));

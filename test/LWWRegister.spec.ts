@@ -4,4 +4,4 @@ import { createLWWRegisterTest } from "crdt-tests";
 
 const generateTimestamp = createClock();
 
-createLWWRegisterTest((id: string) => createLWWRegister({ id, generateTimestamp }));
+createLWWRegisterTest((id: Uint8Array) => createLWWRegister({ id, generateTimestamp }));
