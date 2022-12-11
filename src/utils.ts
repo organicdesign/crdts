@@ -1,7 +1,7 @@
 import type { CRDT } from "crdt-interfaces";
 
 export const syncCrdt = (crdt1: CRDT, crdt2: CRDT): void => {
-	let data = crdt1.sync();
+	let data = crdt1.sync(undefined, { id: crdt2.id });
 	let i = 0;
 
 	while (data != null) {
@@ -9,13 +9,13 @@ export const syncCrdt = (crdt1: CRDT, crdt2: CRDT): void => {
 			throw new Error("Infinite sync loop detected.");
 		}
 
-		const response = crdt2.sync(data);
+		const response = crdt2.sync(data, { id: crdt1.id });
 
 		if (response == null) {
 			break;
 		}
 
-		data = crdt1.sync(response);
+		data = crdt1.sync(response, { id: crdt2.id });
 
 		i++;
 	}
