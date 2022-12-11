@@ -1,6 +1,7 @@
 import { CRDT as CRDTClass } from "./CRDT.js";
 import type { CRDT, CRDTConfig } from "crdt-interfaces";
 import * as cborg from "cborg";
+import { toString as uint8ArrayToString } from "uint8arrays/to-string";
 
 export class StateCRDT<T> extends CRDTClass implements Omit<CRDT, "toValue"> {
 	protected readonly data = new Map<string, T>();
@@ -53,11 +54,11 @@ export class StateCRDT<T> extends CRDTClass implements Omit<CRDT, "toValue"> {
 	protected update (value: T) {
 		const id = this.config.id;
 
-		if (this.compareSelf(id, value)) {
-			this.data.set(id, value);
+		if (this.compareSelf(uint8ArrayToString(id), value)) {
+			this.data.set(uint8ArrayToString(id), value);
 
 			this.broadcast(cborg.encode({
-				[id]: value
+				[uint8ArrayToString(id)]: value
 			}));
 		}
 	}
