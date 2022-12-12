@@ -3,9 +3,10 @@ import type { CRDT as ICRDT, CRDTConfig, MCounter, CreateCRDT } from "crdt-inter
 import { toString as uint8ArrayToString } from "uint8arrays/to-string";
 import { fromString as uint8ArrayFromString } from "uint8arrays/from-string";
 import { CRDT } from "./CRDT.js";
+import { BufferMap } from "./BufferMap.js";
 
 export class GCounter extends CRDT implements ICRDT, MCounter {
-	protected readonly data = new Map<string, number>();
+	protected readonly data = new BufferMap<number>();
 
 	sync(data?: Uint8Array): Uint8Array | undefined {
 		if (data == null) {
@@ -19,10 +20,10 @@ export class GCounter extends CRDT implements ICRDT, MCounter {
 				continue;
 			}
 
-			const lValue = this.data.get(uint8ArrayToString(id));
+			const lValue = this.data.get(id);
 
 			if (lValue == null || int > lValue) {
-				this.data.set(uint8ArrayToString(id), int);
+				this.data.set(id, int);
 			}
 		}
 	}
@@ -31,7 +32,7 @@ export class GCounter extends CRDT implements ICRDT, MCounter {
 		const data: { id: Uint8Array, int: number }[] = [];
 
 		for (const [id, count] of this.data) {
-			data.push({ id: uint8ArrayFromString(id), int: count });
+			data.push({ id: id, int: count });
 		}
 
 		return cborg.encode({ data });
@@ -45,8 +46,8 @@ export class GCounter extends CRDT implements ICRDT, MCounter {
 		const obj = cborg.decode(data);
 
 		for (const [key, rValue] of Object.entries(obj)) {
-			if (this.compareSelf(key, rValue as number)) {
-				this.data.set(key, rValue as number);
+			if (this.compareSelf(uint8ArrayFromString(key), rValue as number)) {
+				this.data.set(uint8ArrayFromString(key), rValue as number);
 			}
 		}
 	}
@@ -60,15 +61,15 @@ export class GCounter extends CRDT implements ICRDT, MCounter {
 			return;
 		}
 
-		const cValue = this.data.get(uint8ArrayToString(this.id)) ?? 0;
+		const cValue = this.data.get(this.id) ?? 0;
 		const nValue = cValue + quantity;
 
 		this.update(nValue);
 	}
 
 	protected update (value: number) {
-		if (this.compareSelf(uint8ArrayToString(this.id), value)) {
-			this.data.set(uint8ArrayToString(this.id), value);
+		if (this.compareSelf(this.id, value)) {
+			this.data.set(this.id, value);
 
 			this.broadcast(cborg.encode({
 				[uint8ArrayToString(this.id)]: value
@@ -77,7 +78,7 @@ export class GCounter extends CRDT implements ICRDT, MCounter {
 	}
 
 	// Returns true if the value passed is larger than the one stored.
-	private compareSelf (key: string, value: number) {
+	private compareSelf (key: Uint8Array, value: number) {
 		return value > (this.data.get(key) ?? 0);
 	}
 }

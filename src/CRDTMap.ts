@@ -1,5 +1,5 @@
-import { MultiCRDT } from "./MultiCRDT.js";
 import type { CRDT as ICRDT, MMap, CRDTConfig } from "crdt-interfaces";
+import { MultiCRDT } from "./MultiCRDT.js";
 
 export class CRDTMap<T extends ICRDT=ICRDT> extends MultiCRDT<T> implements ICRDT, MMap<ICRDT> {
 	protected data = new Map<string, T>();
