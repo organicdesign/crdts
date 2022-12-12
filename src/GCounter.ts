@@ -1,50 +1,44 @@
 import * as cborg from "cborg";
 import type { CRDT as ICRDT, CRDTConfig, MCounter, CreateCRDT } from "crdt-interfaces";
 import { toString as uint8ArrayToString } from "uint8arrays/to-string";
+import { fromString as uint8ArrayFromString } from "uint8arrays/from-string";
 import { CRDT } from "./CRDT.js";
 
 export class GCounter extends CRDT implements ICRDT, MCounter {
 	protected readonly data = new Map<string, number>();
-	private readonly compare: (a: number, b: number) => boolean;
-	private readonly defaultValue?: number;
-
-	constructor (config: CRDTConfig) {
-		super(config);
-
-		// Compare should return true if a is greater than b.
-		this.compare = (a: number, b:number) => a > b;
-		this.defaultValue = 0;
-	}
 
 	sync(data?: Uint8Array): Uint8Array | undefined {
 		if (data == null) {
-			return this.createSyncObj();
+			return this.serialize();
 		}
 
-		const obj: Record<string, number> = cborg.decode(data);
+		const { data: instanceCounts }: { data: { id: Uint8Array, int: number }[] } = cborg.decode(data);
 
-		for (const [key, rValue] of Object.entries(obj)) {
-			const lValue = this.data.get(key);
+		for (const { id, int } of instanceCounts) {
+			if (int == null) {
+				continue;
+			}
 
-			if (lValue == null || this.compare(rValue, lValue)) {
-				this.data.set(key, rValue);
+			const lValue = this.data.get(uint8ArrayToString(id));
+
+			if (lValue == null || int > lValue) {
+				this.data.set(uint8ArrayToString(id), int);
 			}
 		}
 	}
 
 	serialize(): Uint8Array {
-		const data = {
-			id: this.id,
-			sync: this.createSyncObj()
-		};
+		const data: { id: Uint8Array, int: number }[] = [];
 
-		return cborg.encode(data);
+		for (const [id, count] of this.data) {
+			data.push({ id: uint8ArrayFromString(id), int: count });
+		}
+
+		return cborg.encode({ data });
 	}
 
 	deserialize (data: Uint8Array) {
-		const { id, sync }: { id: Uint8Array, sync: Uint8Array } = cborg.decode(data);
-
-		this.sync(sync);
+		this.sync(data);
 	}
 
 	onBroadcast(data: Uint8Array): void {
@@ -73,32 +67,18 @@ export class GCounter extends CRDT implements ICRDT, MCounter {
 	}
 
 	protected update (value: number) {
-		const id = this.config.id;
-
-		if (this.compareSelf(uint8ArrayToString(id), value)) {
-			this.data.set(uint8ArrayToString(id), value);
+		if (this.compareSelf(uint8ArrayToString(this.id), value)) {
+			this.data.set(uint8ArrayToString(this.id), value);
 
 			this.broadcast(cborg.encode({
-				[uint8ArrayToString(id)]: value
+				[uint8ArrayToString(this.id)]: value
 			}));
 		}
 	}
 
-	private createSyncObj () {
-		const obj: Record<string, number> = {};
-
-		for (const [key, value] of this.data) {
-			obj[key] = value;
-		}
-
-		return cborg.encode(obj);
-	}
-
 	// Returns true if the value passed is larger than the one stored.
 	private compareSelf (key: string, value: number) {
-		const lValue = this.data.get(key) ?? this.defaultValue;
-
-		return lValue == null || this.compare(value, lValue);
+		return value > (this.data.get(key) ?? 0);
 	}
 }
 
