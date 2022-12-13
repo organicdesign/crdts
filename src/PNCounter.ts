@@ -1,12 +1,7 @@
-import * as cborg from "cborg";
 import { CRDT as ICRDT, CRDTConfig, BCounter, CreateCRDT } from "crdt-interfaces";
+import { CounterData } from "crdt-protocols/pn-counter";
 import { GCounter } from "./GCounter.js";
 import { CRDT } from "./CRDT.js";
-
-enum CounterType {
-	PCounter,
-	NCounter
-}
 
 export class PNCounter extends CRDT implements ICRDT, BCounter {
 	private pCounter: GCounter;
@@ -18,54 +13,67 @@ export class PNCounter extends CRDT implements ICRDT, BCounter {
 		this.pCounter = new GCounter(config);
 		this.nCounter = new GCounter(config);
 
-		this.pCounter.addBroadcaster((data: Uint8Array) => this.broadcast(
-			cborg.encode({ type: CounterType.PCounter, data})
+		this.pCounter.addBroadcaster((pData: Uint8Array) => this.broadcast(
+			CounterData.encode({ pData })
 		));
 
-		this.nCounter.addBroadcaster((data: Uint8Array) => this.broadcast(
-			cborg.encode({ type: CounterType.NCounter, data})
+		this.nCounter.addBroadcaster((nData: Uint8Array) => this.broadcast(
+			CounterData.encode({ nData })
 		));
 	}
 
 	sync(data?: Uint8Array): Uint8Array | undefined {
 		if (data == null) {
-			return cborg.encode([
-				this.pCounter.sync(),
-				this.nCounter.sync()
-			]);
+			const pData = this.pCounter.sync();
+			const nData = this.nCounter.sync();
+
+			const syncObj: CounterData = {};
+
+			if (pData != null) {
+				syncObj.pData = pData;
+			}
+
+			if (nData != null) {
+				syncObj.nData = nData;
+			}
+
+			return CounterData.encode(syncObj);
 		}
 
-		let [pData, nData]: [Uint8Array?, Uint8Array?] = cborg.decode(data);
+		const { pData, nData } = CounterData.decode(data);
+		const syncObj: CounterData = {};
 
 		if (pData != null) {
-			pData = this.pCounter.sync(pData);
+			syncObj.pData = this.pCounter.sync(pData);
 		}
 
 		if (nData != null) {
-			nData = this.nCounter.sync(nData);
+			syncObj.nData = this.nCounter.sync(nData);
 		}
 
 		if (pData == null && nData == null) {
 			return;
 		}
 
-		return cborg.encode([pData, nData]);
+		return CounterData.encode(syncObj);
 	}
 
 	serialize(): Uint8Array {
-		return cborg.encode([
-			this.pCounter.serialize(),
-			this.nCounter.serialize()
-		]);
+		return CounterData.encode({
+			pData: this.pCounter.serialize(),
+			nData: this.nCounter.serialize()
+		});
 	}
 
 	onBroadcast(data: Uint8Array): void {
-		const { type, data: subData }: { type: CounterType, data: Uint8Array } = cborg.decode(data);
+		const { pData, nData } = CounterData.decode(data);
 
-		if (type === CounterType.PCounter) {
-			this.pCounter.onBroadcast(subData);
-		} else {
-			this.nCounter.onBroadcast(subData);
+		if (pData != null) {
+			this.pCounter.onBroadcast(pData);
+		}
+
+		if (nData != null) {
+			this.nCounter.onBroadcast(nData);
 		}
 	}
 
