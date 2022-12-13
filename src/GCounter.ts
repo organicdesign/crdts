@@ -13,15 +13,18 @@ export class GCounter extends CRDT implements ICRDT, MCounter {
 
 		const { data: instanceCounts } = CounterData.decode(data);
 
-		for (const { id, int } of instanceCounts) {
-			if (int == null) {
+		for (const iCount of instanceCounts) {
+			const { id } = iCount;
+			const count = iCount.int ?? iCount.float ?? iCount.double;
+
+			if (count == null) {
 				continue;
 			}
 
 			const lValue = this.data.get(id);
 
-			if (lValue == null || int > lValue) {
-				this.data.set(id, int);
+			if (lValue == null || count > lValue) {
+				this.data.set(id, count);
 			}
 		}
 	}
@@ -30,7 +33,9 @@ export class GCounter extends CRDT implements ICRDT, MCounter {
 		const data: InstanceCount[] = [];
 
 		for (const [id, count] of this.data) {
-			data.push({ id: id, int: count });
+			const prop = Number.isInteger(count) ? "int" : "double";
+
+			data.push({ id: id, [prop]: count });
 		}
 
 		return CounterData.encode({ data });
@@ -41,14 +46,16 @@ export class GCounter extends CRDT implements ICRDT, MCounter {
 	}
 
 	onBroadcast(data: Uint8Array): void {
-		const { id, int } = InstanceCount.decode(data);
+		const iCount = InstanceCount.decode(data);
+		const { id } = iCount;
+		const count = iCount.int ?? iCount.float ?? iCount.double;
 
-		if (int == null) {
+		if (count == null) {
 			return;
 		}
 
-		if (this.compareSelf(id, int)) {
-			this.data.set(id, int);
+		if (this.compareSelf(id, count)) {
+			this.data.set(id, count);
 		}
 	}
 
@@ -70,10 +77,11 @@ export class GCounter extends CRDT implements ICRDT, MCounter {
 	protected update (value: number) {
 		if (this.compareSelf(this.id, value)) {
 			this.data.set(this.id, value);
+			const prop = Number.isInteger(value) ? "int" : "double";
 
 			this.broadcast(InstanceCount.encode({
 				id: this.id,
-				int: value
+				[prop]: value
 			}));
 		}
 	}
