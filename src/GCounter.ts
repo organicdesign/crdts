@@ -1,8 +1,5 @@
-import * as cborg from "cborg";
 import type { CRDT as ICRDT, CRDTConfig, MCounter, CreateCRDT } from "crdt-interfaces";
 import { InstanceCount, CounterData } from "crdt-protocols/counter";
-import { toString as uint8ArrayToString } from "uint8arrays/to-string";
-import { fromString as uint8ArrayFromString } from "uint8arrays/from-string";
 import { CRDT } from "./CRDT.js";
 import { BufferMap } from "./BufferMap.js";
 
@@ -44,12 +41,14 @@ export class GCounter extends CRDT implements ICRDT, MCounter {
 	}
 
 	onBroadcast(data: Uint8Array): void {
-		const obj = cborg.decode(data);
+		const { id, int } = InstanceCount.decode(data);
 
-		for (const [key, rValue] of Object.entries(obj)) {
-			if (this.compareSelf(uint8ArrayFromString(key), rValue as number)) {
-				this.data.set(uint8ArrayFromString(key), rValue as number);
-			}
+		if (int == null) {
+			return;
+		}
+
+		if (this.compareSelf(id, int)) {
+			this.data.set(id, int);
 		}
 	}
 
@@ -72,8 +71,9 @@ export class GCounter extends CRDT implements ICRDT, MCounter {
 		if (this.compareSelf(this.id, value)) {
 			this.data.set(this.id, value);
 
-			this.broadcast(cborg.encode({
-				[uint8ArrayToString(this.id)]: value
+			this.broadcast(InstanceCount.encode({
+				id: this.id,
+				int: value
 			}));
 		}
 	}
