@@ -1,7 +1,7 @@
 import type { CRDT as ICRDT, CRDTConfig, MCounter, CreateCRDT } from "crdt-interfaces";
 import { InstanceCount, CounterData } from "crdt-protocols/counter";
 import { CRDT } from "./CRDT.js";
-import { BufferMap } from "./BufferMap.js";
+import BufferMap from "buffer-map";
 
 export class GCounter extends CRDT implements ICRDT, MCounter {
 	protected readonly data = new BufferMap<number>();
