@@ -1,5 +1,7 @@
 import type { CRDT as ICRDT, CRDTConfig, MCounter, CreateCRDT } from "crdt-interfaces";
 import { InstanceCount, CounterData } from "crdt-protocols/counter";
+import { UNumber } from "crdt-protocols/types";
+import { encodeUNumber, decodeUNumber } from "crdt-protocols";
 import { CRDT } from "./CRDT.js";
 import BufferMap from "buffer-map";
 
@@ -15,7 +17,7 @@ export class GCounter extends CRDT implements ICRDT, MCounter {
 
 		for (const iCount of instanceCounts) {
 			const { id } = iCount;
-			const count = iCount.int ?? iCount.float ?? iCount.double;
+			const count = decodeUNumber(iCount.count as UNumber);
 
 			if (count == null) {
 				continue;
@@ -33,9 +35,7 @@ export class GCounter extends CRDT implements ICRDT, MCounter {
 		const data: InstanceCount[] = [];
 
 		for (const [id, count] of this.data) {
-			const prop = Number.isInteger(count) ? "int" : "double";
-
-			data.push({ id: id, [prop]: count });
+			data.push({ id, count: encodeUNumber(count) });
 		}
 
 		return CounterData.encode({ data });
@@ -48,7 +48,7 @@ export class GCounter extends CRDT implements ICRDT, MCounter {
 	onBroadcast(data: Uint8Array): void {
 		const iCount = InstanceCount.decode(data);
 		const { id } = iCount;
-		const count = iCount.int ?? iCount.float ?? iCount.double;
+		const count = decodeUNumber(iCount.count as UNumber);
 
 		if (count == null) {
 			return;
@@ -77,11 +77,10 @@ export class GCounter extends CRDT implements ICRDT, MCounter {
 	protected update (value: number) {
 		if (this.compareSelf(this.id, value)) {
 			this.data.set(this.id, value);
-			const prop = Number.isInteger(value) ? "int" : "double";
 
 			this.broadcast(InstanceCount.encode({
 				id: this.id,
-				[prop]: value
+				count: encodeUNumber(value)
 			}));
 		}
 	}
