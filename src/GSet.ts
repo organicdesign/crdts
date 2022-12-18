@@ -1,4 +1,5 @@
-import * as cborg from "cborg";
+import { SetItems } from "crdt-protocols/set";
+import { decodeAny, encodeAny } from "crdt-protocols";
 import type { CRDT as ICRDT, MSet, CRDTConfig } from "crdt-interfaces";
 import { CRDT } from "./CRDT.js";
 
@@ -12,7 +13,9 @@ export class GSet<T=unknown> extends CRDT implements ICRDT, MSet<T> {
 	add(value: T): Set<T> {
 		this.data.add(value);
 
-		const encoded = cborg.encode(value);
+		const encoded = SetItems.encode({
+			data: [encodeAny(value)]
+		});
 
 		this.broadcast(encoded);
 
@@ -45,10 +48,10 @@ export class GSet<T=unknown> extends CRDT implements ICRDT, MSet<T> {
 
 	sync(data?: Uint8Array): Uint8Array | undefined {
 		if (data == null) {
-			return cborg.encode([...this.data.values()]);
+			return this.serialize();
 		}
 
-		const decoded: T[] = cborg.decode(data);
+		const decoded: T[] = SetItems.decode(data).data.map(decodeAny) as T[];
 
 		for (const value of decoded) {
 			this.data.add(value);
@@ -60,13 +63,15 @@ export class GSet<T=unknown> extends CRDT implements ICRDT, MSet<T> {
 	}
 
 	serialize(): Uint8Array {
-		return cborg.encode([...this.data.values()]);
+		return SetItems.encode({ data: [...this.data.values()].map(encodeAny) });
 	}
 
 	onBroadcast(data: Uint8Array): void {
-		const value = cborg.decode(data) as T;
+		const values = SetItems.decode(data).data.map(decodeAny) as T[];
 
-		this.data.add(value);
+		for (const value of values) {
+			this.data.add(value);
+		}
 	}
 }
 
