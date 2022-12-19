@@ -4,7 +4,7 @@ export declare class CRDT {
     private readonly broadcasters;
     constructor(config: CRDTConfig);
     addBroadcaster(broadcaster: (data: Uint8Array) => void): void;
-    protected get id(): string;
+    get id(): Uint8Array;
     protected get generateTimestamp(): () => string;
     protected broadcast(data: Uint8Array): void;
 }

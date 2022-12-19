@@ -1,5 +1,5 @@
-import { CRDT } from "./CRDT.js";
 import type { CRDT as ICRDT, Register, CRDTConfig } from "crdt-interfaces";
+import { CRDT } from "./CRDT.js";
 export declare class LWWRegister<T> extends CRDT implements ICRDT, Register<T> {
     private data;
     private timestamp;

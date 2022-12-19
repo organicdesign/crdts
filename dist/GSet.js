@@ -34,7 +34,7 @@ export class GSet extends CRDT {
     }
     sync(data) {
         if (data == null) {
-            return cborg.encode([...this.data.values()]);
+            return this.serialize();
         }
         const decoded = cborg.decode(data);
         for (const value of decoded) {

@@ -1,6 +1,6 @@
+import type { CRDT as ICRDT, BMap, CRDTConfig } from "crdt-interfaces";
 import { MultiCRDT } from "./MultiCRDT.js";
 import { LWWRegister } from "./LWWRegister.js";
-import type { CRDT as ICRDT, BMap, CRDTConfig } from "crdt-interfaces";
 export declare class LWWMap<T> extends MultiCRDT<LWWRegister<T>> implements ICRDT, BMap<T> {
     [Symbol.iterator](): IterableIterator<[string, T]>;
     constructor(config: CRDTConfig);

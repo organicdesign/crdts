@@ -1,8 +1,45 @@
 import * as cborg from "cborg";
-import { StateCRDT } from "./StateCRDT.js";
-export class GCounter extends StateCRDT {
-    constructor(config) {
-        super(config, (a, b) => a > b, 0);
+import { CRDT } from "./CRDT.js";
+import BufferMap from "buffer-map";
+export class GCounter extends CRDT {
+    constructor() {
+        super(...arguments);
+        this.data = new BufferMap();
+    }
+    sync(data) {
+        if (data == null) {
+            return this.serialize();
+        }
+        const counts = cborg.decode(data);
+        for (const iCount of counts) {
+            const { id, count } = iCount;
+            if (count == null) {
+                continue;
+            }
+            const lValue = this.data.get(id);
+            if (lValue == null || count > lValue) {
+                this.data.set(id, count);
+            }
+        }
+    }
+    serialize() {
+        const data = [];
+        for (const [id, count] of this.data) {
+            data.push({ id, count });
+        }
+        return cborg.encode(data);
+    }
+    deserialize(data) {
+        this.sync(data);
+    }
+    onBroadcast(data) {
+        const { id, count } = cborg.decode(data);
+        if (count == null) {
+            return;
+        }
+        if (this.compareSelf(id, count)) {
+            this.data.set(id, count);
+        }
     }
     toValue() {
         return [...this.data.values()].reduce((p, c) => p + c, 0);
@@ -12,16 +49,23 @@ export class GCounter extends StateCRDT {
         if (quantity < 0) {
             return;
         }
-        const id = this.config.id;
-        const cValue = (_a = this.data.get(id)) !== null && _a !== void 0 ? _a : 0;
+        const cValue = (_a = this.data.get(this.id)) !== null && _a !== void 0 ? _a : 0;
         const nValue = cValue + quantity;
         this.update(nValue);
     }
+    update(value) {
+        if (this.compareSelf(this.id, value)) {
+            this.data.set(this.id, value);
+            this.broadcast(cborg.encode({
+                id: this.id,
+                count: value
+            }));
+        }
+    }
+    // Returns true if the value passed is larger than the one stored.
+    compareSelf(key, value) {
+        var _a;
+        return value > ((_a = this.data.get(key)) !== null && _a !== void 0 ? _a : 0);
+    }
 }
 export const createGCounter = (config) => new GCounter(config);
-export const deserializeGCounter = (data) => {
-    const { id, sync } = cborg.decode(data);
-    const counter = new GCounter({ id });
-    counter.sync(sync);
-    return counter;
-};

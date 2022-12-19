@@ -21,12 +21,12 @@ export class MultiCRDT extends CRDT {
     keys() {
         return this.data.keys();
     }
-    sync(data) {
+    sync(data, context) {
         var _a;
         if (data == null) {
             const obj = {};
             for (const [key, crdt] of this.data.entries()) {
-                obj[key] = crdt.sync();
+                obj[key] = crdt.sync(data, context);
             }
             return cborg.encode(obj);
         }
@@ -36,7 +36,7 @@ export class MultiCRDT extends CRDT {
             if (!this.data.has(key) && this.create != null) {
                 this.assign(key, this.create());
             }
-            const result = (_a = this.data.get(key)) === null || _a === void 0 ? void 0 : _a.sync(subdata);
+            const result = (_a = this.data.get(key)) === null || _a === void 0 ? void 0 : _a.sync(subdata, context);
             if (result != null) {
                 obj[key] = result;
             }
