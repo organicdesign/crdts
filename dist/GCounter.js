@@ -2,9 +2,13 @@ import * as cborg from "cborg";
 import { CRDT } from "./CRDT.js";
 import BufferMap from "buffer-map";
 export class GCounter extends CRDT {
-    constructor() {
-        super(...arguments);
+    constructor(config, options = {}) {
+        super(config);
         this.data = new BufferMap();
+        this.dp = 10;
+        if (options === null || options === void 0 ? void 0 : options.dp) {
+            this.dp = options.dp;
+        }
     }
     sync(data) {
         if (data == null) {
@@ -42,7 +46,7 @@ export class GCounter extends CRDT {
         }
     }
     toValue() {
-        return [...this.data.values()].reduce((p, c) => p + c, 0);
+        return this.round([...this.data.values()].reduce((p, c) => p + c, 0));
     }
     increment(quantity) {
         var _a;
@@ -62,10 +66,13 @@ export class GCounter extends CRDT {
             }));
         }
     }
+    round(count) {
+        return Number(count.toFixed(this.dp));
+    }
     // Returns true if the value passed is larger than the one stored.
     compareSelf(key, value) {
         var _a;
         return value > ((_a = this.data.get(key)) !== null && _a !== void 0 ? _a : 0);
     }
 }
-export const createGCounter = (config) => new GCounter(config);
+export const createGCounter = (config, options = {}) => new GCounter(config, options);

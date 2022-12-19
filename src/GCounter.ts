@@ -3,8 +3,21 @@ import type { CRDT as ICRDT, CRDTConfig, MCounter, CreateCRDT } from "crdt-inter
 import { CRDT } from "./CRDT.js";
 import BufferMap from "buffer-map";
 
+export interface GCounterOpts {
+	dp: number
+}
+
 export class GCounter extends CRDT implements ICRDT, MCounter {
 	protected readonly data = new BufferMap<number>();
+	protected readonly dp: number = 10;
+
+	constructor (config: CRDTConfig, options: Partial<GCounterOpts> = {}) {
+		super(config);
+
+		if (options?.dp) {
+			this.dp = options.dp;
+		}
+	}
 
 	sync(data?: Uint8Array): Uint8Array | undefined {
 		if (data == null) {
@@ -55,7 +68,7 @@ export class GCounter extends CRDT implements ICRDT, MCounter {
 	}
 
 	toValue(): number {
-		return [...this.data.values()].reduce((p, c) => p + c, 0);
+		return this.round([...this.data.values()].reduce((p, c) => p + c, 0));
 	}
 
 	increment(quantity: number): void {
@@ -80,10 +93,14 @@ export class GCounter extends CRDT implements ICRDT, MCounter {
 		}
 	}
 
+	protected round (count: number) {
+		return Number(count.toFixed(this.dp));
+	}
+
 	// Returns true if the value passed is larger than the one stored.
 	private compareSelf (key: Uint8Array, value: number) {
 		return value > (this.data.get(key) ?? 0);
 	}
 }
 
-export const createGCounter: CreateCRDT<GCounter> = (config: CRDTConfig) => new GCounter(config);
+export const createGCounter: CreateCRDT<GCounter> = (config: CRDTConfig, options: Partial<GCounterOpts> = {}) => new GCounter(config, options);
