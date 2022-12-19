@@ -1,5 +1,5 @@
+import * as cborg from "cborg";
 import { CRDT as ICRDT, CRDTConfig, BCounter, CreateCRDT } from "crdt-interfaces";
-import { CounterData } from "crdt-protocols/pn-counter";
 import { GCounter } from "./GCounter.js";
 import { CRDT } from "./CRDT.js";
 
@@ -14,11 +14,11 @@ export class PNCounter extends CRDT implements ICRDT, BCounter {
 		this.nCounter = new GCounter(config);
 
 		this.pCounter.addBroadcaster((pData: Uint8Array) => this.broadcast(
-			CounterData.encode({ pData })
+			cborg.encode({ pData })
 		));
 
 		this.nCounter.addBroadcaster((nData: Uint8Array) => this.broadcast(
-			CounterData.encode({ nData })
+			cborg.encode({ nData })
 		));
 	}
 
@@ -27,7 +27,7 @@ export class PNCounter extends CRDT implements ICRDT, BCounter {
 			const pData = this.pCounter.sync();
 			const nData = this.nCounter.sync();
 
-			const syncObj: CounterData = {};
+			const syncObj: { pData?: Uint8Array, nData?: Uint8Array } = {};
 
 			if (pData != null) {
 				syncObj.pData = pData;
@@ -37,11 +37,11 @@ export class PNCounter extends CRDT implements ICRDT, BCounter {
 				syncObj.nData = nData;
 			}
 
-			return CounterData.encode(syncObj);
+			return cborg.encode(syncObj);
 		}
 
-		const { pData, nData } = CounterData.decode(data);
-		const syncObj: CounterData = {};
+		const { pData, nData }: { pData?: Uint8Array, nData?: Uint8Array } = cborg.decode(data);
+		const syncObj: { pData?: Uint8Array, nData?: Uint8Array } = {};
 
 		if (pData != null) {
 			syncObj.pData = this.pCounter.sync(pData);
@@ -55,18 +55,18 @@ export class PNCounter extends CRDT implements ICRDT, BCounter {
 			return;
 		}
 
-		return CounterData.encode(syncObj);
+		return cborg.encode(syncObj);
 	}
 
 	serialize(): Uint8Array {
-		return CounterData.encode({
+		return cborg.encode({
 			pData: this.pCounter.serialize(),
 			nData: this.nCounter.serialize()
 		});
 	}
 
 	onBroadcast(data: Uint8Array): void {
-		const { pData, nData } = CounterData.decode(data);
+		const { pData, nData } = cborg.decode(data);
 
 		if (pData != null) {
 			this.pCounter.onBroadcast(pData);

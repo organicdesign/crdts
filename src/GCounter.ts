@@ -1,7 +1,5 @@
+import * as cborg from "cborg";
 import type { CRDT as ICRDT, CRDTConfig, MCounter, CreateCRDT } from "crdt-interfaces";
-import { InstanceCount, CounterData } from "crdt-protocols/counter";
-import { UNumber } from "crdt-protocols/types";
-import { encodeUNumber, decodeUNumber } from "crdt-protocols";
 import { CRDT } from "./CRDT.js";
 import BufferMap from "buffer-map";
 
@@ -13,11 +11,10 @@ export class GCounter extends CRDT implements ICRDT, MCounter {
 			return this.serialize();
 		}
 
-		const { data: instanceCounts } = CounterData.decode(data);
+		const counts: { id: Uint8Array, count: number }[] = cborg.decode(data);
 
-		for (const iCount of instanceCounts) {
-			const { id } = iCount;
-			const count = decodeUNumber(iCount.count as UNumber);
+		for (const iCount of counts) {
+			const { id, count } = iCount;
 
 			if (count == null) {
 				continue;
@@ -32,13 +29,13 @@ export class GCounter extends CRDT implements ICRDT, MCounter {
 	}
 
 	serialize(): Uint8Array {
-		const data: InstanceCount[] = [];
+		const data: { id: Uint8Array, count: number }[] = [];
 
 		for (const [id, count] of this.data) {
-			data.push({ id, count: encodeUNumber(count) });
+			data.push({ id, count });
 		}
 
-		return CounterData.encode({ data });
+		return cborg.encode(data);
 	}
 
 	deserialize (data: Uint8Array) {
@@ -46,9 +43,7 @@ export class GCounter extends CRDT implements ICRDT, MCounter {
 	}
 
 	onBroadcast(data: Uint8Array): void {
-		const iCount = InstanceCount.decode(data);
-		const { id } = iCount;
-		const count = decodeUNumber(iCount.count as UNumber);
+		const { id, count } = cborg.decode(data);
 
 		if (count == null) {
 			return;
@@ -78,9 +73,9 @@ export class GCounter extends CRDT implements ICRDT, MCounter {
 		if (this.compareSelf(this.id, value)) {
 			this.data.set(this.id, value);
 
-			this.broadcast(InstanceCount.encode({
+			this.broadcast(cborg.encode({
 				id: this.id,
-				count: encodeUNumber(value)
+				count: value
 			}));
 		}
 	}
