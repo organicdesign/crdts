@@ -30,7 +30,7 @@
     "typescript": "^4.8.4"
   },
   "dependencies": {
-    "buffer-map": "git+ssh://git@code.organicdesign.nz:222/organicdesign/buffer-map.git",
+    "@organicdesign/buffer-collections": "^0.1.1",
     "cborg": "^1.9.6",
     "crdt-interfaces": "git+ssh://git@code.organicdesign.nz:222/organicdesign/crdt-interfaces.git",
     "uint8arrays": "^4.0.2"
