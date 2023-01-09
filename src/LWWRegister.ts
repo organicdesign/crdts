@@ -1,8 +1,8 @@
 import * as cborg from "cborg";
-import type { CRDT as ICRDT, Register, CRDTConfig } from "crdt-interfaces";
+import type { CRDT as ICRDT, BRegister, CRDTConfig } from "crdt-interfaces";
 import { CRDT } from "./CRDT.js";
 
-export class LWWRegister<T> extends CRDT implements ICRDT, Register<T> {
+export class LWWRegister<T> extends CRDT implements ICRDT, BRegister<T> {
 	private data: T | undefined;
 	private timestamp: string = "";
 
