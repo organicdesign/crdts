@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "@organicdesign/buffer-collections": "^0.1.1",
-    "cborg": "^1.9.6"
+    "cborg": "^1.9.6",
+    "uint8arrays": "^4.0.3"
   }
 }
