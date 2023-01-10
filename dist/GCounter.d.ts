@@ -1,6 +1,6 @@
-import type { CRDT as ICRDT, CRDTConfig, MCounter, CreateCRDT } from "crdt-interfaces";
+import type { CRDT as ICRDT, CRDTConfig, MCounter, CreateCRDT } from "@organicdesign/crdt-interfaces";
 import { CRDT } from "./CRDT.js";
-import BufferMap from "buffer-map";
+import { BufferMap } from "@organicdesign/buffer-collections";
 export interface GCounterOpts {
     dp: number;
 }

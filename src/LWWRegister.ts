@@ -1,5 +1,5 @@
 import * as cborg from "cborg";
-import type { CRDT as ICRDT, BRegister, CRDTConfig } from "crdt-interfaces";
+import type { CRDT as ICRDT, BRegister, CRDTConfig } from "@organicdesign/crdt-interfaces";
 import { CRDT } from "./CRDT.js";
 
 export class LWWRegister<T> extends CRDT implements ICRDT, BRegister<T> {

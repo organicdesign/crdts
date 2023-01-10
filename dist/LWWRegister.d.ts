@@ -1,6 +1,6 @@
-import type { CRDT as ICRDT, Register, CRDTConfig } from "crdt-interfaces";
+import type { CRDT as ICRDT, BRegister, CRDTConfig } from "@organicdesign/crdt-interfaces";
 import { CRDT } from "./CRDT.js";
-export declare class LWWRegister<T> extends CRDT implements ICRDT, Register<T> {
+export declare class LWWRegister<T> extends CRDT implements ICRDT, BRegister<T> {
     private data;
     private timestamp;
     get(): T | undefined;

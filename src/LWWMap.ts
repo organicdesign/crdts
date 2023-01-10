@@ -1,4 +1,4 @@
-import type { CRDT as ICRDT, BMap, CRDTConfig } from "crdt-interfaces";
+import type { CRDT as ICRDT, BMap, CRDTConfig } from "@organicdesign/crdt-interfaces";
 import { MultiCRDT } from "./MultiCRDT.js";
 import { LWWRegister } from "./LWWRegister.js";
 

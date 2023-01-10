@@ -1,4 +1,4 @@
-import type { CRDT as ICRDT, MSet, CRDTConfig } from "crdt-interfaces";
+import type { CRDT as ICRDT, MSet, CRDTConfig } from "@organicdesign/crdt-interfaces";
 import { CRDT } from "./CRDT.js";
 export declare class GSet<T = unknown> extends CRDT implements ICRDT, MSet<T> {
     private data;

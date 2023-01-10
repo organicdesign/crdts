@@ -1,4 +1,4 @@
-import type { CRDTConfig } from "crdt-interfaces";
+import type { CRDTConfig } from "@organicdesign/crdt-interfaces";
 
 export class CRDT {
 	protected readonly config: CRDTConfig;

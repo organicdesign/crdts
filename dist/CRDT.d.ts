@@ -1,4 +1,4 @@
-import type { CRDTConfig } from "crdt-interfaces";
+import type { CRDTConfig } from "@organicdesign/crdt-interfaces";
 export declare class CRDT {
     protected readonly config: CRDTConfig;
     private readonly broadcasters;

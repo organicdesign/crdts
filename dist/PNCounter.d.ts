@@ -1,4 +1,4 @@
-import { CRDT as ICRDT, CRDTConfig, BCounter, CreateCRDT } from "crdt-interfaces";
+import { CRDT as ICRDT, CRDTConfig, BCounter, CreateCRDT } from "@organicdesign/crdt-interfaces";
 import { CRDT } from "./CRDT.js";
 export declare class PNCounter extends CRDT implements ICRDT, BCounter {
     private pCounter;

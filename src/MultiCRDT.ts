@@ -1,5 +1,5 @@
 import * as cborg from "cborg";
-import type { CRDT as ICRDT, CRDTConfig, SyncContext } from "crdt-interfaces";
+import type { CRDT as ICRDT, CRDTConfig, SyncContext } from "@organicdesign/crdt-interfaces";
 import { CRDT } from "./CRDT.js";
 
 export class MultiCRDT<T extends ICRDT=ICRDT> extends CRDT implements ICRDT {

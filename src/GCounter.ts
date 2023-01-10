@@ -1,5 +1,5 @@
 import * as cborg from "cborg";
-import type { CRDT as ICRDT, CRDTConfig, MCounter, CreateCRDT } from "crdt-interfaces";
+import type { CRDT as ICRDT, CRDTConfig, MCounter, CreateCRDT } from "@organicdesign/crdt-interfaces";
 import { CRDT } from "./CRDT.js";
 import { BufferMap } from "@organicdesign/buffer-collections";
 

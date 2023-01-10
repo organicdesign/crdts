@@ -1,6 +1,6 @@
 import * as cborg from "cborg";
 import { CRDT } from "./CRDT.js";
-import BufferMap from "buffer-map";
+import { BufferMap } from "@organicdesign/buffer-collections";
 export class GCounter extends CRDT {
     constructor(config, options = {}) {
         super(config);
