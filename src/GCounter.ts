@@ -24,7 +24,7 @@ export class GCounter extends CRDT implements ICRDT, MCounter {
 			return this.serialize();
 		}
 
-		const counts: { id: Uint8Array, count: number }[] = cborg.decode(data);
+		const counts: { id: Uint8Array, count: number }[] = cborg.decode(data) as { id: Uint8Array, count: number }[];
 
 		for (const iCount of counts) {
 			const { id, count } = iCount;
@@ -56,7 +56,7 @@ export class GCounter extends CRDT implements ICRDT, MCounter {
 	}
 
 	onBroadcast(data: Uint8Array): void {
-		const { id, count } = cborg.decode(data);
+		const { id, count } = cborg.decode(data) as { id: Uint8Array, count: number };
 
 		if (count == null) {
 			return;

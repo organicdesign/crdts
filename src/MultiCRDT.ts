@@ -84,7 +84,7 @@ export class MultiCRDT<T extends ICRDT=ICRDT> extends CRDT implements ICRDT {
 	}
 
 	onBroadcast(data: Uint8Array): void {
-		const decoded: Record<string, Uint8Array> = cborg.decode(data);
+		const decoded: Record<string, Uint8Array> = cborg.decode(data) as Record<string, Uint8Array>;
 
 		for (const [key, value] of Object.entries(decoded)) {
 			let subCrdt = this.data.get(key);

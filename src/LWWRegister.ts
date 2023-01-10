@@ -30,7 +30,7 @@ export class LWWRegister<T> extends CRDT implements ICRDT, BRegister<T> {
 			return this.serialize();
 		}
 
-		const { value, timestamp }: { value: T, timestamp: string } = cborg.decode(data);
+		const { value, timestamp }: { value: T, timestamp: string } = cborg.decode(data) as { value: T, timestamp: string };
 
 		if (timestamp > this.timestamp) {
 			this.data = value;

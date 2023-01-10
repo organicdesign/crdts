@@ -48,7 +48,7 @@ export class GSet<T=unknown> extends CRDT implements ICRDT, MSet<T> {
 			return this.serialize();
 		}
 
-		const decoded: T[] = cborg.decode(data);
+		const decoded: T[] = cborg.decode(data) as T[];
 
 		for (const value of decoded) {
 			this.data.add(value);

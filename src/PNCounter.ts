@@ -40,7 +40,7 @@ export class PNCounter extends CRDT implements ICRDT, BCounter {
 			return cborg.encode(syncObj);
 		}
 
-		const { pData, nData }: { pData?: Uint8Array, nData?: Uint8Array } = cborg.decode(data);
+		const { pData, nData }: { pData?: Uint8Array, nData?: Uint8Array } = cborg.decode(data) as { pData?: Uint8Array, nData?: Uint8Array };
 		const syncObj: { pData?: Uint8Array, nData?: Uint8Array } = {};
 
 		if (pData != null) {
@@ -66,7 +66,7 @@ export class PNCounter extends CRDT implements ICRDT, BCounter {
 	}
 
 	onBroadcast(data: Uint8Array): void {
-		const { pData, nData } = cborg.decode(data);
+		const { pData, nData } = cborg.decode(data) as { pData?: Uint8Array, nData?: Uint8Array };
 
 		if (pData != null) {
 			this.pCounter.onBroadcast(pData);
