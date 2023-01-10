@@ -17,7 +17,7 @@ export class CRDT {
 	}
 
 	protected get generateTimestamp () {
-		return this.config.generateTimestamp ?? (() => Date.now().toString(16));
+		return this.config.generateTimestamp ?? Date.now;
 	}
 
 	protected broadcast (data: Uint8Array) {
