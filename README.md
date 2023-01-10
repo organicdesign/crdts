@@ -30,21 +30,28 @@ import { createGSet } from "crdts";
 
 A grow only set.
 
+### MV-Register
+```javascript
+import { createMVRegister } from "crdts";
+```
+
+A multi-value register. This register relies on logical time only and will return an array with all values that are set at the same time.
+
 ### LWW-Register
 
 ```javascript
 import { createLWWRegister } from "crdts";
 ```
 
-A last write wins register. To ensure consistency you will need to provide an adequate method for generating timestamps that will never produce duplicate results.
+A last write wins register. Uses hybrid time and IDs to ensure consistency.
 
-### CRDT-Map
+### LWW-Map
 
 ```javascript
 import { createLWWMap } from "crdts";
 ```
 
-A last write wins map. To ensure consistency you will need to provide an adequate method for generating timestamps that will never produce duplicate results.
+A last write wins map. Uses hybrid time and IDs to ensure consistency.
 
 ### CRDT-Map
 
