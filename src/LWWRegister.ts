@@ -5,7 +5,8 @@ import { CRDT } from "./CRDT.js";
 
 export class LWWRegister<T> extends CRDT implements ICRDT, BRegister<T> {
 	private data: T | undefined;
-	private timestamp: string = "";
+	private physical: number = 0;
+	private logical: number = 0;
 	private lastId: Uint8Array = new Uint8Array();
 
 	get(): T | undefined {
@@ -13,21 +14,35 @@ export class LWWRegister<T> extends CRDT implements ICRDT, BRegister<T> {
 	}
 
 	set(value: T): void {
+		const physical = this.generateTimestamp();
+
 		this.data = value;
-		this.timestamp = this.generateTimestamp();
+		this.logical = physical > this.physical ? 0 : this.logical + 1;
+		this.physical = Math.max(physical, this.physical);
 		this.lastId = this.id;
 
 		this.broadcast(cborg.encode({
 			value,
-			timestamp: this.timestamp,
+			physical: this.physical,
+			logical: this.logical,
 			id: this.id
 		}));
 	}
 
 	clear(): void {
+		const physical = this.generateTimestamp();
+
 		this.data = undefined;
-		this.timestamp = this.generateTimestamp();
+		this.logical = physical > this.physical ? 0 : this.logical + 1;
+		this.physical = Math.max(physical, this.physical);
 		this.lastId = this.id;
+
+		this.broadcast(cborg.encode({
+			value: undefined,
+			physical: this.physical,
+			logical: this.logical,
+			id: this.id
+		}));
 	}
 
 	sync(data: Uint8Array | undefined, { id }: SyncContext): Uint8Array | undefined {
@@ -45,7 +60,8 @@ export class LWWRegister<T> extends CRDT implements ICRDT, BRegister<T> {
 	serialize(): Uint8Array {
 		return cborg.encode({
 			value: this.data,
-			timestamp: this.timestamp,
+			physical: this.physical,
+			logical: this.logical,
 			id: this.lastId
 		});
 	}
@@ -57,9 +73,9 @@ export class LWWRegister<T> extends CRDT implements ICRDT, BRegister<T> {
 	}
 
 	private update (data: Uint8Array, id: Uint8Array) {
-		const { value, timestamp }: { value: T, timestamp: string } = cborg.decode(data) as { value: T, timestamp: string };
+		const { value, physical, logical } = cborg.decode(data) as { value: T, physical: number, logical: number };
 
-		if (timestamp === this.timestamp) {
+		if (physical === this.physical && logical === this.logical) {
 			// Timestamps happened at the same time, we need to decide what happened first.
 			if (uint8ArrayToString(id) > uint8ArrayToString(this.lastId)) {
 				this.data = value;
@@ -69,10 +85,13 @@ export class LWWRegister<T> extends CRDT implements ICRDT, BRegister<T> {
 			return;
 		}
 
-		if (timestamp > this.timestamp) {
+		if (physical > this.physical || logical > this.logical) {
 			this.data = value;
-			this.timestamp = timestamp;
+			this.physical = Math.max(physical, this.physical);
+			this.logical = physical > this.physical ? 0 : logical;
 			this.lastId = id;
+
+			return;
 		}
 	}
 }

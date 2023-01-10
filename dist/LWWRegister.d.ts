@@ -2,7 +2,8 @@ import type { CRDT as ICRDT, BRegister, CRDTConfig, SyncContext } from "@organic
 import { CRDT } from "./CRDT.js";
 export declare class LWWRegister<T> extends CRDT implements ICRDT, BRegister<T> {
     private data;
-    private timestamp;
+    private physical;
+    private logical;
     private lastId;
     get(): T | undefined;
     set(value: T): void;

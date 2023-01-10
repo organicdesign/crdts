@@ -11,7 +11,7 @@ export class CRDT {
     }
     get generateTimestamp() {
         var _a;
-        return (_a = this.config.generateTimestamp) !== null && _a !== void 0 ? _a : (() => Date.now().toString(16));
+        return (_a = this.config.generateTimestamp) !== null && _a !== void 0 ? _a : Date.now;
     }
     broadcast(data) {
         for (const broadcaster of this.broadcasters) {
