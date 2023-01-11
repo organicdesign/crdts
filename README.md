@@ -1,6 +1,12 @@
 # CRDTs
 
-A group of useful CRDTs implementing interfaces from crdt-interfaces.
+A group of useful CRDTs implementing interfaces from `@organicdesign/crdt-interfaces`.
+
+## Install
+
+```
+npm i @organicdesign/crdts
+```
 
 ## CRDTs
 
@@ -9,7 +15,7 @@ Each CRDT exposes a class, a instantiation method and if applicable, a deseriali
 ### G-Counter
 
 ```javascript
-import { createGCounter } from "crdts";
+import { createGCounter } from "@organicdesign/crdts";
 ```
 
 A grow only counter.
@@ -17,7 +23,7 @@ A grow only counter.
 ### PN-Counter
 
 ```javascript
-import { createPNCounter } from "crdts";
+import { createPNCounter } from "@organicdesign/crdts";
 ```
 
 A positive/negative counter (one that can grow and shrink).
@@ -25,14 +31,14 @@ A positive/negative counter (one that can grow and shrink).
 ### G-Set
 
 ```javascript
-import { createGSet } from "crdts";
+import { createGSet } from "@organicdesign/crdts";
 ```
 
 A grow only set.
 
 ### MV-Register
 ```javascript
-import { createMVRegister } from "crdts";
+import { createMVRegister } from "@organicdesign/crdts";
 ```
 
 A multi-value register. This register relies on logical time only and will return an array with all values that are set at the same time.
@@ -40,7 +46,7 @@ A multi-value register. This register relies on logical time only and will retur
 ### LWW-Register
 
 ```javascript
-import { createLWWRegister } from "crdts";
+import { createLWWRegister } from "@organicdesign/crdts";
 ```
 
 A last write wins register. Uses hybrid time and IDs to ensure consistency.
@@ -48,7 +54,7 @@ A last write wins register. Uses hybrid time and IDs to ensure consistency.
 ### LWW-Map
 
 ```javascript
-import { createLWWMap } from "crdts";
+import { createLWWMap } from "@organicdesign/crdts";
 ```
 
 A last write wins map. Uses hybrid time and IDs to ensure consistency.

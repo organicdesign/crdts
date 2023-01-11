@@ -2,7 +2,7 @@
   "type": "module",
   "name": "crdts",
   "version": "0.1.0",
-  "description": "A group of useful CRDTs implementing interfaces from crdt-interfaces.",
+  "description": "A group of useful CRDTs implementing interfaces from @organicdesign/crdt-interfaces.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -10,9 +10,10 @@
     "build": "mkdir -p dist && touch dist/cleanup && rm dist/* && tsc -b",
     "lint": "eslint ./src/* ./test/*"
   },
+  "homepage": "https://code.organicdesign.nz/organicdesign/crdts",
   "repository": {
     "type": "git",
-    "url": "ssh://git@code.organicdesign.nz:222/organicdesign/crdts.git"
+    "url": "https://github.com/organicdesign/crdts.git"
   },
   "author": "Saul Boyd",
   "license": "GPL-3.0-or-later",
