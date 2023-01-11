@@ -1,6 +1,6 @@
 {
   "type": "module",
-  "name": "crdts",
+  "name": "@organicdesign/crdts",
   "version": "0.1.0",
   "description": "A group of useful CRDTs implementing interfaces from @organicdesign/crdt-interfaces.",
   "main": "dist/index.js",
