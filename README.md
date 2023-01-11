@@ -10,7 +10,7 @@ npm i @organicdesign/crdts
 
 ## CRDTs
 
-Each CRDT exposes a class, a instantiation method and if applicable, a deserialize method.
+Each CRDT exposes a class, an instantiation method and if applicable, a deserialize method. Most of these CRDTs use a basic protocol encoded in CBOR and have room for improvement in regards to efficiency and specification.
 
 ### G-Counter
 
