@@ -1,0 +1,37 @@
+## [0.1.3](https://github.com/organicdesign/crdts/compare/v0.1.2...v0.1.3) (2023-01-16)
+
+### Changed
+
+* Expand readme code examples.
+
+## [0.1.2](https://github.com/organicdesign/crdts/compare/v0.1.1...v0.1.2) (2023-01-12)
+
+### Changed
+
+* Improved readme examples.
+
+## [0.1.1](https://github.com/organicdesign/crdts/compare/v0.1.0...v0.1.1) (2023-01-12)
+
+### Added
+
+* Added MV-Register crdt.
+
+### Fixed
+
+* Fixed wrong package being used in examples.
+
+### Changed
+
+* Changed LWW timestamps to hybrid time.
+
+## 0.1.0 (2023-01-10)
+
+### Added
+
+* Added CRDTs:
+  * G-Counter
+  * PN-Counter
+  * G-Set
+  * LWW-Register
+  * CRDT-Map
+  * CRDT-Map
