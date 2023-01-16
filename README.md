@@ -2,13 +2,27 @@
 
 A group of useful CRDTs implementing interfaces from `@organicdesign/crdt-interfaces`.
 
+## Table of Contents
+
+- [Install](#install)
+- [Usage](#usage)
+  - [G-Counter](#g-counter)
+  - [PN-Counter](#pn-counter)
+  - [G-Set](#g-set)
+  - [MV-Register](#mv-register)
+  - [LWW-Register](#lww-register)
+  - [LWW-Map](#lww-map)
+  - [CRDT-Map](#crdt-map)
+- [Building](#building)
+- [Testing](#testing)
+
 ## Install
 
 ```
 npm i @organicdesign/crdts
 ```
 
-## CRDTs
+## Usage
 
 Each CRDT exposes a class, an instantiation method and if applicable, a deserialize method. Most of these CRDTs use a basic protocol encoded in CBOR and have room for improvement in regards to efficiency and specification.
 
