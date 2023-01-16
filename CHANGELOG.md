@@ -1,3 +1,10 @@
+## [0.1.4](https://github.com/organicdesign/crdts/compare/v0.1.3...v0.1.4) (2023-01-17)
+
+### Added
+
+* Add keywords to package.json.
+* Add table of contents to readme.
+
 ## [0.1.3](https://github.com/organicdesign/crdts/compare/v0.1.2...v0.1.3) (2023-01-16)
 
 ### Changed
