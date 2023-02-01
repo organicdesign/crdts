@@ -1,13 +1,14 @@
-import * as cborg from "cborg";
 import type {
 	SynchronizableCRDT,
 	CRDTConfig,
 	MCounter,
 	CreateCRDT
-} from "@organicdesign/crdt-interfaces";
+} from "../../crdt-interfaces/src/index.js";
 import { BufferMap } from "@organicdesign/buffer-collections";
 import { CRDT } from "./CRDT.js";
 import { createGCounterSynchronizer } from "./synchronizers/GCounter.js";
+import { createGCounterSerializer } from "./serializers/GCounter.js";
+import { createGCounterBroadcaster } from "./broadcasters/GCounter.js";
 
 export interface GCounterOpts {
 	dp: number
@@ -16,6 +17,7 @@ export interface GCounterOpts {
 export class GCounter extends CRDT implements SynchronizableCRDT, MCounter {
 	protected readonly data = new BufferMap<number>();
 	protected readonly dp: number = 10;
+	protected readonly watchers = new Map<string, (peer: Uint8Array, count: number) => void>();
 
 	constructor (config: CRDTConfig, options: Partial<GCounterOpts> = {}) {
 		super(config);
@@ -37,35 +39,41 @@ export class GCounter extends CRDT implements SynchronizableCRDT, MCounter {
 				getPeers: () => this.data.keys()
 			}));
 		}
-	}
 
-/*
-	serialize(): Uint8Array {
-		const data: { id: Uint8Array, count: number }[] = [];
+		for (const createSerializer of config.serializers ?? [createGCounterSerializer()]) {
+			this.serializers.push(createSerializer({
+				getCount: (peer: Uint8Array) => this.data.get(peer) ?? 0,
+				setCount: (peer: Uint8Array, count: number) => {
+					const existing = this.data.get(peer) ?? 0;
 
-		for (const [id, count] of this.data) {
-			data.push({ id, count });
+					if (existing < count) {
+						this.data.set(peer, count);
+					}
+				},
+				getPeers: () => this.data.keys()
+			}));
 		}
 
-		return cborg.encode(data);
-	}
+		for (const createBroadcaster of config.broadcasters ?? [createGCounterBroadcaster()]) {
+			this.broadcasters.push(createBroadcaster({
+				setCount: (peer: Uint8Array, count: number) => {
+					const existing = this.data.get(peer) ?? 0;
 
-	deserialize (data: Uint8Array) {
-		//this.sync(data);
-	}
-
-	onBroadcast(data: Uint8Array): void {
-		const { id, count } = cborg.decode(data) as { id: Uint8Array, count: number };
-
-		if (count == null) {
-			return;
-		}
-
-		if (this.compareSelf(id, count)) {
-			this.data.set(id, count);
+					if (existing < count) {
+						this.data.set(peer, count);
+					}
+				},
+				onChange: method => this.watchers.set(createBroadcaster.toString(), method)
+			}));
 		}
 	}
-*/
+
+	protected change (peer: Uint8Array, count: number) {
+		for (const watcher of this.watchers.values()) {
+			watcher(peer, count);
+		}
+	}
+
 	toValue(): number {
 		return this.round([...this.data.values()].reduce((p, c) => p + c, 0));
 	}
@@ -85,12 +93,7 @@ export class GCounter extends CRDT implements SynchronizableCRDT, MCounter {
 		if (this.compareSelf(this.id, value)) {
 			this.data.set(this.id, value);
 
-			/*
-			this.broadcast(cborg.encode({
-				id: this.id,
-				count: value
-			}));
-			*/
+			this.change(this.id, value);
 		}
 	}
 
