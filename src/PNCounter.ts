@@ -1,80 +1,46 @@
-import * as cborg from "cborg";
-import { CRDT as ICRDT, CRDTConfig, BCounter, CreateCRDT } from "@organicdesign/crdt-interfaces";
+import type {
+	SynchronizableCRDT,
+	SerializableCRDT,
+	BroadcastableCRDT,
+	CRDTConfig,
+	BCounter,
+	CreateCRDT,
+	CreateSynchronizer,
+	CreateSerializer,
+	CreateBroadcaster,
+	CRDTSynchronizer,
+	CRDTSerializer,
+	CRDTBroadcaster
+} from "../../crdt-interfaces/src/index.js";
 import { GCounter } from "./GCounter.js";
 import { CRDT } from "./CRDT.js";
+import { createPNCounterSynchronizer } from "./synchronizers/PNCounter.js";
+import { createPNCounterSerializer } from "./serializers/PNCounter.js";
+import { createPNCounterBroadcaster } from "./broadcasters/PNCounter.js";
 
-export class PNCounter extends CRDT implements ICRDT, BCounter {
+export interface PNCounterOpts {
+	dp: number
+}
+
+export class PNCounter extends CRDT implements SynchronizableCRDT, SerializableCRDT, BroadcastableCRDT, BCounter {
 	private pCounter: GCounter;
 	private nCounter: GCounter;
 
-	constructor(config: CRDTConfig) {
-		super(config);
+	constructor (config: CRDTConfig, options: Partial<PNCounterOpts> = {}) {
+		config.synchronizers = config.synchronizers ?? [createPNCounterSynchronizer()] as Iterable<CreateSynchronizer<CRDTSynchronizer>>;
+		config.serializers = config.serializers ?? [createPNCounterSerializer()] as Iterable<CreateSerializer<CRDTSerializer>>;
+		config.broadcasters = config.broadcasters ?? [createPNCounterBroadcaster()] as Iterable<CreateBroadcaster<CRDTBroadcaster>>;
 
-		this.pCounter = new GCounter(config);
-		this.nCounter = new GCounter(config);
+		const pCounter = new GCounter({ id: config.id }, options);
+		const nCounter = new GCounter({ id: config.id }, options);
 
-		this.pCounter.addBroadcaster((pData: Uint8Array) => this.broadcast(
-			cborg.encode({ pData })
-		));
+		super(config, () => ({
+			getPCounter: () => pCounter,
+			getNCounter: () => nCounter
+		}));
 
-		this.nCounter.addBroadcaster((nData: Uint8Array) => this.broadcast(
-			cborg.encode({ nData })
-		));
-	}
-
-	sync(data?: Uint8Array): Uint8Array | undefined {
-		if (data == null) {
-			const pData = this.pCounter.sync();
-			const nData = this.nCounter.sync();
-
-			const syncObj: { pData?: Uint8Array, nData?: Uint8Array } = {};
-
-			if (pData != null) {
-				syncObj.pData = pData;
-			}
-
-			if (nData != null) {
-				syncObj.nData = nData;
-			}
-
-			return cborg.encode(syncObj);
-		}
-
-		const { pData, nData }: { pData?: Uint8Array, nData?: Uint8Array } = cborg.decode(data) as { pData?: Uint8Array, nData?: Uint8Array };
-		const syncObj: { pData?: Uint8Array, nData?: Uint8Array } = {};
-
-		if (pData != null) {
-			syncObj.pData = this.pCounter.sync(pData);
-		}
-
-		if (nData != null) {
-			syncObj.nData = this.nCounter.sync(nData);
-		}
-
-		if (pData == null && nData == null) {
-			return;
-		}
-
-		return cborg.encode(syncObj);
-	}
-
-	serialize(): Uint8Array {
-		return cborg.encode({
-			pData: this.pCounter.serialize(),
-			nData: this.nCounter.serialize()
-		});
-	}
-
-	onBroadcast(data: Uint8Array): void {
-		const { pData, nData } = cborg.decode(data) as { pData?: Uint8Array, nData?: Uint8Array };
-
-		if (pData != null) {
-			this.pCounter.onBroadcast(pData);
-		}
-
-		if (nData != null) {
-			this.nCounter.onBroadcast(nData);
-		}
+		this.pCounter = pCounter;
+		this.nCounter = nCounter;
 	}
 
 	toValue(): number {
