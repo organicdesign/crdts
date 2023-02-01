@@ -27,44 +27,34 @@ export class GCounter extends CRDT implements SynchronizableCRDT, MCounter {
 		}
 
 		for (const createSynchronizer of config.synchronizers ?? [createGCounterSynchronizer()]) {
-			this.synchronizers.push(createSynchronizer({
-				getCount: (peer: Uint8Array) => this.data.get(peer) ?? 0,
-				setCount: (peer: Uint8Array, count: number) => {
-					const existing = this.data.get(peer) ?? 0;
-
-					if (existing < count) {
-						this.data.set(peer, count);
-					}
-				},
-				getPeers: () => this.data.keys()
-			}));
+			this.synchronizers.push(createSynchronizer(this.components));
 		}
 
 		for (const createSerializer of config.serializers ?? [createGCounterSerializer()]) {
-			this.serializers.push(createSerializer({
-				getCount: (peer: Uint8Array) => this.data.get(peer) ?? 0,
-				setCount: (peer: Uint8Array, count: number) => {
-					const existing = this.data.get(peer) ?? 0;
-
-					if (existing < count) {
-						this.data.set(peer, count);
-					}
-				},
-				getPeers: () => this.data.keys()
-			}));
+			this.serializers.push(createSerializer(this.components));
 		}
 
 		for (const createBroadcaster of config.broadcasters ?? [createGCounterBroadcaster()]) {
-			this.broadcasters.push(createBroadcaster({
-				setCount: (peer: Uint8Array, count: number) => {
-					const existing = this.data.get(peer) ?? 0;
+			this.broadcasters.push(createBroadcaster(this.components));
+		}
+	}
 
-					if (existing < count) {
-						this.data.set(peer, count);
-					}
-				},
-				onChange: method => this.watchers.set(createBroadcaster.toString(), method)
-			}));
+	private get components () {
+		return {
+			getPeers: () => this.data.keys(),
+			getCount: (peer: Uint8Array) => this.data.get(peer) ?? 0,
+
+			setCount: (peer: Uint8Array, count: number) => {
+				const existing = this.data.get(peer) ?? 0;
+
+				if (existing < count) {
+					this.data.set(peer, count);
+				}
+			},
+
+			onChange: (method: (peer: Uint8Array, count: number) => void) => {
+				this.watchers.set(Math.random().toString(), method)
+			}
 		}
 	}
 
