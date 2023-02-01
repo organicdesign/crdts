@@ -2,7 +2,13 @@ import type {
 	SynchronizableCRDT,
 	CRDTConfig,
 	MCounter,
-	CreateCRDT
+	CreateCRDT,
+	CreateSynchronizer,
+	CreateSerializer,
+	CreateBroadcaster,
+	CRDTSynchronizer,
+	CRDTSerializer,
+	CRDTBroadcaster
 } from "../../crdt-interfaces/src/index.js";
 import { BufferMap } from "@organicdesign/buffer-collections";
 import { CRDT } from "./CRDT.js";
@@ -17,30 +23,16 @@ export interface GCounterOpts {
 export class GCounter extends CRDT implements SynchronizableCRDT, MCounter {
 	protected readonly data = new BufferMap<number>();
 	protected readonly dp: number = 10;
-	protected readonly watchers = new Map<string, (peer: Uint8Array, count: number) => void>();
+	protected readonly watchers: Map<string, (peer: Uint8Array, count: number) => void>;
 
 	constructor (config: CRDTConfig, options: Partial<GCounterOpts> = {}) {
-		super(config);
+		config.synchronizers = config.synchronizers ?? [createGCounterSynchronizer()] as Iterable<CreateSynchronizer<CRDTSynchronizer>>;
+		config.serializers = config.serializers ?? [createGCounterSerializer()] as Iterable<CreateSerializer<CRDTSerializer>>;
+		config.broadcasters = config.broadcasters ?? [createGCounterBroadcaster()] as Iterable<CreateBroadcaster<CRDTBroadcaster>>;
 
-		if (options?.dp) {
-			this.dp = options.dp;
-		}
+		const watchers = new Map<string, (peer: Uint8Array, count: number) => void>();
 
-		for (const createSynchronizer of config.synchronizers ?? [createGCounterSynchronizer()]) {
-			this.synchronizers.push(createSynchronizer(this.components));
-		}
-
-		for (const createSerializer of config.serializers ?? [createGCounterSerializer()]) {
-			this.serializers.push(createSerializer(this.components));
-		}
-
-		for (const createBroadcaster of config.broadcasters ?? [createGCounterBroadcaster()]) {
-			this.broadcasters.push(createBroadcaster(this.components));
-		}
-	}
-
-	private get components () {
-		return {
+		super(config, () => ({
 			getPeers: () => this.data.keys(),
 			getCount: (peer: Uint8Array) => this.data.get(peer) ?? 0,
 
@@ -53,9 +45,15 @@ export class GCounter extends CRDT implements SynchronizableCRDT, MCounter {
 			},
 
 			onChange: (method: (peer: Uint8Array, count: number) => void) => {
-				this.watchers.set(Math.random().toString(), method)
+				watchers.set(Math.random().toString(), method)
 			}
+		}));
+
+		if (options?.dp) {
+			this.dp = options.dp;
 		}
+
+		this.watchers = watchers;
 	}
 
 	protected change (peer: Uint8Array, count: number) {

@@ -7,7 +7,7 @@ import type {
 	SerializableCRDT,
 	SynchronizableCRDT,
 	BroadcastableCRDT
-} from "@organicdesign/crdt-interfaces";
+} from "../../crdt-interfaces/src/index.js";
 
 export class CRDT implements Omit<ICRDT & SerializableCRDT & SynchronizableCRDT & BroadcastableCRDT, "toValue"> {
 	protected readonly config: CRDTConfig;
@@ -15,8 +15,20 @@ export class CRDT implements Omit<ICRDT & SerializableCRDT & SynchronizableCRDT 
 	protected readonly serializers: CRDTSerializer[] = [];
 	protected readonly broadcasters: CRDTBroadcaster[] = [];
 
-	constructor (config: CRDTConfig) {
+	constructor (config: CRDTConfig, getComponents: () => {} = () => ({})) {
 		this.config = config;
+
+		for (const createSynchronizer of config.synchronizers ?? []) {
+			this.synchronizers.push(createSynchronizer(getComponents()));
+		}
+
+		for (const createSerializer of config.serializers ?? []) {
+			this.serializers.push(createSerializer(getComponents()));
+		}
+
+		for (const createBroadcaster of config.broadcasters ?? []) {
+			this.broadcasters.push(createBroadcaster(getComponents()));
+		}
 	}
 
 	get id () : Uint8Array {

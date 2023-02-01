@@ -1,3 +1,4 @@
+import type { CRDTBroadcaster } from "../../../crdt-interfaces/src/index.js";
 import * as cborg from "cborg";
 
 export interface GCounterBroadcasterComponents {
@@ -10,7 +11,7 @@ export interface GCounterBroadcasterOpts {
 	listenOnly: boolean
 }
 
-export class GCounterBroadcaster {
+export class GCounterBroadcaster implements CRDTBroadcaster {
 	private readonly components: GCounterBroadcasterComponents;
 	private readonly config: GCounterBroadcasterOpts;
 	private broadcast: (data: Uint8Array) => void = () => {};
