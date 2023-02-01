@@ -19,7 +19,7 @@ export class PNCounterSerializer implements CRDTSerializer {
 		this.options = {
 			protocol: options.protocol ?? "/pn-counter/cbor/0.1.0",
 			subProtocol: options.subProtocol ?? "/g-counter/cbor/0.1.0"
-		}
+		};
 
 		this.components = components;
 	}
