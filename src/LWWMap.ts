@@ -1,8 +1,17 @@
-import type { CRDT as ICRDT, BMap, CRDTConfig } from "@organicdesign/crdt-interfaces";
-import { MultiCRDT } from "./MultiCRDT.js";
-import { LWWRegister } from "./LWWRegister.js";
+import type {
+	SynchronizableCRDT,
+	CRDTConfig,
+	BMap,
+	CreateSynchronizer,
+	CRDTSynchronizer,
+} from "../../crdt-interfaces/src/index.js";
+import { CRDT } from "./CRDT.js";
+import { LWWRegister, createLWWRegister } from "./LWWRegister.js";
+import { createLWWMapSynchronizer } from "./synchronizers/LWWMap.js";
 
-export class LWWMap<T> extends MultiCRDT<LWWRegister<T>> implements ICRDT, BMap<T> {
+export class LWWMap<T> extends CRDT implements SynchronizableCRDT, BMap<T> {
+	protected data = new Map<string, LWWRegister<T>>();
+
 	[Symbol.iterator](): IterableIterator<[string, T]> {
 		const data = this.data;
 
@@ -16,7 +25,46 @@ export class LWWMap<T> extends MultiCRDT<LWWRegister<T>> implements ICRDT, BMap<
 	}
 
 	constructor (config: CRDTConfig) {
-		super(config, () => new LWWRegister(this.config));
+		config.synchronizers = config.synchronizers ?? [createLWWMapSynchronizer()] as Iterable<CreateSynchronizer<CRDTSynchronizer>>;
+
+		super(config, () => ({
+			getKeys: () => this.data.keys(),
+			getValue: (key: string) => {
+				// Create register if it does not exist.
+				if (!this.data.has(key)) {
+					this.assign(key, createLWWRegister({ id: this.id }));
+					return this.data.get(key) as LWWRegister<T>;
+				}
+
+				return this.data.get(key);
+			}
+		}));
+
+		// Disable serialization and broadcast.
+		Object.defineProperties(this, {
+			getSerializeProtocols: { value: undefined },
+			getBroadcastProtocols: { value: undefined }
+		});
+	}
+
+	protected assign (key: string, register: LWWRegister<T>) {
+		/*
+		crdt.addBroadcaster?.((data: Uint8Array) => {
+			this.broadcast(cborg.encode({
+				[key]: data
+			}));
+		});
+		*/
+
+		this.data.set(key, register);
+	}
+
+	get size(): number {
+		return this.data.size;
+	}
+
+	keys(): IterableIterator<string> {
+		return this.data.keys();
 	}
 
 	clear(): void {
@@ -56,7 +104,7 @@ export class LWWMap<T> extends MultiCRDT<LWWRegister<T>> implements ICRDT, BMap<
 		let reg = this.data.get(key);
 
 		if (reg == null) {
-			this.assign(key, new LWWRegister(this.config));
+			this.assign(key, createLWWRegister({ id: this.id }));
 			reg = this.data.get(key) as LWWRegister<T>;
 		}
 
