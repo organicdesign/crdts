@@ -1,15 +1,47 @@
-import type { CRDT as ICRDT, MMap, CRDTConfig } from "@organicdesign/crdt-interfaces";
-import { MultiCRDT } from "./MultiCRDT.js";
+import type {
+	SynchronizableCRDT,
+	CRDTConfig,
+	MMap,
+	CRDT as ICRDT,
+	CreateSynchronizer,
+	CRDTSynchronizer,
+} from "../../crdt-interfaces/src/index.js";
+import { createCRDTMapSynchronizer } from "../../crdt-map-synchronizer/src/index.js";
+import { CRDT } from "./CRDT.js";
 
-export class CRDTMap<T extends ICRDT=ICRDT> extends MultiCRDT<T> implements ICRDT, MMap<ICRDT> {
+export class CRDTMap<T extends ICRDT=ICRDT> extends CRDT implements SynchronizableCRDT, MMap<T> {
 	protected data = new Map<string, T>();
 
 	constructor (config: CRDTConfig) {
-		super(config);
+		config.synchronizers = config.synchronizers ?? [createCRDTMapSynchronizer()] as Iterable<CreateSynchronizer<CRDTSynchronizer>>;
+
+		super(config, () => ({
+			keys: () => this.data.keys(),
+			get: (key: string) => this.data.get(key),
+			getId: () => this.id
+		}));
+
+		// Disable serialization and broadcast.
+		Object.defineProperties(this, {
+			getSerializeProtocols: { value: undefined },
+			getBroadcastProtocols: { value: undefined }
+		});
+	}
+
+	protected assign (key: string, crdt: T) {
+		this.data.set(key, crdt);
 	}
 
 	[Symbol.iterator](): IterableIterator<[string, T]> {
 		return this.data[Symbol.iterator]();
+	}
+
+	get size(): number {
+		return this.data.size;
+	}
+
+	keys(): IterableIterator<string> {
+		return this.data.keys();
 	}
 
 	forEach(callbackfn: (value: T, key: string, map: Map<string, T>) => void, thisArg?: any): void {
@@ -36,6 +68,16 @@ export class CRDTMap<T extends ICRDT=ICRDT> extends MultiCRDT<T> implements ICRD
 
 	values(): IterableIterator<T> {
 		return this.data.values();
+	}
+
+	toValue(): Map<string, unknown> {
+		const output = new Map<string, unknown>();
+
+		for (const [key, crdt] of this.data.entries()) {
+			output.set(key, crdt.toValue());
+		}
+
+		return output;
 	}
 }
 

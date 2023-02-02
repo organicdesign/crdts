@@ -31,6 +31,10 @@ export class PNCounter extends CRDT implements SynchronizableCRDT, SerializableC
 		config.serializers = config.serializers ?? [createPNCounterSerializer()] as Iterable<CreateSerializer<CRDTSerializer>>;
 		config.broadcasters = config.broadcasters ?? [createPNCounterBroadcaster()] as Iterable<CreateBroadcaster<CRDTBroadcaster>>;
 
+		if (options.dp == null) {
+			options.dp = 10;
+		}
+
 		const pCounter = new GCounter({ id: config.id }, options);
 		const nCounter = new GCounter({ id: config.id }, options);
 
