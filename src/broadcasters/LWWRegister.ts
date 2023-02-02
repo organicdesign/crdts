@@ -1,15 +1,9 @@
 import type { CRDTBroadcaster } from "../../../crdt-interfaces/src/index.js";
 import * as cborg from "cborg";
 
-interface Timestamp {
-	physical: number,
-	logical: number,
-	id: Uint8Array
-}
-
 export interface LWWRegisterBroadcasterComponents {
-	onChange (watcher: (value: unknown, timestamp: Timestamp) => void): void
-	setValue (value: unknown, timestamp: Timestamp): void
+	onChange (watcher: (value: unknown, physical: number, logical: number, id: Uint8Array) => void): void
+	setValue (value: unknown, physical: number, logical: number, id: Uint8Array): void
 }
 
 export interface LWWRegisterBroadcasterOpts {
@@ -30,7 +24,7 @@ export class LWWRegisterBroadcaster implements CRDTBroadcaster {
 
 		this.components = components;
 
-		this.components.onChange((value, timestamp) => this.onChange(value, timestamp));
+		this.components.onChange((value, physical, logical, id) => this.onChange(value, physical, logical, id));
 	}
 
 	get protocol () {
@@ -38,17 +32,17 @@ export class LWWRegisterBroadcaster implements CRDTBroadcaster {
 	}
 
 	onBroadcast (data: Uint8Array) {
-		const { value, timestamp } = cborg.decode(data) as { value: unknown, timestamp: Timestamp };
+		const { value, physical, logical, id } = cborg.decode(data) as { value: unknown, physical: number, logical: number, id: Uint8Array };
 
-		this.components.setValue(value, timestamp);
+		this.components.setValue(value, physical, logical, id);
 	}
 
 	setBroadcast (broadcast: (data: Uint8Array) => void) {
 		this.broadcast = broadcast;
 	}
 
-	private onChange (value: unknown, timestamp: Timestamp) {
-		const data = cborg.encode({ value, timestamp });
+	private onChange (value: unknown, physical: number, logical: number, id: Uint8Array) {
+		const data = cborg.encode({ value, physical, logical, id });
 
 		if (!this.config.listenOnly) {
 			this.broadcast(data);

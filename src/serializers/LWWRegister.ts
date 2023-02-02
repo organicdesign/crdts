@@ -1,15 +1,9 @@
 import type { CRDTSerializer } from "@organicdesign/crdt-interfaces";
 import * as cborg from "cborg";
 
-interface Timestamp {
-	physical: number,
-	logical: number,
-	id: Uint8Array
-}
-
 export interface LWWRegisterSerializerComponents {
-	getValue (): { value: unknown, timestamp: Timestamp }
-	setValue (value: unknown, timestamp: Timestamp): void
+	getValue (): { value: unknown, physical: number, logical: number, id: Uint8Array }
+	setValue (value: unknown, physical: number, logical: number, id: Uint8Array): void
 }
 
 export interface LWWRegisterSyncOpts {
@@ -30,9 +24,9 @@ export class LWWRegisterSerializer implements CRDTSerializer {
 	}
 
 	deserialize (data: Uint8Array) {
-		const { value, timestamp } = cborg.decode(data) as { value: unknown, timestamp: Timestamp };
+		const { value, physical, logical, id } = cborg.decode(data) as { value: unknown, physical: number, logical: number, id: Uint8Array };
 
-		this.components.setValue(value, timestamp);
+		this.components.setValue(value, physical, logical, id);
 	}
 }
 

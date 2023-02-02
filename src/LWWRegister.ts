@@ -1,13 +1,72 @@
-import * as cborg from "cborg";
-import type { CRDT as ICRDT, BRegister, CRDTConfig, SyncContext } from "@organicdesign/crdt-interfaces";
 import { toString as uint8ArrayToString } from "uint8arrays/to-string";
+import type {
+	SynchronizableCRDT,
+	SerializableCRDT,
+	BroadcastableCRDT,
+	CRDTConfig,
+	BRegister,
+	CreateSynchronizer,
+	CreateSerializer,
+	CreateBroadcaster,
+	CRDTSynchronizer,
+	CRDTSerializer,
+	CRDTBroadcaster
+} from "../../crdt-interfaces/src/index.js";
 import { CRDT } from "./CRDT.js";
+import { createLWWRegisterSynchronizer } from "./synchronizers/LWWRegister.js";
+import { createLWWRegisterSerializer } from "./serializers/LWWRegister.js";
+import { createLWWRegisterBroadcaster } from "./broadcasters/LWWRegister.js";
 
-export class LWWRegister<T> extends CRDT implements ICRDT, BRegister<T> {
+export class LWWRegister<T> extends CRDT implements SynchronizableCRDT, SerializableCRDT, BroadcastableCRDT, BRegister<T> {
 	private data: T | undefined;
 	private physical: number = 0;
 	private logical: number = 0;
 	private lastId: Uint8Array = new Uint8Array();
+	protected readonly watchers: Map<string, (value: unknown, physical: number, logical: number, id: Uint8Array) => void>;
+
+	constructor (config: CRDTConfig) {
+		config.synchronizers = config.synchronizers ?? [createLWWRegisterSynchronizer()] as Iterable<CreateSynchronizer<CRDTSynchronizer>>;
+		config.serializers = config.serializers ?? [createLWWRegisterSerializer()] as Iterable<CreateSerializer<CRDTSerializer>>;
+		config.broadcasters = config.broadcasters ?? [createLWWRegisterBroadcaster()] as Iterable<CreateBroadcaster<CRDTBroadcaster>>;
+
+		const watchers = new Map<string, (value: unknown, physical: number, logical: number, id: Uint8Array) => void>();
+
+		super(config, () => ({
+			getValue: () => ({
+				value: this.data,
+				physical: this.physical,
+				logical: this.logical,
+				id: this.lastId
+			}),
+
+			setValue: (value: unknown, physical: number, logical: number, id: Uint8Array) => {
+				if (physical === this.physical && logical === this.logical) {
+					// Timestamps happened at the same time, we need to decide what happened first.
+					if (uint8ArrayToString(id) > uint8ArrayToString(this.lastId)) {
+						this.data = value as T;
+						this.lastId = id;
+					}
+				} else if (physical > this.physical || logical > this.logical) {
+					this.data = value as T;
+					this.physical = Math.max(physical, this.physical);
+					this.logical = physical > this.physical ? 0 : logical;
+					this.lastId = id;
+				}
+			},
+
+			onChange: (method: (value: unknown, physical: number, logical: number, id: Uint8Array) => void) => {
+				watchers.set(Math.random().toString(), method)
+			}
+		}));
+
+		this.watchers = watchers;
+	}
+
+	protected change (value: unknown, physical: number, logical: number, id: Uint8Array) {
+		for (const watcher of this.watchers.values()) {
+			watcher(value, physical, logical, id);
+		}
+	}
 
 	get(): T | undefined {
 		return this.data;
@@ -21,12 +80,12 @@ export class LWWRegister<T> extends CRDT implements ICRDT, BRegister<T> {
 		this.physical = Math.max(physical, this.physical);
 		this.lastId = this.id;
 
-		this.broadcast(cborg.encode({
+		this.change(
 			value,
-			physical: this.physical,
-			logical: this.logical,
-			id: this.id
-		}));
+			this.physical,
+			this.logical,
+			this.id
+		);
 	}
 
 	clear(): void {
@@ -37,62 +96,16 @@ export class LWWRegister<T> extends CRDT implements ICRDT, BRegister<T> {
 		this.physical = Math.max(physical, this.physical);
 		this.lastId = this.id;
 
-		this.broadcast(cborg.encode({
-			value: undefined,
-			physical: this.physical,
-			logical: this.logical,
-			id: this.id
-		}));
-	}
-
-	sync(data: Uint8Array | undefined, { id }: SyncContext): Uint8Array | undefined {
-		if (data == null) {
-			return this.serialize();
-		}
-
-		this.update(data, id);
+		this.change(
+			undefined,
+			this.physical,
+			this.logical,
+			this.id
+		);
 	}
 
 	toValue(): T | undefined {
 		return this.data;
-	}
-
-	serialize(): Uint8Array {
-		return cborg.encode({
-			value: this.data,
-			physical: this.physical,
-			logical: this.logical,
-			id: this.lastId
-		});
-	}
-
-	onBroadcast (data: Uint8Array) {
-		const { id } = cborg.decode(data) as { id: Uint8Array };
-
-		this.update(data, id);
-	}
-
-	private update (data: Uint8Array, id: Uint8Array) {
-		const { value, physical, logical } = cborg.decode(data) as { value: T, physical: number, logical: number };
-
-		if (physical === this.physical && logical === this.logical) {
-			// Timestamps happened at the same time, we need to decide what happened first.
-			if (uint8ArrayToString(id) > uint8ArrayToString(this.lastId)) {
-				this.data = value;
-				this.lastId = id;
-			}
-
-			return;
-		}
-
-		if (physical > this.physical || logical > this.logical) {
-			this.data = value;
-			this.physical = Math.max(physical, this.physical);
-			this.logical = physical > this.physical ? 0 : logical;
-			this.lastId = id;
-
-			return;
-		}
 	}
 }
 

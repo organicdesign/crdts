@@ -1,16 +1,9 @@
 import type { CRDTSynchronizer, SyncContext } from "@organicdesign/crdt-interfaces";
-import { toString as uint8ArrayToString } from "uint8arrays/to-string";
 import * as cborg from "cborg";
 
-interface Timestamp {
-	physical: number,
-	logical: number,
-	id: Uint8Array
-}
-
 export interface LWWRegisterSyncComponents {
-	getValue (): { value: unknown, timestamp: Timestamp }
-	setValue (value: unknown, timestamp: Timestamp): void
+	getValue (): { value: unknown, physical: number, logical: number, id: Uint8Array }
+	setValue (value: unknown, physical: number, logical: number, id: Uint8Array): void
 }
 
 export interface LWWRegisterSyncOpts {
@@ -32,36 +25,14 @@ export class LWWRegisterSynchronizer implements CRDTSynchronizer {
 
 			return cborg.encode({
 				value: localValue.value,
-				physical: localValue.timestamp.physical,
-				logical: localValue.timestamp.logical
+				physical: localValue.physical,
+				logical: localValue.logical
 			})
 		}
 
-		this.update(data, id);
-	}
-
-	private update (data: Uint8Array, id: Uint8Array) {
 		const { value, physical, logical } = cborg.decode(data) as { value: unknown, physical: number, logical: number };
 
-		const localValue = this.components.getValue();
-		const localTimestamp = localValue.timestamp;
-
-		const newValue = { value: localValue.value, timestamp: localValue.timestamp };
-
-		if (physical === localTimestamp.physical && logical === localTimestamp.logical) {
-			// Timestamps happened at the same time, we need to decide what happened first.
-			if (uint8ArrayToString(id) > uint8ArrayToString(localTimestamp.id)) {
-				newValue.value = value;
-				newValue.timestamp.id = id;
-			}
-		} else if (physical > localTimestamp.physical || logical > localTimestamp.logical) {
-			newValue.value = value;
-			newValue.timestamp.physical = Math.max(physical, localTimestamp.physical);
-			newValue.timestamp.logical = physical > localTimestamp.physical ? 0 : logical;
-			newValue.timestamp.id = id;
-		}
-
-		this.components.setValue(newValue.value, newValue.timestamp);
+		this.components.setValue(value, physical, logical, id);
 	}
 }
 
