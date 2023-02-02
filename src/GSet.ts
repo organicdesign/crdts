@@ -1,9 +1,48 @@
-import * as cborg from "cborg";
-import type { CRDT as ICRDT, MSet, CRDTConfig } from "@organicdesign/crdt-interfaces";
+import type {
+	SynchronizableCRDT,
+	SerializableCRDT,
+	BroadcastableCRDT,
+	CRDTConfig,
+	CreateSynchronizer,
+	CreateSerializer,
+	CreateBroadcaster,
+	CRDTSynchronizer,
+	CRDTSerializer,
+	CRDTBroadcaster
+} from "../../crdt-interfaces/src/index.js";
 import { CRDT } from "./CRDT.js";
+import { createGSetSynchronizer } from "./synchronizers/GSet.js";
+import { createGSetSerializer } from "./serializers/GSet.js";
+import { createGSetBroadcaster } from "./broadcasters/GSet.js";
 
-export class GSet<T=unknown> extends CRDT implements ICRDT, MSet<T> {
+export class GSet<T=unknown> extends CRDT implements SynchronizableCRDT, SerializableCRDT, BroadcastableCRDT, GSet<T> {
 	private data = new Set<T>();
+	protected readonly watchers: Map<string, (item: T) => void>;
+
+	constructor (config: CRDTConfig) {
+		config.synchronizers = config.synchronizers ?? [createGSetSynchronizer()] as Iterable<CreateSynchronizer<CRDTSynchronizer>>;
+		config.serializers = config.serializers ?? [createGSetSerializer()] as Iterable<CreateSerializer<CRDTSerializer>>;
+		config.broadcasters = config.broadcasters ?? [createGSetBroadcaster()] as Iterable<CreateBroadcaster<CRDTBroadcaster>>;
+
+		const watchers = new Map<string, (item: T) => void>();
+
+		super(config, () => ({
+			get: () => this.data,
+			add: (item: T) => this.data.add(item),
+
+			onChange: (method: (item: T) => void) => {
+				watchers.set(Math.random().toString(), method)
+			}
+		}));
+
+		this.watchers = watchers;
+	}
+
+	protected change (item: T) {
+		for (const watcher of this.watchers.values()) {
+			watcher(item);
+		}
+	}
 
 	[Symbol.iterator](): IterableIterator<T> {
 		return this.data[Symbol.iterator]();
@@ -11,10 +50,7 @@ export class GSet<T=unknown> extends CRDT implements ICRDT, MSet<T> {
 
 	add(value: T): Set<T> {
 		this.data.add(value);
-
-		const encoded = cborg.encode(value);
-
-		this.broadcast(encoded);
+		this.change(value);
 
 		return this.toValue();
 	}
@@ -43,30 +79,8 @@ export class GSet<T=unknown> extends CRDT implements ICRDT, MSet<T> {
 		return this.data.values();
 	}
 
-	sync(data?: Uint8Array): Uint8Array | undefined {
-		if (data == null) {
-			return this.serialize();
-		}
-
-		const decoded: T[] = cborg.decode(data) as T[];
-
-		for (const value of decoded) {
-			this.data.add(value);
-		}
-	}
-
 	toValue(): Set<T> {
 		return new Set(this.data);
-	}
-
-	serialize(): Uint8Array {
-		return cborg.encode([...this.data.values()]);
-	}
-
-	onBroadcast(data: Uint8Array): void {
-		const value = cborg.decode(data) as T;
-
-		this.data.add(value);
 	}
 }
 
