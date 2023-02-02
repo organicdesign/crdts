@@ -1,4 +1,9 @@
-import type { CRDTSynchronizer, SynchronizableCRDT, SyncContext } from "@organicdesign/crdt-interfaces";
+import {
+	CRDTSynchronizer,
+	SynchronizableCRDT,
+	SyncContext,
+	getSynchronizer
+} from "../../../crdt-interfaces/src/index.js";
 import * as cborg from "cborg";
 
 export interface PNCounterSyncComponents {
@@ -30,8 +35,8 @@ export class PNCounterSynchronizer implements CRDTSynchronizer {
 
 	sync (data: Uint8Array | undefined, context: SyncContext): Uint8Array | undefined {
 		if (data == null) {
-			const pData = this.components.getPCounter().getSynchronizer(this.options.subProtocol)?.sync(undefined, context);
-			const nData = this.components.getNCounter().getSynchronizer(this.options.subProtocol)?.sync(undefined, context);
+			const pData = getSynchronizer(this.components.getPCounter(), this.options.subProtocol)?.sync(undefined, context);
+			const nData = getSynchronizer(this.components.getNCounter(), this.options.subProtocol)?.sync(undefined, context);
 
 			const syncObj: { pData?: Uint8Array, nData?: Uint8Array } = {};
 
@@ -50,11 +55,11 @@ export class PNCounterSynchronizer implements CRDTSynchronizer {
 		const syncObj: { pData?: Uint8Array, nData?: Uint8Array } = {};
 
 		if (pData != null) {
-			syncObj.pData = this.components.getPCounter().getSynchronizer(this.options.subProtocol)?.sync(pData, context);
+			syncObj.pData = getSynchronizer(this.components.getPCounter(), this.options.subProtocol)?.sync(pData, context);
 		}
 
 		if (nData != null) {
-			syncObj.nData = this.components.getNCounter().getSynchronizer(this.options.subProtocol)?.sync(nData, context);
+			syncObj.nData = getSynchronizer(this.components.getNCounter(), this.options.subProtocol)?.sync(nData, context);
 		}
 
 		if (pData == null && nData == null) {

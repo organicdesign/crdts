@@ -23,8 +23,8 @@ export class CRDTMap<T extends ICRDT=ICRDT> extends CRDT implements Synchronizab
 
 		// Disable serialization and broadcast.
 		Object.defineProperties(this, {
-			getSerializeProtocols: { value: undefined },
-			getBroadcastProtocols: { value: undefined }
+			getSerializers: { value: undefined },
+			getBroadcasters: { value: undefined }
 		});
 	}
 

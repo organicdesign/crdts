@@ -1,4 +1,9 @@
-import type { CRDTSynchronizer, SynchronizableCRDT, SyncContext } from "@organicdesign/crdt-interfaces";
+import {
+	CRDTSynchronizer,
+	SynchronizableCRDT,
+	SyncContext,
+	getSynchronizer
+} from "../../../crdt-interfaces/src/index.js";
 import * as cborg from "cborg";
 
 export interface LWWMapSyncComponents {
@@ -33,7 +38,7 @@ export class LWWMapSynchronizer implements CRDTSynchronizer {
 			const output: Record<string, Uint8Array> = {};
 
 			for (const key of this.components.getKeys()) {
-				const syncData = this.components.getValue(key)?.getSynchronizer(this.options.subProtocol)?.sync(undefined, context);
+				const syncData = getSynchronizer(this.components.getValue(key), this.options.subProtocol)?.sync(undefined, context);
 
 				if (syncData != null) {
 					output[key] = syncData;
@@ -47,7 +52,7 @@ export class LWWMapSynchronizer implements CRDTSynchronizer {
 		const syncObj: Record<string, Uint8Array> = {};
 
 		for (const key of Object.keys(syncData)) {
-			const newSyncData = this.components.getValue(key)?.getSynchronizer(this.options.subProtocol)?.sync(syncData[key], context);
+			const newSyncData = getSynchronizer(this.components.getValue(key), this.options.subProtocol)?.sync(syncData[key], context);
 
 			if (newSyncData != null) {
 				syncObj[key] = newSyncData;

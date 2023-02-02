@@ -1,4 +1,4 @@
-import type { CRDTSerializer, SerializableCRDT } from "@organicdesign/crdt-interfaces";
+import { CRDTSerializer, SerializableCRDT, getSerializer } from "../../../crdt-interfaces/src/index.js";
 import * as cborg from "cborg";
 
 export interface PNCounterSerializerComponents {
@@ -30,16 +30,16 @@ export class PNCounterSerializer implements CRDTSerializer {
 
 	serialize (): Uint8Array {
 		return cborg.encode({
-			pData: this.components.getPCounter().getSerializer(this.options.subProtocol)?.serialize(),
-			nData: this.components.getNCounter().getSerializer(this.options.subProtocol)?.serialize()
+			pData: getSerializer(this.components.getPCounter(), this.options.subProtocol)?.serialize(),
+			nData: getSerializer(this.components.getNCounter(), this.options.subProtocol)?.serialize()
 		});
 	}
 
 	deserialize (data: Uint8Array) {
 		const { pData, nData } = cborg.decode(data) as { pData: Uint8Array, nData: Uint8Array };
 
-		this.components.getPCounter().getSerializer(this.options.subProtocol)?.deserialize(pData);
-		this.components.getNCounter().getSerializer(this.options.subProtocol)?.deserialize(nData);
+		getSerializer(this.components.getPCounter(), this.options.subProtocol)?.deserialize(pData);
+		getSerializer(this.components.getNCounter(), this.options.subProtocol)?.deserialize(nData);
 	}
 }
 

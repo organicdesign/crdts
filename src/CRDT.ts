@@ -39,27 +39,15 @@ export class CRDT implements Omit<ICRDT & SerializableCRDT & SynchronizableCRDT 
 		return this.config.generateTimestamp ?? Date.now;
 	}
 
-	getSynchronizer (protocol: string): CRDTSynchronizer | undefined {
-		return this.synchronizers.find(s => s.protocol === protocol);
+	getSynchronizers (): Iterable<CRDTSynchronizer> {
+		return this.synchronizers;
 	}
 
-	getSynchronizerProtocols (): Iterable<string> {
-		return this.synchronizers.map(s => s.protocol);
+	getSerializers (): Iterable<CRDTSerializer> {
+		return this.serializers;
 	}
 
-	getSerializer (protocol: string): CRDTSerializer | undefined {
-		return this.serializers.find(s => s.protocol === protocol);
-	}
-
-	getSerializeProtocols (): Iterable<string> {
-		return this.serializers.map(s => s.protocol);
-	}
-
-	getBroadcaster (protocol: string): CRDTBroadcaster | undefined {
-		return this.broadcasters.find(s => s.protocol === protocol);
-	}
-
-	getBroadcastProtocols (): Iterable<string> {
-		return this.broadcasters.map(s => s.protocol);
+	getBroadcasters (): Iterable<CRDTBroadcaster> {
+		return this.broadcasters;
 	}
 }

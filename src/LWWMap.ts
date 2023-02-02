@@ -42,8 +42,8 @@ export class LWWMap<T> extends CRDT implements SynchronizableCRDT, BMap<T> {
 
 		// Disable serialization and broadcast.
 		Object.defineProperties(this, {
-			getSerializeProtocols: { value: undefined },
-			getBroadcastProtocols: { value: undefined }
+			getSerializers: { value: undefined },
+			getBroadcasters: { value: undefined }
 		});
 	}
 

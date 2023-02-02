@@ -1,4 +1,4 @@
-import type { CRDTBroadcaster, BroadcastableCRDT } from "../../../crdt-interfaces/src/index.js";
+import { CRDTBroadcaster, BroadcastableCRDT, getBroadcaster } from "../../../crdt-interfaces/src/index.js";
 import * as cborg from "cborg";
 
 export interface PNCounterBroadcasterComponents {
@@ -26,8 +26,13 @@ export class PNCounterBroadcaster implements CRDTBroadcaster {
 
 		this.components = components;
 
-		this.components.getPCounter().getBroadcaster(this.options.subProtocol)?.setBroadcast(data => this.onSubBroadcast(data, "P"));
-		this.components.getNCounter().getBroadcaster(this.options.subProtocol)?.setBroadcast(data => this.onSubBroadcast(data, "N"));
+		getBroadcaster(this.components.getPCounter(), this.options.subProtocol)?.setBroadcast(
+			(data: Uint8Array) => this.onSubBroadcast(data, "P")
+		);
+
+		getBroadcaster(this.components.getNCounter(), this.options.subProtocol)?.setBroadcast(
+			(data: Uint8Array) => this.onSubBroadcast(data, "N")
+		);
 	}
 
 	get protocol () {
@@ -38,11 +43,11 @@ export class PNCounterBroadcaster implements CRDTBroadcaster {
 		const { subData, type } = cborg.decode(data) as { subData: Uint8Array, type: "P" | "N" };
 
 		if (type === "P") {
-			this.components.getPCounter().getBroadcaster(this.options.subProtocol)?.onBroadcast(subData);
+			getBroadcaster(this.components.getPCounter(), this.options.subProtocol)?.onBroadcast(subData);
 		}
 
 		if (type === "N") {
-			this.components.getNCounter().getBroadcaster(this.options.subProtocol)?.onBroadcast(subData);
+			getBroadcaster(this.components.getNCounter(), this.options.subProtocol)?.onBroadcast(subData);
 		}
 	}
 
