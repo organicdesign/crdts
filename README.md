@@ -24,13 +24,11 @@ npm i @organicdesign/crdts
 
 ## Usage
 
-Each CRDT exposes a class, an instantiation method and if applicable, a deserialize method. Most of these CRDTs use a basic protocol encoded in CBOR and have room for improvement in regards to efficiency and specification.
+Each CRDT exposes a class and an instantiation method. Most of these CRDTs use a basic protocol encoded in CBOR by default and have room for improvement in regards to efficiency and specification.
 
 ```javascript
 // 'createCRDT' is a placeholder for a specific CRDT creation method.
 const crdt = createCRDT({ id: new Uint8Array([1]) });
-
-const syncData = crdt.sync(remoteSyncData);
 
 console.log(crdt.toValue());
 ```
