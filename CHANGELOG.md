@@ -1,3 +1,30 @@
+## [0.2.0](https://github.com/organicdesign/crdts/compare/v0.1.4...v0.2.0) (2023-02-03)
+
+### Changed
+* Modified all the CRDTs to `@organicdesign/crdt-interfaces@0.4.0`
+
+### Added
+
+* Synchronizers
+  * GCounter
+  * GSet
+  * LWWMap
+  * LWWRegister
+  * MVRegister
+  * PNCounter
+* Serializers
+  * GCounter
+  * GSet
+  * LWWRegister
+  * MVRegister
+  * PNCounter
+* Broadcasters
+  * GCounter
+  * GSet
+  * LWWRegister
+  * MVRegister
+  * PNCounter
+
 ## [0.1.4](https://github.com/organicdesign/crdts/compare/v0.1.3...v0.1.4) (2023-01-17)
 
 ### Added
