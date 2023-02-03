@@ -47,7 +47,7 @@ export class GCounter extends CRDT implements SynchronizableCRDT, SerializableCR
 			},
 
 			onChange: (method: (peer: Uint8Array, count: number) => void) => {
-				watchers.set(Math.random().toString(), method)
+				watchers.set(Math.random().toString(), method);
 			}
 		}));
 

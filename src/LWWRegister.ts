@@ -55,7 +55,7 @@ export class LWWRegister<T> extends CRDT implements SynchronizableCRDT, Serializ
 			},
 
 			onChange: (method: (value: unknown, physical: number, logical: number, id: Uint8Array) => void) => {
-				watchers.set(Math.random().toString(), method)
+				watchers.set(Math.random().toString(), method);
 			}
 		}));
 

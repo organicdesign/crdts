@@ -1,4 +1,4 @@
-import type { CRDTSynchronizer, SyncContext } from "@organicdesign/crdt-interfaces";
+import type { CRDTSynchronizer, SyncContext } from "../../../crdt-interfaces/src/index.js";
 import * as cborg from "cborg";
 
 export interface LWWRegisterSyncComponents {
@@ -27,7 +27,7 @@ export class LWWRegisterSynchronizer implements CRDTSynchronizer {
 				value: localValue.value,
 				physical: localValue.physical,
 				logical: localValue.logical
-			})
+			});
 		}
 
 		const { value, physical, logical } = cborg.decode(data) as { value: unknown, physical: number, logical: number };

@@ -1,6 +1,6 @@
 import { createLWWRegister } from "../src/LWWRegister.js";
 import createClock from "./logical-clock.js";
-import { createLWWRegisterTest } from "@organicdesign/crdt-tests";
+import { createLWWRegisterTest } from "../../crdt-tests/src/lww-register.js";
 
 const generateTimestamp = createClock();
 

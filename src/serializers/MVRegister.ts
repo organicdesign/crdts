@@ -1,4 +1,4 @@
-import type { CRDTSerializer } from "@organicdesign/crdt-interfaces";
+import type { CRDTSerializer } from "../../../crdt-interfaces/src/index.js";
 import * as cborg from "cborg";
 
 export interface MVRegisterSerializerComponents {

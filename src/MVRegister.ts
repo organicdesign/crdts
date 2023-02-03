@@ -46,7 +46,7 @@ export class MVRegister<T> extends CRDT implements SynchronizableCRDT, Serializa
 			},
 
 			onChange: (method: (values: unknown[], logical: number) => void) => {
-				watchers.set(Math.random().toString(), method)
+				watchers.set(Math.random().toString(), method);
 			}
 		}));
 

@@ -31,7 +31,7 @@ export class GSet<T=unknown> extends CRDT implements SynchronizableCRDT, Seriali
 			add: (item: T) => this.data.add(item),
 
 			onChange: (method: (item: T) => void) => {
-				watchers.set(Math.random().toString(), method)
+				watchers.set(Math.random().toString(), method);
 			}
 		}));
 

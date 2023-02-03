@@ -4,7 +4,7 @@ import type {
 	MMap,
 	CRDT as ICRDT,
 	CreateSynchronizer,
-	CRDTSynchronizer,
+	CRDTSynchronizer
 } from "../../crdt-interfaces/src/index.js";
 import { createCRDTMapSynchronizer } from "../../crdt-map-synchronizer/src/index.js";
 import { CRDT } from "./CRDT.js";

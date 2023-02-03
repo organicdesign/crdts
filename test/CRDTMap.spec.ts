@@ -1,4 +1,4 @@
 import { createCRDTMap } from "../src/CRDTMap.js";
-import { createCRDTMapTest } from "@organicdesign/crdt-tests";
+import { createCRDTMapTest } from "../../crdt-tests/src/crdt-map.js";
 
 createCRDTMapTest(createCRDTMap);

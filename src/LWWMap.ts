@@ -3,7 +3,7 @@ import type {
 	CRDTConfig,
 	BMap,
 	CreateSynchronizer,
-	CRDTSynchronizer,
+	CRDTSynchronizer
 } from "../../crdt-interfaces/src/index.js";
 import { CRDT } from "./CRDT.js";
 import { LWWRegister, createLWWRegister } from "./LWWRegister.js";

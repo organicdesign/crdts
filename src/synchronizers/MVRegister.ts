@@ -1,4 +1,4 @@
-import type { CRDTSynchronizer } from "@organicdesign/crdt-interfaces";
+import type { CRDTSynchronizer } from "../../../crdt-interfaces/src/index.js";
 import * as cborg from "cborg";
 
 export interface MVRegisterSyncComponents {
@@ -21,7 +21,7 @@ export class MVRegisterSynchronizer implements CRDTSynchronizer {
 
 	sync (data?: Uint8Array): Uint8Array | undefined {
 		if (data == null) {
-			return cborg.encode(this.components.get())
+			return cborg.encode(this.components.get());
 		}
 
 		const { values, logical } = cborg.decode(data) as { values: unknown[], logical: number };
