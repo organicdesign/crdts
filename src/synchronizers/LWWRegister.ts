@@ -2,8 +2,8 @@ import type { CRDTSynchronizer, SyncContext } from "@organicdesign/crdt-interfac
 import * as cborg from "cborg";
 
 export interface LWWRegisterSyncComponents {
-	getValue (): { value: unknown, physical: number, logical: number, id: Uint8Array }
-	setValue (value: unknown, physical: number, logical: number, id: Uint8Array): void
+	get (): { value: unknown, physical: number, logical: number, id: Uint8Array }
+	set (value: unknown, physical: number, logical: number, id: Uint8Array): void
 }
 
 export interface LWWRegisterSyncOpts {
@@ -21,7 +21,7 @@ export class LWWRegisterSynchronizer implements CRDTSynchronizer {
 
 	sync (data: Uint8Array | undefined, { id }: SyncContext): Uint8Array | undefined {
 		if (data == null) {
-			const localValue = this.components.getValue();
+			const localValue = this.components.get();
 
 			return cborg.encode({
 				value: localValue.value,
@@ -32,7 +32,7 @@ export class LWWRegisterSynchronizer implements CRDTSynchronizer {
 
 		const { value, physical, logical } = cborg.decode(data) as { value: unknown, physical: number, logical: number };
 
-		this.components.setValue(value, physical, logical, id);
+		this.components.set(value, physical, logical, id);
 	}
 }
 

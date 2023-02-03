@@ -32,14 +32,14 @@ export class LWWRegister<T> extends CRDT implements SynchronizableCRDT, Serializ
 		const watchers = new Map<string, (value: unknown, physical: number, logical: number, id: Uint8Array) => void>();
 
 		super(config, () => ({
-			getValue: () => ({
+			get: () => ({
 				value: this.data,
 				physical: this.physical,
 				logical: this.logical,
 				id: this.lastId
 			}),
 
-			setValue: (value: unknown, physical: number, logical: number, id: Uint8Array) => {
+			set: (value: unknown, physical: number, logical: number, id: Uint8Array) => {
 				if (physical === this.physical && logical === this.logical) {
 					// Timestamps happened at the same time, we need to decide what happened first.
 					if (uint8ArrayToString(id) > uint8ArrayToString(this.lastId)) {

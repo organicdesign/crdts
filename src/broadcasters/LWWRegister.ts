@@ -3,7 +3,7 @@ import * as cborg from "cborg";
 
 export interface LWWRegisterBroadcasterComponents {
 	onChange (watcher: (value: unknown, physical: number, logical: number, id: Uint8Array) => void): void
-	setValue (value: unknown, physical: number, logical: number, id: Uint8Array): void
+	set (value: unknown, physical: number, logical: number, id: Uint8Array): void
 }
 
 export interface LWWRegisterBroadcasterOpts {
@@ -34,7 +34,7 @@ export class LWWRegisterBroadcaster implements CRDTBroadcaster {
 	onBroadcast (data: Uint8Array) {
 		const { value, physical, logical, id } = cborg.decode(data) as { value: unknown, physical: number, logical: number, id: Uint8Array };
 
-		this.components.setValue(value, physical, logical, id);
+		this.components.set(value, physical, logical, id);
 	}
 
 	setBroadcast (broadcast: (data: Uint8Array) => void) {

@@ -2,9 +2,9 @@ import type { CRDTSerializer } from "@organicdesign/crdt-interfaces";
 import * as cborg from "cborg";
 
 export interface GCounterSerializerComponents {
-	getCount (peer: Uint8Array): number
+	get (peer: Uint8Array): number
 	getPeers (): Iterable<Uint8Array>
-	setCount (peer: Uint8Array, count: number): void
+	set (peer: Uint8Array, count: number): void
 }
 
 export interface GCounterSyncOpts {
@@ -26,7 +26,7 @@ export class GCounterSerializer implements CRDTSerializer {
 		const peers = this.components.getPeers();
 
 		for (const id of peers) {
-			data.push({ id, count: this.components.getCount(id) });
+			data.push({ id, count: this.components.get(id) });
 		}
 
 		return cborg.encode(data);
@@ -36,7 +36,7 @@ export class GCounterSerializer implements CRDTSerializer {
 		const decoded = cborg.decode(data) as { id: Uint8Array, count: number }[];
 
 		for (const { id, count } of decoded) {
-			this.components.setCount(id, count);
+			this.components.set(id, count);
 		}
 	}
 }

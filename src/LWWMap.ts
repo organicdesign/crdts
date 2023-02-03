@@ -28,8 +28,9 @@ export class LWWMap<T> extends CRDT implements SynchronizableCRDT, BMap<T> {
 		config.synchronizers = config.synchronizers ?? [createLWWMapSynchronizer()] as Iterable<CreateSynchronizer<CRDTSynchronizer>>;
 
 		super(config, () => ({
-			getKeys: () => this.data.keys(),
-			getValue: (key: string) => {
+			keys: () => this.data.keys(),
+
+			get: (key: string) => {
 				// Create register if it does not exist.
 				if (!this.data.has(key)) {
 					this.assign(key, createLWWRegister({ id: this.id }));

@@ -36,9 +36,9 @@ export class GCounter extends CRDT implements SynchronizableCRDT, SerializableCR
 
 		super(config, () => ({
 			getPeers: () => this.data.keys(),
-			getCount: (peer: Uint8Array) => this.data.get(peer) ?? 0,
+			get: (peer: Uint8Array) => this.data.get(peer) ?? 0,
 
-			setCount: (peer: Uint8Array, count: number) => {
+			set: (peer: Uint8Array, count: number) => {
 				const existing = this.data.get(peer) ?? 0;
 
 				if (existing < count) {

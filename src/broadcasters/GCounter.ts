@@ -3,7 +3,7 @@ import * as cborg from "cborg";
 
 export interface GCounterBroadcasterComponents {
 	onChange (watcher: (peer: Uint8Array, count: number) => void): void
-	setCount (peer: Uint8Array, count: number): void
+	set (peer: Uint8Array, count: number): void
 }
 
 export interface GCounterBroadcasterOpts {
@@ -34,7 +34,7 @@ export class GCounterBroadcaster implements CRDTBroadcaster {
 	onBroadcast (data: Uint8Array) {
 		const { peer, count } = cborg.decode(data) as { peer: Uint8Array, count: number };
 
-		this.components.setCount(peer, count);
+		this.components.set(peer, count);
 	}
 
 	setBroadcast (broadcast: (data: Uint8Array) => void) {

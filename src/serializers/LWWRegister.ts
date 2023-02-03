@@ -2,8 +2,8 @@ import type { CRDTSerializer } from "@organicdesign/crdt-interfaces";
 import * as cborg from "cborg";
 
 export interface LWWRegisterSerializerComponents {
-	getValue (): { value: unknown, physical: number, logical: number, id: Uint8Array }
-	setValue (value: unknown, physical: number, logical: number, id: Uint8Array): void
+	get (): { value: unknown, physical: number, logical: number, id: Uint8Array }
+	set (value: unknown, physical: number, logical: number, id: Uint8Array): void
 }
 
 export interface LWWRegisterSyncOpts {
@@ -20,13 +20,13 @@ export class LWWRegisterSerializer implements CRDTSerializer {
 	}
 
 	serialize (): Uint8Array {
-		return cborg.encode(this.components.getValue());
+		return cborg.encode(this.components.get());
 	}
 
 	deserialize (data: Uint8Array) {
 		const { value, physical, logical, id } = cborg.decode(data) as { value: unknown, physical: number, logical: number, id: Uint8Array };
 
-		this.components.setValue(value, physical, logical, id);
+		this.components.set(value, physical, logical, id);
 	}
 }
 

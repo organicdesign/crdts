@@ -2,9 +2,9 @@ import type { CRDTSynchronizer } from "@organicdesign/crdt-interfaces";
 import * as cborg from "cborg";
 
 export interface GCounterSyncComponents {
-	getCount (peer: Uint8Array): number
+	get (peer: Uint8Array): number
+	set (peer: Uint8Array, count: number): void
 	getPeers (): Iterable<Uint8Array>
-	setCount (peer: Uint8Array, count: number): void
 }
 
 export interface GCounterSyncOpts {
@@ -27,7 +27,7 @@ export class GCounterSynchronizer implements CRDTSynchronizer {
 			for (const peer of this.components.getPeers()) {
 				response.push({
 					id: peer,
-					count: this.components.getCount(peer)
+					count: this.components.get(peer)
 				});
 			}
 
@@ -40,7 +40,7 @@ export class GCounterSynchronizer implements CRDTSynchronizer {
 			const { id, count } = iCount;
 
 			if (count != null) {
-				this.components.setCount(id, count);
+				this.components.set(id, count);
 			}
 		}
 	}

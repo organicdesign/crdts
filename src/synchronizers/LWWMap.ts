@@ -7,8 +7,8 @@ import {
 import * as cborg from "cborg";
 
 export interface LWWMapSyncComponents {
-	getKeys (): Iterable<string>
-	getValue (key: string): SynchronizableCRDT
+	keys (): Iterable<string>
+	get (key: string): SynchronizableCRDT
 }
 
 export interface LWWMapSyncOpts {
@@ -37,8 +37,8 @@ export class LWWMapSynchronizer implements CRDTSynchronizer {
 		if (data == null) {
 			const output: Record<string, Uint8Array> = {};
 
-			for (const key of this.components.getKeys()) {
-				const syncData = getSynchronizer(this.components.getValue(key), this.options.subProtocol)?.sync(undefined, context);
+			for (const key of this.components.keys()) {
+				const syncData = getSynchronizer(this.components.get(key), this.options.subProtocol)?.sync(undefined, context);
 
 				if (syncData != null) {
 					output[key] = syncData;
@@ -52,7 +52,7 @@ export class LWWMapSynchronizer implements CRDTSynchronizer {
 		const syncObj: Record<string, Uint8Array> = {};
 
 		for (const key of Object.keys(syncData)) {
-			const newSyncData = getSynchronizer(this.components.getValue(key), this.options.subProtocol)?.sync(syncData[key], context);
+			const newSyncData = getSynchronizer(this.components.get(key), this.options.subProtocol)?.sync(syncData[key], context);
 
 			if (newSyncData != null) {
 				syncObj[key] = newSyncData;
