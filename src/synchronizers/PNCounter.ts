@@ -2,11 +2,12 @@ import {
 	CRDTSynchronizer,
 	SynchronizableCRDT,
 	SyncContext,
+	CreateSynchronizer,
 	getSynchronizer
 } from "../../../crdt-interfaces/src/index.js";
 import * as cborg from "cborg";
 
-export interface PNCounterSyncComponents {
+export type PNCounterSyncComponents = {
 	getPCounter (): SynchronizableCRDT
 	getNCounter (): SynchronizableCRDT
 }
@@ -70,4 +71,6 @@ export class PNCounterSynchronizer implements CRDTSynchronizer {
 	}
 }
 
-export const createPNCounterSynchronizer = (options?: Partial<PNCounterSyncOpts>) => (components: PNCounterSyncComponents) => new PNCounterSynchronizer(components, options);
+export const createPNCounterSynchronizer =
+	(options?: Partial<PNCounterSyncOpts>): CreateSynchronizer<PNCounterSynchronizer, PNCounterSyncComponents> =>
+		(components: PNCounterSyncComponents) => new PNCounterSynchronizer(components, options);

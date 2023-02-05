@@ -1,7 +1,7 @@
-import type { CRDTSynchronizer } from "../../../crdt-interfaces/src/index.js";
+import type { CRDTSynchronizer, CreateSynchronizer } from "../../../crdt-interfaces/src/index.js";
 import * as cborg from "cborg";
 
-export interface MVRegisterSyncComponents {
+export type MVRegisterSyncComponents = {
 	get (): { values: unknown[], logical: number }
 	set (values: unknown[], logical: number): void
 }
@@ -30,4 +30,6 @@ export class MVRegisterSynchronizer implements CRDTSynchronizer {
 	}
 }
 
-export const createMVRegisterSynchronizer = (options?: Partial<MVRegisterSyncOpts>) => (components: MVRegisterSyncComponents) => new MVRegisterSynchronizer(components, options);
+export const createMVRegisterSynchronizer =
+	(options?: Partial<MVRegisterSyncOpts>): CreateSynchronizer<MVRegisterSynchronizer, MVRegisterSyncComponents> =>
+		(components: MVRegisterSyncComponents) => new MVRegisterSynchronizer(components, options);

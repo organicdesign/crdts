@@ -1,7 +1,11 @@
-import type { CRDTSynchronizer, SyncContext } from "../../../crdt-interfaces/src/index.js";
+import type {
+	CRDTSynchronizer,
+	SyncContext,
+	CreateSynchronizer
+} from "../../../crdt-interfaces/src/index.js";
 import * as cborg from "cborg";
 
-export interface LWWRegisterSyncComponents {
+export type LWWRegisterSyncComponents = {
 	get (): { value: unknown, physical: number, logical: number, id: Uint8Array }
 	set (value: unknown, physical: number, logical: number, id: Uint8Array): void
 }
@@ -36,4 +40,6 @@ export class LWWRegisterSynchronizer implements CRDTSynchronizer {
 	}
 }
 
-export const createLWWRegisterSynchronizer = (options?: Partial<LWWRegisterSyncOpts>) => (components: LWWRegisterSyncComponents) => new LWWRegisterSynchronizer(components, options);
+export const createLWWRegisterSynchronizer =
+	(options?: Partial<LWWRegisterSyncOpts>): CreateSynchronizer<LWWRegisterSynchronizer, LWWRegisterSyncComponents> =>
+		(components: LWWRegisterSyncComponents) => new LWWRegisterSynchronizer(components, options);

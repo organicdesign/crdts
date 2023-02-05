@@ -2,11 +2,12 @@ import {
 	CRDTSynchronizer,
 	SynchronizableCRDT,
 	SyncContext,
+	CreateSynchronizer,
 	getSynchronizer
 } from "../../../crdt-interfaces/src/index.js";
 import * as cborg from "cborg";
 
-export interface LWWMapSyncComponents {
+export type LWWMapSyncComponents = {
 	keys (): Iterable<string>
 	get (key: string): SynchronizableCRDT
 }
@@ -67,4 +68,6 @@ export class LWWMapSynchronizer implements CRDTSynchronizer {
 	}
 }
 
-export const createLWWMapSynchronizer = (options?: Partial<LWWMapSyncOpts>) => (components: LWWMapSyncComponents) => new LWWMapSynchronizer(components, options);
+export const createLWWMapSynchronizer =
+	(options?: Partial<LWWMapSyncOpts>): CreateSynchronizer<LWWMapSynchronizer, LWWMapSyncComponents> =>
+		(components: LWWMapSyncComponents) => new LWWMapSynchronizer(components, options);

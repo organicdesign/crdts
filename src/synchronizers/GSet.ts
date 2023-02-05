@@ -1,7 +1,7 @@
-import type { CRDTSynchronizer } from "../../../crdt-interfaces/src/index.js";
+import type { CRDTSynchronizer, CreateSynchronizer } from "../../../crdt-interfaces/src/index.js";
 import * as cborg from "cborg";
 
-export interface GSetSyncComponents {
+export type GSetSyncComponents = {
 	get (): Iterable<unknown>
 	add (item: unknown): void
 }
@@ -32,4 +32,6 @@ export class GSetSynchronizer implements CRDTSynchronizer {
 	}
 }
 
-export const createGSetSynchronizer = (options?: Partial<GSetSyncOpts>) => (components: GSetSyncComponents) => new GSetSynchronizer(components, options);
+export const createGSetSynchronizer =
+	(options?: Partial<GSetSyncOpts>): CreateSynchronizer<GSetSynchronizer, GSetSyncComponents> =>
+		(components: GSetSyncComponents) => new GSetSynchronizer(components, options);

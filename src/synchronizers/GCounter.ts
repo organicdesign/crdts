@@ -1,7 +1,7 @@
-import type { CRDTSynchronizer } from "../../../crdt-interfaces/src/index.js";
+import type { CRDTSynchronizer, CreateSynchronizer } from "../../../crdt-interfaces/src/index.js";
 import * as cborg from "cborg";
 
-export interface GCounterSyncComponents {
+export type GCounterSyncComponents = {
 	get (peer: Uint8Array): number
 	set (peer: Uint8Array, count: number): void
 	getPeers (): Iterable<Uint8Array>
@@ -46,4 +46,6 @@ export class GCounterSynchronizer implements CRDTSynchronizer {
 	}
 }
 
-export const createGCounterSynchronizer = (options?: Partial<GCounterSyncOpts>) => (components: GCounterSyncComponents) => new GCounterSynchronizer(components, options);
+export const createGCounterSynchronizer =
+	(options?: Partial<GCounterSyncOpts>): CreateSynchronizer<GCounterSynchronizer, GCounterSyncComponents> =>
+		(components: GCounterSyncComponents) => new GCounterSynchronizer(components, options);
