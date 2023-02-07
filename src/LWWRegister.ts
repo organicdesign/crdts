@@ -101,4 +101,4 @@ export class LWWRegister<T> extends CRDT<SyncComps, BroadComps, SerialComps> imp
 	}
 }
 
-export const createLWWRegister = <T>(config: CRDTConfig) => new LWWRegister<T>(config);
+export const createLWWRegister = <T>(config: CRDTConfig<SyncComps, BroadComps, SerialComps>) => new LWWRegister<T>(config);

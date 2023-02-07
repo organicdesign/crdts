@@ -19,7 +19,7 @@ export class GCounter extends CRDT<SyncComps, BroadComps, SerialComps> implement
 	protected readonly dp: number = 10;
 	protected readonly watchers: Map<string, (peer: Uint8Array, count: number) => void>;
 
-	constructor (config: CRDTConfig<SyncComps, BroadComps, SerialComps> , options: Partial<GCounterOpts> = {}) {
+	constructor (config: CRDTConfig<SyncComps, BroadComps, SerialComps>, options: Partial<GCounterOpts> = {}) {
 		config.synchronizers = config.synchronizers ?? [createGCounterSynchronizer()];
 		config.serializers = config.serializers ?? [createGCounterSerializer()];
 		config.broadcasters = config.broadcasters ?? [createGCounterBroadcaster()];
@@ -89,4 +89,6 @@ export class GCounter extends CRDT<SyncComps, BroadComps, SerialComps> implement
 	}
 }
 
-export const createGCounter: CreateCRDT<GCounter> = (config: CRDTConfig, options: Partial<GCounterOpts> = {}) => new GCounter(config, options);
+export const createGCounter: CreateCRDT<GCounter> =
+	(config: CRDTConfig<SyncComps, BroadComps, SerialComps>, options: Partial<GCounterOpts> = {}) =>
+		new GCounter(config, options);

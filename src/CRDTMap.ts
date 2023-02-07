@@ -82,4 +82,4 @@ export class CRDTMap<T extends ICRDT=ICRDT> extends CRDT<SyncComps> implements S
 }
 
 
-export const createCRDTMap = <T extends ICRDT=ICRDT>(config: CRDTConfig) => new CRDTMap<T>(config);
+export const createCRDTMap = <T extends ICRDT=ICRDT>(config: CRDTConfig<SyncComps>) => new CRDTMap<T>(config);

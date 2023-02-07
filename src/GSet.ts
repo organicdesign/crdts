@@ -76,4 +76,4 @@ export class GSet<T=unknown> extends CRDT<SyncComps, BroadComps, SerialComps> im
 	}
 }
 
-export const createGSet = <T>(config: CRDTConfig) => new GSet<T>(config);
+export const createGSet = <T>(config: CRDTConfig<SyncComps, BroadComps, SerialComps>) => new GSet<T>(config);

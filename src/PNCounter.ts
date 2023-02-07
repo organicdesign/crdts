@@ -51,4 +51,5 @@ export class PNCounter extends CRDT<SyncComps, BroadComps, SerialComps> implemen
 	}
 }
 
-export const createPNCounter: CreateCRDT<PNCounter> = (config: CRDTConfig) => new PNCounter(config);
+export const createPNCounter: CreateCRDT<PNCounter> =
+	(config: CRDTConfig<SyncComps, BroadComps, SerialComps>) => new PNCounter(config);

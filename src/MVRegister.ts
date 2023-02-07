@@ -74,4 +74,4 @@ export class MVRegister<T> extends CRDT<SyncComps, BroadComps, SerialComps> impl
 	}
 }
 
-export const createMVRegister = <T>(config: CRDTConfig) => new MVRegister<T>(config);
+export const createMVRegister = <T>(config: CRDTConfig<SyncComps, BroadComps, SerialComps>) => new MVRegister<T>(config);

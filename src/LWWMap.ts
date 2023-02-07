@@ -143,4 +143,4 @@ export class LWWMap<T> extends CRDT<SyncComps> implements SynchronizableCRDT, BM
 	}
 }
 
-export const createLWWMap = <T>(config: CRDTConfig) => new LWWMap<T>(config);
+export const createLWWMap = <T>(config: CRDTConfig<SyncComps>) => new LWWMap<T>(config);
