@@ -2,13 +2,7 @@ import type {
 	SynchronizableCRDT,
 	SerializableCRDT,
 	BroadcastableCRDT,
-	CRDTConfig,
-	CreateSynchronizer,
-	CreateSerializer,
-	CreateBroadcaster,
-	CRDTSynchronizer,
-	CRDTSerializer,
-	CRDTBroadcaster
+	CRDTConfig
 } from "../../crdt-interfaces/src/index.js";
 import { CRDT } from "./CRDT.js";
 import { createGSetSynchronizer } from "./synchronizers/GSet.js";
@@ -20,9 +14,9 @@ export class GSet<T=unknown> extends CRDT implements SynchronizableCRDT, Seriali
 	protected readonly watchers: Map<string, (item: T) => void>;
 
 	constructor (config: CRDTConfig) {
-		config.synchronizers = config.synchronizers ?? [createGSetSynchronizer()] as Iterable<CreateSynchronizer<CRDTSynchronizer>>;
-		config.serializers = config.serializers ?? [createGSetSerializer()] as Iterable<CreateSerializer<CRDTSerializer>>;
-		config.broadcasters = config.broadcasters ?? [createGSetBroadcaster()] as Iterable<CreateBroadcaster<CRDTBroadcaster>>;
+		config.synchronizers = config.synchronizers ?? [createGSetSynchronizer()];
+		config.serializers = config.serializers ?? [createGSetSerializer()];
+		config.broadcasters = config.broadcasters ?? [createGSetBroadcaster()];
 
 		super(config);
 

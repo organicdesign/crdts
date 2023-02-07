@@ -3,13 +3,7 @@ import type {
 	SerializableCRDT,
 	BroadcastableCRDT,
 	CRDTConfig,
-	MVRegister as IMVRegister,
-	CreateSynchronizer,
-	CreateSerializer,
-	CreateBroadcaster,
-	CRDTSynchronizer,
-	CRDTSerializer,
-	CRDTBroadcaster
+	MVRegister as IMVRegister
 } from "../../crdt-interfaces/src/index.js";
 import { CRDT } from "./CRDT.js";
 import { createMVRegisterSynchronizer } from "./synchronizers/MVRegister.js";
@@ -22,9 +16,9 @@ export class MVRegister<T> extends CRDT implements SynchronizableCRDT, Serializa
 	protected readonly watchers: Map<string, (values: unknown[], logical: number) => void>;
 
 	constructor (config: CRDTConfig) {
-		config.synchronizers = config.synchronizers ?? [createMVRegisterSynchronizer()] as Iterable<CreateSynchronizer<CRDTSynchronizer>>;
-		config.serializers = config.serializers ?? [createMVRegisterSerializer()] as Iterable<CreateSerializer<CRDTSerializer>>;
-		config.broadcasters = config.broadcasters ?? [createMVRegisterBroadcaster()] as Iterable<CreateBroadcaster<CRDTBroadcaster>>;
+		config.synchronizers = config.synchronizers ?? [createMVRegisterSynchronizer()];
+		config.serializers = config.serializers ?? [createMVRegisterSerializer()];
+		config.broadcasters = config.broadcasters ?? [createMVRegisterBroadcaster()];
 
 		super(config);
 

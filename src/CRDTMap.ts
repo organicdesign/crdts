@@ -2,9 +2,7 @@ import type {
 	SynchronizableCRDT,
 	CRDTConfig,
 	MMap,
-	CRDT as ICRDT,
-	CreateSynchronizer,
-	CRDTSynchronizer
+	CRDT as ICRDT
 } from "../../crdt-interfaces/src/index.js";
 import { createCRDTMapSynchronizer } from "../../crdt-map-synchronizer/src/index.js";
 import { CRDT } from "./CRDT.js";
@@ -13,7 +11,7 @@ export class CRDTMap<T extends ICRDT=ICRDT> extends CRDT implements Synchronizab
 	protected data = new Map<string, T>();
 
 	constructor (config: CRDTConfig) {
-		config.synchronizers = config.synchronizers ?? [createCRDTMapSynchronizer()] as Iterable<CreateSynchronizer<CRDTSynchronizer>>;
+		config.synchronizers = config.synchronizers ?? [createCRDTMapSynchronizer()];
 
 		super(config);
 

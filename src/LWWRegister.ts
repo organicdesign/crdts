@@ -4,13 +4,7 @@ import type {
 	SerializableCRDT,
 	BroadcastableCRDT,
 	CRDTConfig,
-	BRegister,
-	CreateSynchronizer,
-	CreateSerializer,
-	CreateBroadcaster,
-	CRDTSynchronizer,
-	CRDTSerializer,
-	CRDTBroadcaster
+	BRegister
 } from "../../crdt-interfaces/src/index.js";
 import { CRDT } from "./CRDT.js";
 import { createLWWRegisterSynchronizer } from "./synchronizers/LWWRegister.js";
@@ -25,9 +19,9 @@ export class LWWRegister<T> extends CRDT implements SynchronizableCRDT, Serializ
 	protected readonly watchers: Map<string, (value: unknown, physical: number, logical: number, id: Uint8Array) => void>;
 
 	constructor (config: CRDTConfig) {
-		config.synchronizers = config.synchronizers ?? [createLWWRegisterSynchronizer()] as Iterable<CreateSynchronizer<CRDTSynchronizer>>;
-		config.serializers = config.serializers ?? [createLWWRegisterSerializer()] as Iterable<CreateSerializer<CRDTSerializer>>;
-		config.broadcasters = config.broadcasters ?? [createLWWRegisterBroadcaster()] as Iterable<CreateBroadcaster<CRDTBroadcaster>>;
+		config.synchronizers = config.synchronizers ?? [createLWWRegisterSynchronizer()];
+		config.serializers = config.serializers ?? [createLWWRegisterSerializer()];
+		config.broadcasters = config.broadcasters ?? [createLWWRegisterBroadcaster()];
 
 		super(config);
 

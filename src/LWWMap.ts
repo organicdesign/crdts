@@ -1,9 +1,7 @@
 import type {
 	SynchronizableCRDT,
 	CRDTConfig,
-	BMap,
-	CreateSynchronizer,
-	CRDTSynchronizer
+	BMap
 } from "../../crdt-interfaces/src/index.js";
 import { CRDT } from "./CRDT.js";
 import { LWWRegister, createLWWRegister } from "./LWWRegister.js";
@@ -25,7 +23,7 @@ export class LWWMap<T> extends CRDT implements SynchronizableCRDT, BMap<T> {
 	}
 
 	constructor (config: CRDTConfig) {
-		config.synchronizers = config.synchronizers ?? [createLWWMapSynchronizer()] as Iterable<CreateSynchronizer<CRDTSynchronizer>>;
+		config.synchronizers = config.synchronizers ?? [createLWWMapSynchronizer()];
 
 		super(config);
 

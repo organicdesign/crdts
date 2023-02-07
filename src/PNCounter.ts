@@ -4,13 +4,7 @@ import type {
 	BroadcastableCRDT,
 	CRDTConfig,
 	BCounter,
-	CreateCRDT,
-	CreateSynchronizer,
-	CreateSerializer,
-	CreateBroadcaster,
-	CRDTSynchronizer,
-	CRDTSerializer,
-	CRDTBroadcaster
+	CreateCRDT
 } from "../../crdt-interfaces/src/index.js";
 import { GCounter } from "./GCounter.js";
 import { CRDT } from "./CRDT.js";
@@ -27,9 +21,9 @@ export class PNCounter extends CRDT implements SynchronizableCRDT, SerializableC
 	private nCounter: GCounter;
 
 	constructor (config: CRDTConfig, options: Partial<PNCounterOpts> = {}) {
-		config.synchronizers = config.synchronizers ?? [createPNCounterSynchronizer()] as Iterable<CreateSynchronizer<CRDTSynchronizer>>;
-		config.serializers = config.serializers ?? [createPNCounterSerializer()] as Iterable<CreateSerializer<CRDTSerializer>>;
-		config.broadcasters = config.broadcasters ?? [createPNCounterBroadcaster()] as Iterable<CreateBroadcaster<CRDTBroadcaster>>;
+		config.synchronizers = config.synchronizers ?? [createPNCounterSynchronizer()];
+		config.serializers = config.serializers ?? [createPNCounterSerializer()];
+		config.broadcasters = config.broadcasters ?? [createPNCounterBroadcaster()];
 
 		if (options.dp == null) {
 			options.dp = 10;

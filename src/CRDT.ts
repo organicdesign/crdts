@@ -21,6 +21,7 @@ export class CRDT implements Omit<AllCRDTTypes, "toValue"> {
 		this.config = config;
 	}
 
+	// Setup is separated from the constructor so that subclasses can access 'this' before setting up components.
 	protected setup (components: Record<string, unknown> = {}) {
 		for (const createSynchronizer of this.config.synchronizers ?? []) {
 			this.synchronizers.push(createSynchronizer(components));
@@ -35,12 +36,12 @@ export class CRDT implements Omit<AllCRDTTypes, "toValue"> {
 		}
 	}
 
-	get id () : Uint8Array {
-		return this.config.id;
-	}
-
 	protected get generateTimestamp () {
 		return this.config.generateTimestamp ?? Date.now;
+	}
+
+	get id () : Uint8Array {
+		return this.config.id;
 	}
 
 	getSynchronizers (): Iterable<CRDTSynchronizer> {

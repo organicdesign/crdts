@@ -4,13 +4,7 @@ import type {
 	BroadcastableCRDT,
 	CRDTConfig,
 	MCounter,
-	CreateCRDT,
-	CreateSynchronizer,
-	CreateSerializer,
-	CreateBroadcaster,
-	CRDTSynchronizer,
-	CRDTSerializer,
-	CRDTBroadcaster
+	CreateCRDT
 } from "../../crdt-interfaces/src/index.js";
 import { BufferMap } from "@organicdesign/buffer-collections";
 import { CRDT } from "./CRDT.js";
@@ -28,9 +22,9 @@ export class GCounter extends CRDT implements SynchronizableCRDT, SerializableCR
 	protected readonly watchers: Map<string, (peer: Uint8Array, count: number) => void>;
 
 	constructor (config: CRDTConfig, options: Partial<GCounterOpts> = {}) {
-		config.synchronizers = config.synchronizers ?? [createGCounterSynchronizer()] as Iterable<CreateSynchronizer<CRDTSynchronizer>>;
-		config.serializers = config.serializers ?? [createGCounterSerializer()] as Iterable<CreateSerializer<CRDTSerializer>>;
-		config.broadcasters = config.broadcasters ?? [createGCounterBroadcaster()] as Iterable<CreateBroadcaster<CRDTBroadcaster>>;
+		config.synchronizers = config.synchronizers ?? [createGCounterSynchronizer()];
+		config.serializers = config.serializers ?? [createGCounterSerializer()];
+		config.broadcasters = config.broadcasters ?? [createGCounterBroadcaster()];
 
 		super(config);
 
