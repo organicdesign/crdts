@@ -8,20 +8,23 @@ import type {
 } from "../../crdt-interfaces/src/index.js";
 import { BufferMap } from "@organicdesign/buffer-collections";
 import { CRDT } from "./CRDT.js";
-import { createGCounterSynchronizer } from "./synchronizers/GCounter.js";
-import { createGCounterSerializer } from "./serializers/GCounter.js";
-import { createGCounterBroadcaster } from "./broadcasters/GCounter.js";
+import { createGCounterSynchronizer, GCounterSyncComponents as SyncComps } from "./synchronizers/GCounter.js";
+import { createGCounterSerializer, GCounterSerializerComponents as SerialComps } from "./serializers/GCounter.js";
+import { createGCounterBroadcaster, GCounterBroadcasterComponents as BroadComps } from "./broadcasters/GCounter.js";
 
 export interface GCounterOpts {
 	dp: number
 }
 
-export class GCounter extends CRDT implements SynchronizableCRDT, SerializableCRDT, BroadcastableCRDT, MCounter {
+export class GCounter
+	extends CRDT<SyncComps, BroadComps, SerialComps>
+	implements SynchronizableCRDT, SerializableCRDT, BroadcastableCRDT, MCounter
+{
 	protected readonly data = new BufferMap<number>();
 	protected readonly dp: number = 10;
 	protected readonly watchers: Map<string, (peer: Uint8Array, count: number) => void>;
 
-	constructor (config: CRDTConfig, options: Partial<GCounterOpts> = {}) {
+	constructor (config: CRDTConfig<SyncComps, BroadComps, SerialComps> , options: Partial<GCounterOpts> = {}) {
 		config.synchronizers = config.synchronizers ?? [createGCounterSynchronizer()];
 		config.serializers = config.serializers ?? [createGCounterSerializer()];
 		config.broadcasters = config.broadcasters ?? [createGCounterBroadcaster()];

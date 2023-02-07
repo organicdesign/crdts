@@ -9,20 +9,25 @@ import type {
 	BroadcastableCRDT
 } from "../../crdt-interfaces/src/index.js";
 
-type AllCRDTTypes = ICRDT & SerializableCRDT & SynchronizableCRDT & BroadcastableCRDT;
+type AllCRDTTypes = ICRDT & SerializableCRDT & SynchronizableCRDT & BroadcastableCRDT
+type UMap = Record<string, unknown>
 
-export class CRDT implements Omit<AllCRDTTypes, "toValue"> {
-	protected readonly config: CRDTConfig;
+export class CRDT<
+	SyncComps extends UMap = {},
+	BroadComps extends UMap = {},
+	SerialComps extends UMap = {}
+> implements Omit<AllCRDTTypes, "toValue"> {
+	protected readonly config: CRDTConfig<SyncComps, BroadComps, SerialComps>;
 	protected readonly synchronizers: CRDTSynchronizer[] = [];
 	protected readonly serializers: CRDTSerializer[] = [];
 	protected readonly broadcasters: CRDTBroadcaster[] = [];
 
-	constructor (config: CRDTConfig) {
+	constructor (config: CRDTConfig<SyncComps, BroadComps, SerialComps>) {
 		this.config = config;
 	}
 
 	// Setup is separated from the constructor so that subclasses can access 'this' before setting up components.
-	protected setup (components: Record<string, unknown> = {}) {
+	protected setup (components: SyncComps & BroadComps & SerialComps) {
 		for (const createSynchronizer of this.config.synchronizers ?? []) {
 			this.synchronizers.push(createSynchronizer(components));
 		}

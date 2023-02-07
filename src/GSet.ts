@@ -5,15 +5,18 @@ import type {
 	CRDTConfig
 } from "../../crdt-interfaces/src/index.js";
 import { CRDT } from "./CRDT.js";
-import { createGSetSynchronizer } from "./synchronizers/GSet.js";
-import { createGSetSerializer } from "./serializers/GSet.js";
-import { createGSetBroadcaster } from "./broadcasters/GSet.js";
+import { createGSetSynchronizer, GSetSyncComponents as SyncComps } from "./synchronizers/GSet.js";
+import { createGSetSerializer, GSetSerializerComponents as SerialComps } from "./serializers/GSet.js";
+import { createGSetBroadcaster, GSetBroadcasterComponents as BroadComps } from "./broadcasters/GSet.js";
 
-export class GSet<T=unknown> extends CRDT implements SynchronizableCRDT, SerializableCRDT, BroadcastableCRDT, GSet<T> {
+export class GSet<T=unknown>
+	extends CRDT<SyncComps, BroadComps, SerialComps>
+	implements SynchronizableCRDT, SerializableCRDT, BroadcastableCRDT, GSet<T>
+{
 	private data = new Set<T>();
 	protected readonly watchers: Map<string, (item: T) => void>;
 
-	constructor (config: CRDTConfig) {
+	constructor (config: CRDTConfig<SyncComps, BroadComps, SerialComps>) {
 		config.synchronizers = config.synchronizers ?? [createGSetSynchronizer()];
 		config.serializers = config.serializers ?? [createGSetSerializer()];
 		config.broadcasters = config.broadcasters ?? [createGSetBroadcaster()];

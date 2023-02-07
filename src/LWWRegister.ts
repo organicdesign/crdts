@@ -7,18 +7,21 @@ import type {
 	BRegister
 } from "../../crdt-interfaces/src/index.js";
 import { CRDT } from "./CRDT.js";
-import { createLWWRegisterSynchronizer } from "./synchronizers/LWWRegister.js";
-import { createLWWRegisterSerializer } from "./serializers/LWWRegister.js";
-import { createLWWRegisterBroadcaster } from "./broadcasters/LWWRegister.js";
+import { createLWWRegisterSynchronizer, LWWRegisterSyncComponents as SyncComps } from "./synchronizers/LWWRegister.js";
+import { createLWWRegisterSerializer, LWWRegisterSerializerComponents as SerialComps } from "./serializers/LWWRegister.js";
+import { createLWWRegisterBroadcaster, LWWRegisterBroadcasterComponents as BroadComps } from "./broadcasters/LWWRegister.js";
 
-export class LWWRegister<T> extends CRDT implements SynchronizableCRDT, SerializableCRDT, BroadcastableCRDT, BRegister<T> {
+export class LWWRegister<T>
+	extends CRDT<SyncComps, BroadComps, SerialComps>
+	implements SynchronizableCRDT, SerializableCRDT, BroadcastableCRDT, BRegister<T>
+{
 	private data: T | undefined;
 	private physical: number = 0;
 	private logical: number = 0;
 	private lastId: Uint8Array = new Uint8Array();
 	protected readonly watchers: Map<string, (value: unknown, physical: number, logical: number, id: Uint8Array) => void>;
 
-	constructor (config: CRDTConfig) {
+	constructor (config: CRDTConfig<SyncComps, BroadComps, SerialComps>) {
 		config.synchronizers = config.synchronizers ?? [createLWWRegisterSynchronizer()];
 		config.serializers = config.serializers ?? [createLWWRegisterSerializer()];
 		config.broadcasters = config.broadcasters ?? [createLWWRegisterBroadcaster()];

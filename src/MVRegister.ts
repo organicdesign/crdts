@@ -6,16 +6,19 @@ import type {
 	MVRegister as IMVRegister
 } from "../../crdt-interfaces/src/index.js";
 import { CRDT } from "./CRDT.js";
-import { createMVRegisterSynchronizer } from "./synchronizers/MVRegister.js";
-import { createMVRegisterSerializer } from "./serializers/MVRegister.js";
-import { createMVRegisterBroadcaster } from "./broadcasters/MVRegister.js";
+import { createMVRegisterSynchronizer, MVRegisterSyncComponents as SyncComps } from "./synchronizers/MVRegister.js";
+import { createMVRegisterSerializer, MVRegisterSerializerComponents as SerialComps } from "./serializers/MVRegister.js";
+import { createMVRegisterBroadcaster, MVRegisterBroadcasterComponents as BroadComps } from "./broadcasters/MVRegister.js";
 
-export class MVRegister<T> extends CRDT implements SynchronizableCRDT, SerializableCRDT, BroadcastableCRDT, IMVRegister<T> {
+export class MVRegister<T>
+	extends CRDT<SyncComps, BroadComps, SerialComps>
+	implements SynchronizableCRDT, SerializableCRDT, BroadcastableCRDT, IMVRegister<T>
+{
 	private data = new Set<T>();
 	private logical: number = 0;
 	protected readonly watchers: Map<string, (values: unknown[], logical: number) => void>;
 
-	constructor (config: CRDTConfig) {
+	constructor (config: CRDTConfig<SyncComps, BroadComps, SerialComps>) {
 		config.synchronizers = config.synchronizers ?? [createMVRegisterSynchronizer()];
 		config.serializers = config.serializers ?? [createMVRegisterSerializer()];
 		config.broadcasters = config.broadcasters ?? [createMVRegisterBroadcaster()];

@@ -5,9 +5,12 @@ import type {
 } from "../../crdt-interfaces/src/index.js";
 import { CRDT } from "./CRDT.js";
 import { LWWRegister, createLWWRegister } from "./LWWRegister.js";
-import { createLWWMapSynchronizer } from "./synchronizers/LWWMap.js";
+import { createLWWMapSynchronizer, LWWMapSyncComponents as SyncComps } from "./synchronizers/LWWMap.js";
 
-export class LWWMap<T> extends CRDT implements SynchronizableCRDT, BMap<T> {
+export class LWWMap<T>
+	extends CRDT<SyncComps>
+	implements SynchronizableCRDT, BMap<T>
+{
 	protected data = new Map<string, LWWRegister<T>>();
 
 	[Symbol.iterator](): IterableIterator<[string, T]> {
@@ -22,7 +25,7 @@ export class LWWMap<T> extends CRDT implements SynchronizableCRDT, BMap<T> {
 		return itr();
 	}
 
-	constructor (config: CRDTConfig) {
+	constructor (config: CRDTConfig<SyncComps>) {
 		config.synchronizers = config.synchronizers ?? [createLWWMapSynchronizer()];
 
 		super(config);

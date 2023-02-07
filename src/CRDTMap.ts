@@ -4,13 +4,16 @@ import type {
 	MMap,
 	CRDT as ICRDT
 } from "../../crdt-interfaces/src/index.js";
-import { createCRDTMapSynchronizer } from "../../crdt-map-synchronizer/src/index.js";
+import { createCRDTMapSynchronizer, CRDTMapSyncComponents as SyncComps } from "../../crdt-map-synchronizer/src/index.js";
 import { CRDT } from "./CRDT.js";
 
-export class CRDTMap<T extends ICRDT=ICRDT> extends CRDT implements SynchronizableCRDT, MMap<T> {
+export class CRDTMap<T extends ICRDT=ICRDT>
+	extends CRDT<SyncComps>
+	implements SynchronizableCRDT, MMap<T>
+{
 	protected data = new Map<string, T>();
 
-	constructor (config: CRDTConfig) {
+	constructor (config: CRDTConfig<SyncComps>) {
 		config.synchronizers = config.synchronizers ?? [createCRDTMapSynchronizer()];
 
 		super(config);
