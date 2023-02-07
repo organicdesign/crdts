@@ -1,7 +1,7 @@
-import type { CRDTBroadcaster } from "../../../crdt-interfaces/src/index.js";
+import type { CRDTBroadcaster, CreateBroadcaster } from "../../../crdt-interfaces/src/index.js";
 import * as cborg from "cborg";
 
-export interface GSetBroadcasterComponents {
+export type GSetBroadcasterComponents = {
 	onChange (watcher: (item: unknown) => void): void
 	add (item: unknown): void
 }
@@ -50,4 +50,6 @@ export class GSetBroadcaster implements CRDTBroadcaster {
 	}
 }
 
-export const createGSetBroadcaster = (options?: Partial<GSetBroadcasterOpts>) => (components: GSetBroadcasterComponents) => new GSetBroadcaster(components, options);
+export const createGSetBroadcaster =
+	(options?: Partial<GSetBroadcasterOpts>): CreateBroadcaster<GSetBroadcaster, GSetBroadcasterComponents> =>
+		(components: GSetBroadcasterComponents) => new GSetBroadcaster(components, options);

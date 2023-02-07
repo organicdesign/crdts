@@ -1,7 +1,7 @@
-import type { CRDTBroadcaster } from "../../../crdt-interfaces/src/index.js";
+import type { CRDTBroadcaster, CreateBroadcaster } from "../../../crdt-interfaces/src/index.js";
 import * as cborg from "cborg";
 
-export interface LWWRegisterBroadcasterComponents {
+export type LWWRegisterBroadcasterComponents = {
 	onChange (watcher: (value: unknown, physical: number, logical: number, id: Uint8Array) => void): void
 	set (value: unknown, physical: number, logical: number, id: Uint8Array): void
 }
@@ -50,4 +50,6 @@ export class LWWRegisterBroadcaster implements CRDTBroadcaster {
 	}
 }
 
-export const createLWWRegisterBroadcaster = (options?: Partial<LWWRegisterBroadcasterOpts>) => (components: LWWRegisterBroadcasterComponents) => new LWWRegisterBroadcaster(components, options);
+export const createLWWRegisterBroadcaster =
+	(options?: Partial<LWWRegisterBroadcasterOpts>): CreateBroadcaster<LWWRegisterBroadcaster, LWWRegisterBroadcasterComponents> =>
+		(components: LWWRegisterBroadcasterComponents) => new LWWRegisterBroadcaster(components, options);

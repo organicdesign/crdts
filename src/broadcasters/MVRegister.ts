@@ -1,7 +1,7 @@
-import type { CRDTBroadcaster } from "../../../crdt-interfaces/src/index.js";
+import type { CRDTBroadcaster, CreateBroadcaster } from "../../../crdt-interfaces/src/index.js";
 import * as cborg from "cborg";
 
-export interface MVRegisterBroadcasterComponents {
+export type MVRegisterBroadcasterComponents = {
 	onChange (watcher: (values: unknown[], logical: number) => void): void
 	set (values: unknown[], logical: number): void
 }
@@ -50,4 +50,6 @@ export class MVRegisterBroadcaster implements CRDTBroadcaster {
 	}
 }
 
-export const createMVRegisterBroadcaster = (options?: Partial<MVRegisterBroadcasterOpts>) => (components: MVRegisterBroadcasterComponents) => new MVRegisterBroadcaster(components, options);
+export const createMVRegisterBroadcaster =
+	(options?: Partial<MVRegisterBroadcasterOpts>): CreateBroadcaster<MVRegisterBroadcaster, MVRegisterBroadcasterComponents> =>
+		(components: MVRegisterBroadcasterComponents) => new MVRegisterBroadcaster(components, options);

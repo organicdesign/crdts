@@ -1,7 +1,7 @@
-import type { CRDTBroadcaster } from "../../../crdt-interfaces/src/index.js";
+import type { CRDTBroadcaster, CreateBroadcaster } from "../../../crdt-interfaces/src/index.js";
 import * as cborg from "cborg";
 
-export interface GCounterBroadcasterComponents {
+export type GCounterBroadcasterComponents = {
 	onChange (watcher: (peer: Uint8Array, count: number) => void): void
 	set (peer: Uint8Array, count: number): void
 }
@@ -50,4 +50,6 @@ export class GCounterBroadcaster implements CRDTBroadcaster {
 	}
 }
 
-export const createGCounterBroadcaster = (options?: Partial<GCounterBroadcasterOpts>) => (components: GCounterBroadcasterComponents) => new GCounterBroadcaster(components, options);
+export const createGCounterBroadcaster =
+	(options?: Partial<GCounterBroadcasterOpts>): CreateBroadcaster<GCounterBroadcaster, GCounterBroadcasterComponents> =>
+		(components: GCounterBroadcasterComponents) => new GCounterBroadcaster(components, options);

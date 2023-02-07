@@ -1,7 +1,12 @@
-import { CRDTBroadcaster, BroadcastableCRDT, getBroadcaster } from "../../../crdt-interfaces/src/index.js";
+import {
+	CRDTBroadcaster,
+	BroadcastableCRDT,
+	CreateBroadcaster,
+	getBroadcaster
+} from "../../../crdt-interfaces/src/index.js";
 import * as cborg from "cborg";
 
-export interface PNCounterBroadcasterComponents {
+export type PNCounterBroadcasterComponents = {
 	getPCounter (): BroadcastableCRDT
 	getNCounter (): BroadcastableCRDT
 }
@@ -62,4 +67,6 @@ export class PNCounterBroadcaster implements CRDTBroadcaster {
 	}
 }
 
-export const createPNCounterBroadcaster = (options?: Partial<PNCounterBroadcasterOpts>) => (components: PNCounterBroadcasterComponents) => new PNCounterBroadcaster(components, options);
+export const createPNCounterBroadcaster =
+	(options?: Partial<PNCounterBroadcasterOpts>): CreateBroadcaster<PNCounterBroadcaster, PNCounterBroadcasterComponents> =>
+		(components: PNCounterBroadcasterComponents) => new PNCounterBroadcaster(components, options);
