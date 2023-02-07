@@ -72,5 +72,5 @@ export class PNCounterSynchronizer implements CRDTSynchronizer {
 }
 
 export const createPNCounterSynchronizer =
-	(options?: Partial<PNCounterSyncOpts>): CreateSynchronizer<PNCounterSynchronizer, PNCounterSyncComponents> =>
+	(options?: Partial<PNCounterSyncOpts>): CreateSynchronizer<PNCounterSyncComponents, PNCounterSynchronizer> =>
 		(components: PNCounterSyncComponents) => new PNCounterSynchronizer(components, options);

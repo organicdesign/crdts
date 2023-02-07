@@ -31,5 +31,5 @@ export class MVRegisterSynchronizer implements CRDTSynchronizer {
 }
 
 export const createMVRegisterSynchronizer =
-	(options?: Partial<MVRegisterSyncOpts>): CreateSynchronizer<MVRegisterSynchronizer, MVRegisterSyncComponents> =>
+	(options?: Partial<MVRegisterSyncOpts>): CreateSynchronizer<MVRegisterSyncComponents, MVRegisterSynchronizer> =>
 		(components: MVRegisterSyncComponents) => new MVRegisterSynchronizer(components, options);

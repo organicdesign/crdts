@@ -68,5 +68,5 @@ export class PNCounterBroadcaster implements CRDTBroadcaster {
 }
 
 export const createPNCounterBroadcaster =
-	(options?: Partial<PNCounterBroadcasterOpts>): CreateBroadcaster<PNCounterBroadcaster, PNCounterBroadcasterComponents> =>
+	(options?: Partial<PNCounterBroadcasterOpts>): CreateBroadcaster<PNCounterBroadcasterComponents, PNCounterBroadcaster> =>
 		(components: PNCounterBroadcasterComponents) => new PNCounterBroadcaster(components, options);

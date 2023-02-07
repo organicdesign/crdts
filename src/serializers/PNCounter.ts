@@ -49,5 +49,5 @@ export class PNCounterSerializer implements CRDTSerializer {
 }
 
 export const createPNCounterSerializer =
-	(options?: Partial<PNCounterSerializerOpts>): CreateSerializer<PNCounterSerializer, PNCounterSerializerComponents> =>
+	(options?: Partial<PNCounterSerializerOpts>): CreateSerializer<PNCounterSerializerComponents, PNCounterSerializer> =>
 		(components: PNCounterSerializerComponents) => new PNCounterSerializer(components, options);

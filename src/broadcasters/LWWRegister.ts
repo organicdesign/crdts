@@ -51,5 +51,5 @@ export class LWWRegisterBroadcaster implements CRDTBroadcaster {
 }
 
 export const createLWWRegisterBroadcaster =
-	(options?: Partial<LWWRegisterBroadcasterOpts>): CreateBroadcaster<LWWRegisterBroadcaster, LWWRegisterBroadcasterComponents> =>
+	(options?: Partial<LWWRegisterBroadcasterOpts>): CreateBroadcaster<LWWRegisterBroadcasterComponents, LWWRegisterBroadcaster> =>
 		(components: LWWRegisterBroadcasterComponents) => new LWWRegisterBroadcaster(components, options);

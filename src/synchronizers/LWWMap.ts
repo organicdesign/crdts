@@ -9,7 +9,7 @@ import * as cborg from "cborg";
 
 export type LWWMapSyncComponents = {
 	keys (): Iterable<string>
-	get (key: string): SynchronizableCRDT
+	get (key: string): SynchronizableCRDT | undefined
 }
 
 export interface LWWMapSyncOpts {
@@ -39,7 +39,13 @@ export class LWWMapSynchronizer implements CRDTSynchronizer {
 			const output: Record<string, Uint8Array> = {};
 
 			for (const key of this.components.keys()) {
-				const syncData = getSynchronizer(this.components.get(key), this.options.subProtocol)?.sync(undefined, context);
+				const value = this.components.get(key);
+
+				if (value == null) {
+					continue;
+				}
+
+				const syncData = getSynchronizer(value, this.options.subProtocol)?.sync(undefined, context);
 
 				if (syncData != null) {
 					output[key] = syncData;
@@ -53,7 +59,13 @@ export class LWWMapSynchronizer implements CRDTSynchronizer {
 		const syncObj: Record<string, Uint8Array> = {};
 
 		for (const key of Object.keys(syncData)) {
-			const newSyncData = getSynchronizer(this.components.get(key), this.options.subProtocol)?.sync(syncData[key], context);
+			const value = this.components.get(key);
+
+			if (value == null) {
+				continue;
+			}
+
+			const newSyncData = getSynchronizer(value, this.options.subProtocol)?.sync(syncData[key], context);
 
 			if (newSyncData != null) {
 				syncObj[key] = newSyncData;
@@ -69,5 +81,5 @@ export class LWWMapSynchronizer implements CRDTSynchronizer {
 }
 
 export const createLWWMapSynchronizer =
-	(options?: Partial<LWWMapSyncOpts>): CreateSynchronizer<LWWMapSynchronizer, LWWMapSyncComponents> =>
+	(options?: Partial<LWWMapSyncOpts>): CreateSynchronizer<LWWMapSyncComponents, LWWMapSynchronizer> =>
 		(components: LWWMapSyncComponents) => new LWWMapSynchronizer(components, options);

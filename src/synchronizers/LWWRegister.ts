@@ -41,5 +41,5 @@ export class LWWRegisterSynchronizer implements CRDTSynchronizer {
 }
 
 export const createLWWRegisterSynchronizer =
-	(options?: Partial<LWWRegisterSyncOpts>): CreateSynchronizer<LWWRegisterSynchronizer, LWWRegisterSyncComponents> =>
+	(options?: Partial<LWWRegisterSyncOpts>): CreateSynchronizer<LWWRegisterSyncComponents, LWWRegisterSynchronizer> =>
 		(components: LWWRegisterSyncComponents) => new LWWRegisterSynchronizer(components, options);

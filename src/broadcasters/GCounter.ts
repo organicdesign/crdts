@@ -51,5 +51,5 @@ export class GCounterBroadcaster implements CRDTBroadcaster {
 }
 
 export const createGCounterBroadcaster =
-	(options?: Partial<GCounterBroadcasterOpts>): CreateBroadcaster<GCounterBroadcaster, GCounterBroadcasterComponents> =>
+	(options?: Partial<GCounterBroadcasterOpts>): CreateBroadcaster<GCounterBroadcasterComponents, GCounterBroadcaster> =>
 		(components: GCounterBroadcasterComponents) => new GCounterBroadcaster(components, options);

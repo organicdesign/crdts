@@ -42,5 +42,5 @@ export class GCounterSerializer implements CRDTSerializer {
 }
 
 export const createGCounterSerializer =
-	(options?: Partial<GCounterSerializerOpts>): CreateSerializer<GCounterSerializer, GCounterSerializerComponents> =>
+	(options?: Partial<GCounterSerializerOpts>): CreateSerializer<GCounterSerializerComponents, GCounterSerializer> =>
 		(components: GCounterSerializerComponents) => new GCounterSerializer(components, options);

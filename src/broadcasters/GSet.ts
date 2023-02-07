@@ -51,5 +51,5 @@ export class GSetBroadcaster implements CRDTBroadcaster {
 }
 
 export const createGSetBroadcaster =
-	(options?: Partial<GSetBroadcasterOpts>): CreateBroadcaster<GSetBroadcaster, GSetBroadcasterComponents> =>
+	(options?: Partial<GSetBroadcasterOpts>): CreateBroadcaster<GSetBroadcasterComponents, GSetBroadcaster> =>
 		(components: GSetBroadcasterComponents) => new GSetBroadcaster(components, options);

@@ -51,5 +51,5 @@ export class MVRegisterBroadcaster implements CRDTBroadcaster {
 }
 
 export const createMVRegisterBroadcaster =
-	(options?: Partial<MVRegisterBroadcasterOpts>): CreateBroadcaster<MVRegisterBroadcaster, MVRegisterBroadcasterComponents> =>
+	(options?: Partial<MVRegisterBroadcasterOpts>): CreateBroadcaster<MVRegisterBroadcasterComponents, MVRegisterBroadcaster> =>
 		(components: MVRegisterBroadcasterComponents) => new MVRegisterBroadcaster(components, options);

@@ -33,5 +33,5 @@ export class GSetSynchronizer implements CRDTSynchronizer {
 }
 
 export const createGSetSynchronizer =
-	(options?: Partial<GSetSyncOpts>): CreateSynchronizer<GSetSynchronizer, GSetSyncComponents> =>
+	(options?: Partial<GSetSyncOpts>): CreateSynchronizer<GSetSyncComponents, GSetSynchronizer> =>
 		(components: GSetSyncComponents) => new GSetSynchronizer(components, options);

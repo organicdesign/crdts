@@ -33,5 +33,5 @@ export class GSetSerializer implements CRDTSerializer {
 }
 
 export const createGSetSerializer =
-	(options?: Partial<GSetSerializerOpts>): CreateSerializer<GSetSerializer, GSetSerializerComponents> =>
+	(options?: Partial<GSetSerializerOpts>): CreateSerializer<GSetSerializerComponents, GSetSerializer> =>
 		(components: GSetSerializerComponents) => new GSetSerializer(components, options);

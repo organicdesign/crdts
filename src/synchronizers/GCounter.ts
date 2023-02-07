@@ -47,5 +47,5 @@ export class GCounterSynchronizer implements CRDTSynchronizer {
 }
 
 export const createGCounterSynchronizer =
-	(options?: Partial<GCounterSyncOpts>): CreateSynchronizer<GCounterSynchronizer, GCounterSyncComponents> =>
+	(options?: Partial<GCounterSyncOpts>): CreateSynchronizer<GCounterSyncComponents, GCounterSynchronizer> =>
 		(components: GCounterSyncComponents) => new GCounterSynchronizer(components, options);

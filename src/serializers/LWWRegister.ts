@@ -36,5 +36,5 @@ export class LWWRegisterSerializer implements CRDTSerializer {
 }
 
 export const createLWWRegisterSerializer =
-	(options?: Partial<LWWRegisterSerializerOpts>): CreateSerializer<LWWRegisterSerializer, LWWRegisterSerializerComponents> =>
+	(options?: Partial<LWWRegisterSerializerOpts>): CreateSerializer<LWWRegisterSerializerComponents, LWWRegisterSerializer> =>
 		(components: LWWRegisterSerializerComponents) => new LWWRegisterSerializer(components, options);
