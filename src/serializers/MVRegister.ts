@@ -30,6 +30,6 @@ export class MVRegisterSerializer implements CRDTSerializer {
 	}
 }
 
-export const createLWWRegisterSerializer =
+export const createMVRegisterSerializer =
 	(options?: Partial<MVRegisterSerializerOpts>): CreateSerializer<MVRegisterSerializer, MVRegisterSerializerComponents> =>
 		(components: MVRegisterSerializerComponents) => new MVRegisterSerializer(components, options);
