@@ -1,7 +1,5 @@
 import type {
-	SynchronizableCRDT,
-	SerializableCRDT,
-	BroadcastableCRDT,
+	CompleteCRDT,
 	CRDTConfig,
 	BCounter,
 	CreateCRDT
@@ -16,10 +14,7 @@ export interface PNCounterOpts {
 	dp: number
 }
 
-export class PNCounter
-	extends CRDT<SyncComps, BroadComps, SerialComps>
-	implements SynchronizableCRDT, SerializableCRDT, BroadcastableCRDT, BCounter
-{
+export class PNCounter extends CRDT<SyncComps, BroadComps, SerialComps> implements CompleteCRDT, BCounter {
 	private pCounter: GCounter;
 	private nCounter: GCounter;
 

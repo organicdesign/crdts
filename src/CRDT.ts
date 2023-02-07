@@ -3,20 +3,16 @@ import type {
 	CRDTSynchronizer,
 	CRDTSerializer,
 	CRDTBroadcaster,
-	CRDT as ICRDT,
-	SerializableCRDT,
-	SynchronizableCRDT,
-	BroadcastableCRDT
+	CompleteCRDT
 } from "../../crdt-interfaces/src/index.js";
 
-type AllCRDTTypes = ICRDT & SerializableCRDT & SynchronizableCRDT & BroadcastableCRDT
 type UMap = Record<string, unknown>
 
 export class CRDT<
 	SyncComps extends UMap = {},
 	BroadComps extends UMap = {},
 	SerialComps extends UMap = {}
-> implements Omit<AllCRDTTypes, "toValue"> {
+> implements Omit<CompleteCRDT, "toValue"> {
 	protected readonly config: CRDTConfig<SyncComps, BroadComps, SerialComps>;
 	protected readonly synchronizers: CRDTSynchronizer[] = [];
 	protected readonly serializers: CRDTSerializer[] = [];

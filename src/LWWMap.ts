@@ -7,10 +7,7 @@ import { CRDT } from "./CRDT.js";
 import { LWWRegister, createLWWRegister } from "./LWWRegister.js";
 import { createLWWMapSynchronizer, LWWMapSyncComponents as SyncComps } from "./synchronizers/LWWMap.js";
 
-export class LWWMap<T>
-	extends CRDT<SyncComps>
-	implements SynchronizableCRDT, BMap<T>
-{
+export class LWWMap<T> extends CRDT<SyncComps> implements SynchronizableCRDT, BMap<T> {
 	protected data = new Map<string, LWWRegister<T>>();
 
 	[Symbol.iterator](): IterableIterator<[string, T]> {

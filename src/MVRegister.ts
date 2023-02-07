@@ -1,7 +1,5 @@
 import type {
-	SynchronizableCRDT,
-	SerializableCRDT,
-	BroadcastableCRDT,
+	CompleteCRDT,
 	CRDTConfig,
 	MVRegister as IMVRegister
 } from "../../crdt-interfaces/src/index.js";
@@ -10,10 +8,7 @@ import { createMVRegisterSynchronizer, MVRegisterSyncComponents as SyncComps } f
 import { createMVRegisterSerializer, MVRegisterSerializerComponents as SerialComps } from "./serializers/MVRegister.js";
 import { createMVRegisterBroadcaster, MVRegisterBroadcasterComponents as BroadComps } from "./broadcasters/MVRegister.js";
 
-export class MVRegister<T>
-	extends CRDT<SyncComps, BroadComps, SerialComps>
-	implements SynchronizableCRDT, SerializableCRDT, BroadcastableCRDT, IMVRegister<T>
-{
+export class MVRegister<T> extends CRDT<SyncComps, BroadComps, SerialComps> implements CompleteCRDT, IMVRegister<T> {
 	private data = new Set<T>();
 	private logical: number = 0;
 	protected readonly watchers: Map<string, (values: unknown[], logical: number) => void>;

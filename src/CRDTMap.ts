@@ -7,10 +7,7 @@ import type {
 import { createCRDTMapSynchronizer, CRDTMapSyncComponents as SyncComps } from "../../crdt-map-synchronizer/src/index.js";
 import { CRDT } from "./CRDT.js";
 
-export class CRDTMap<T extends ICRDT=ICRDT>
-	extends CRDT<SyncComps>
-	implements SynchronizableCRDT, MMap<T>
-{
+export class CRDTMap<T extends ICRDT=ICRDT> extends CRDT<SyncComps> implements SynchronizableCRDT, MMap<T> {
 	protected data = new Map<string, T>();
 
 	constructor (config: CRDTConfig<SyncComps>) {

@@ -1,7 +1,5 @@
 import type {
-	SynchronizableCRDT,
-	SerializableCRDT,
-	BroadcastableCRDT,
+	CompleteCRDT,
 	CRDTConfig,
 	MCounter,
 	CreateCRDT
@@ -16,10 +14,7 @@ export interface GCounterOpts {
 	dp: number
 }
 
-export class GCounter
-	extends CRDT<SyncComps, BroadComps, SerialComps>
-	implements SynchronizableCRDT, SerializableCRDT, BroadcastableCRDT, MCounter
-{
+export class GCounter extends CRDT<SyncComps, BroadComps, SerialComps> implements CompleteCRDT, MCounter {
 	protected readonly data = new BufferMap<number>();
 	protected readonly dp: number = 10;
 	protected readonly watchers: Map<string, (peer: Uint8Array, count: number) => void>;

@@ -1,8 +1,6 @@
 import { toString as uint8ArrayToString } from "uint8arrays/to-string";
 import type {
-	SynchronizableCRDT,
-	SerializableCRDT,
-	BroadcastableCRDT,
+	CompleteCRDT,
 	CRDTConfig,
 	BRegister
 } from "../../crdt-interfaces/src/index.js";
@@ -11,10 +9,7 @@ import { createLWWRegisterSynchronizer, LWWRegisterSyncComponents as SyncComps }
 import { createLWWRegisterSerializer, LWWRegisterSerializerComponents as SerialComps } from "./serializers/LWWRegister.js";
 import { createLWWRegisterBroadcaster, LWWRegisterBroadcasterComponents as BroadComps } from "./broadcasters/LWWRegister.js";
 
-export class LWWRegister<T>
-	extends CRDT<SyncComps, BroadComps, SerialComps>
-	implements SynchronizableCRDT, SerializableCRDT, BroadcastableCRDT, BRegister<T>
-{
+export class LWWRegister<T> extends CRDT<SyncComps, BroadComps, SerialComps> implements CompleteCRDT, BRegister<T> {
 	private data: T | undefined;
 	private physical: number = 0;
 	private logical: number = 0;
