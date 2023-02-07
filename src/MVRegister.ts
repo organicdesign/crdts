@@ -28,7 +28,7 @@ export class MVRegister<T> extends CRDT implements SynchronizableCRDT, Serializa
 
 		const watchers = new Map<string, (values: unknown[], logical: number) => void>();
 
-		super(config, () => ({
+		super(config, {
 			get: () => ({
 				values: [...this.data],
 				logical: this.logical
@@ -48,7 +48,7 @@ export class MVRegister<T> extends CRDT implements SynchronizableCRDT, Serializa
 			onChange: (method: (values: unknown[], logical: number) => void) => {
 				watchers.set(Math.random().toString(), method);
 			}
-		}));
+		});
 
 		this.watchers = watchers;
 	}

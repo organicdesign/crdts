@@ -9,25 +9,27 @@ import type {
 	BroadcastableCRDT
 } from "../../crdt-interfaces/src/index.js";
 
-export class CRDT implements Omit<ICRDT & SerializableCRDT & SynchronizableCRDT & BroadcastableCRDT, "toValue"> {
+type AllCRDTTypes = ICRDT & SerializableCRDT & SynchronizableCRDT & BroadcastableCRDT;
+
+export class CRDT implements Omit<AllCRDTTypes, "toValue"> {
 	protected readonly config: CRDTConfig;
 	protected readonly synchronizers: CRDTSynchronizer[] = [];
 	protected readonly serializers: CRDTSerializer[] = [];
 	protected readonly broadcasters: CRDTBroadcaster[] = [];
 
-	constructor (config: CRDTConfig, getComponents: () => {} = () => ({})) {
+	constructor (config: CRDTConfig, components: {} = {}) {
 		this.config = config;
 
 		for (const createSynchronizer of config.synchronizers ?? []) {
-			this.synchronizers.push(createSynchronizer(getComponents()));
+			this.synchronizers.push(createSynchronizer(components));
 		}
 
 		for (const createSerializer of config.serializers ?? []) {
-			this.serializers.push(createSerializer(getComponents()));
+			this.serializers.push(createSerializer(components));
 		}
 
 		for (const createBroadcaster of config.broadcasters ?? []) {
-			this.broadcasters.push(createBroadcaster(getComponents()));
+			this.broadcasters.push(createBroadcaster(components));
 		}
 	}
 

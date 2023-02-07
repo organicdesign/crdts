@@ -26,14 +26,14 @@ export class GSet<T=unknown> extends CRDT implements SynchronizableCRDT, Seriali
 
 		const watchers = new Map<string, (item: T) => void>();
 
-		super(config, () => ({
+		super(config, {
 			get: () => this.data,
 			add: (item: T) => this.data.add(item),
 
 			onChange: (method: (item: T) => void) => {
 				watchers.set(Math.random().toString(), method);
 			}
-		}));
+		});
 
 		this.watchers = watchers;
 	}

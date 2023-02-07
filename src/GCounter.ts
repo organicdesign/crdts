@@ -34,7 +34,7 @@ export class GCounter extends CRDT implements SynchronizableCRDT, SerializableCR
 
 		const watchers = new Map<string, (peer: Uint8Array, count: number) => void>();
 
-		super(config, () => ({
+		super(config, {
 			getPeers: () => this.data.keys(),
 			get: (peer: Uint8Array) => this.data.get(peer) ?? 0,
 
@@ -49,7 +49,7 @@ export class GCounter extends CRDT implements SynchronizableCRDT, SerializableCR
 			onChange: (method: (peer: Uint8Array, count: number) => void) => {
 				watchers.set(Math.random().toString(), method);
 			}
-		}));
+		});
 
 		if (options?.dp) {
 			this.dp = options.dp;

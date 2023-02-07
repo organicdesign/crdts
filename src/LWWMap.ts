@@ -27,7 +27,7 @@ export class LWWMap<T> extends CRDT implements SynchronizableCRDT, BMap<T> {
 	constructor (config: CRDTConfig) {
 		config.synchronizers = config.synchronizers ?? [createLWWMapSynchronizer()] as Iterable<CreateSynchronizer<CRDTSynchronizer>>;
 
-		super(config, () => ({
+		super(config, {
 			keys: () => this.data.keys(),
 
 			get: (key: string) => {
@@ -39,7 +39,7 @@ export class LWWMap<T> extends CRDT implements SynchronizableCRDT, BMap<T> {
 
 				return this.data.get(key);
 			}
-		}));
+		});
 
 		// Disable serialization and broadcast.
 		Object.defineProperties(this, {

@@ -38,10 +38,10 @@ export class PNCounter extends CRDT implements SynchronizableCRDT, SerializableC
 		const pCounter = new GCounter({ id: config.id }, options);
 		const nCounter = new GCounter({ id: config.id }, options);
 
-		super(config, () => ({
+		super(config, {
 			getPCounter: () => pCounter,
 			getNCounter: () => nCounter
-		}));
+		});
 
 		this.pCounter = pCounter;
 		this.nCounter = nCounter;
