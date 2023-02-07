@@ -24,18 +24,18 @@ export class GSet<T=unknown> extends CRDT implements SynchronizableCRDT, Seriali
 		config.serializers = config.serializers ?? [createGSetSerializer()] as Iterable<CreateSerializer<CRDTSerializer>>;
 		config.broadcasters = config.broadcasters ?? [createGSetBroadcaster()] as Iterable<CreateBroadcaster<CRDTBroadcaster>>;
 
-		const watchers = new Map<string, (item: T) => void>();
+		super(config);
 
-		super(config, {
+		this.watchers = new Map<string, (item: T) => void>();
+
+		this.setup({
 			get: () => this.data,
 			add: (item: T) => this.data.add(item),
 
 			onChange: (method: (item: T) => void) => {
-				watchers.set(Math.random().toString(), method);
+				this.watchers.set(Math.random().toString(), method);
 			}
 		});
-
-		this.watchers = watchers;
 	}
 
 	protected change (item: T) {

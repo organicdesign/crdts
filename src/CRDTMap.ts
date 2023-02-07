@@ -15,7 +15,9 @@ export class CRDTMap<T extends ICRDT=ICRDT> extends CRDT implements Synchronizab
 	constructor (config: CRDTConfig) {
 		config.synchronizers = config.synchronizers ?? [createCRDTMapSynchronizer()] as Iterable<CreateSynchronizer<CRDTSynchronizer>>;
 
-		super(config, {
+		super(config);
+
+		this.setup({
 			keys: () => this.data.keys(),
 			get: (key: string) => this.data.get(key),
 			getId: () => this.id

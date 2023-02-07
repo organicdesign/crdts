@@ -29,9 +29,11 @@ export class LWWRegister<T> extends CRDT implements SynchronizableCRDT, Serializ
 		config.serializers = config.serializers ?? [createLWWRegisterSerializer()] as Iterable<CreateSerializer<CRDTSerializer>>;
 		config.broadcasters = config.broadcasters ?? [createLWWRegisterBroadcaster()] as Iterable<CreateBroadcaster<CRDTBroadcaster>>;
 
-		const watchers = new Map<string, (value: unknown, physical: number, logical: number, id: Uint8Array) => void>();
+		super(config);
 
-		super(config, {
+		this.watchers = new Map<string, (value: unknown, physical: number, logical: number, id: Uint8Array) => void>();
+
+		this.setup({
 			get: () => ({
 				value: this.data,
 				physical: this.physical,
@@ -55,11 +57,9 @@ export class LWWRegister<T> extends CRDT implements SynchronizableCRDT, Serializ
 			},
 
 			onChange: (method: (value: unknown, physical: number, logical: number, id: Uint8Array) => void) => {
-				watchers.set(Math.random().toString(), method);
+				this.watchers.set(Math.random().toString(), method);
 			}
 		});
-
-		this.watchers = watchers;
 	}
 
 	protected change (value: unknown, physical: number, logical: number, id: Uint8Array) {

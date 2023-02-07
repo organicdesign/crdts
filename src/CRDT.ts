@@ -17,18 +17,20 @@ export class CRDT implements Omit<AllCRDTTypes, "toValue"> {
 	protected readonly serializers: CRDTSerializer[] = [];
 	protected readonly broadcasters: CRDTBroadcaster[] = [];
 
-	constructor (config: CRDTConfig, components: {} = {}) {
+	constructor (config: CRDTConfig) {
 		this.config = config;
+	}
 
-		for (const createSynchronizer of config.synchronizers ?? []) {
+	protected setup (components: Record<string, unknown> = {}) {
+		for (const createSynchronizer of this.config.synchronizers ?? []) {
 			this.synchronizers.push(createSynchronizer(components));
 		}
 
-		for (const createSerializer of config.serializers ?? []) {
+		for (const createSerializer of this.config.serializers ?? []) {
 			this.serializers.push(createSerializer(components));
 		}
 
-		for (const createBroadcaster of config.broadcasters ?? []) {
+		for (const createBroadcaster of this.config.broadcasters ?? []) {
 			this.broadcasters.push(createBroadcaster(components));
 		}
 	}

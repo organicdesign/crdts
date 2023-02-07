@@ -26,9 +26,11 @@ export class MVRegister<T> extends CRDT implements SynchronizableCRDT, Serializa
 		config.serializers = config.serializers ?? [createMVRegisterSerializer()] as Iterable<CreateSerializer<CRDTSerializer>>;
 		config.broadcasters = config.broadcasters ?? [createMVRegisterBroadcaster()] as Iterable<CreateBroadcaster<CRDTBroadcaster>>;
 
-		const watchers = new Map<string, (values: unknown[], logical: number) => void>();
+		super(config);
 
-		super(config, {
+		this.watchers = new Map<string, (values: unknown[], logical: number) => void>();
+
+		this.setup({
 			get: () => ({
 				values: [...this.data],
 				logical: this.logical
@@ -46,11 +48,9 @@ export class MVRegister<T> extends CRDT implements SynchronizableCRDT, Serializa
 			},
 
 			onChange: (method: (values: unknown[], logical: number) => void) => {
-				watchers.set(Math.random().toString(), method);
+				this.watchers.set(Math.random().toString(), method);
 			}
 		});
-
-		this.watchers = watchers;
 	}
 
 	protected change (values: unknown[], logical: number) {

@@ -32,9 +32,15 @@ export class GCounter extends CRDT implements SynchronizableCRDT, SerializableCR
 		config.serializers = config.serializers ?? [createGCounterSerializer()] as Iterable<CreateSerializer<CRDTSerializer>>;
 		config.broadcasters = config.broadcasters ?? [createGCounterBroadcaster()] as Iterable<CreateBroadcaster<CRDTBroadcaster>>;
 
-		const watchers = new Map<string, (peer: Uint8Array, count: number) => void>();
+		super(config);
 
-		super(config, {
+		if (options?.dp) {
+			this.dp = options.dp;
+		}
+
+		this.watchers = new Map<string, (peer: Uint8Array, count: number) => void>();
+
+		this.setup({
 			getPeers: () => this.data.keys(),
 			get: (peer: Uint8Array) => this.data.get(peer) ?? 0,
 
@@ -47,15 +53,9 @@ export class GCounter extends CRDT implements SynchronizableCRDT, SerializableCR
 			},
 
 			onChange: (method: (peer: Uint8Array, count: number) => void) => {
-				watchers.set(Math.random().toString(), method);
+				this.watchers.set(Math.random().toString(), method);
 			}
 		});
-
-		if (options?.dp) {
-			this.dp = options.dp;
-		}
-
-		this.watchers = watchers;
 	}
 
 	protected change (peer: Uint8Array, count: number) {
