@@ -1,12 +1,12 @@
-import type { CRDTSerializer } from "../../../crdt-interfaces/src/index.js";
+import type { CRDTSerializer, CreateSerializer } from "../../../crdt-interfaces/src/index.js";
 import * as cborg from "cborg";
 
-export interface MVRegisterSerializerComponents {
+export type MVRegisterSerializerComponents = {
 	get (): { values: unknown[], logical: number }
 	set (values: unknown[], logical: number): void
 }
 
-export interface MVRegisterSyncOpts {
+export interface MVRegisterSerializerOpts {
 	protocol: string
 }
 
@@ -14,7 +14,7 @@ export class MVRegisterSerializer implements CRDTSerializer {
 	public readonly protocol: string;
 	private readonly components: MVRegisterSerializerComponents;
 
-	constructor(components: MVRegisterSerializerComponents, options: Partial<MVRegisterSyncOpts> = {}) {
+	constructor(components: MVRegisterSerializerComponents, options: Partial<MVRegisterSerializerOpts> = {}) {
 		this.protocol = options.protocol ?? "/mv-register/cbor/0.1.0";
 		this.components = components;
 	}
@@ -30,4 +30,6 @@ export class MVRegisterSerializer implements CRDTSerializer {
 	}
 }
 
-export const createMVRegisterSerializer = (options?: Partial<MVRegisterSyncOpts>) => (components: MVRegisterSerializerComponents) => new MVRegisterSerializer(components, options);
+export const createLWWRegisterSerializer =
+	(options?: Partial<MVRegisterSerializerOpts>): CreateSerializer<MVRegisterSerializer, MVRegisterSerializerComponents> =>
+		(components: MVRegisterSerializerComponents) => new MVRegisterSerializer(components, options);

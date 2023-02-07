@@ -1,21 +1,26 @@
-import { CRDTSerializer, SerializableCRDT, getSerializer } from "../../../crdt-interfaces/src/index.js";
+import {
+	CRDTSerializer,
+	SerializableCRDT,
+	CreateSerializer,
+	getSerializer
+} from "../../../crdt-interfaces/src/index.js";
 import * as cborg from "cborg";
 
-export interface PNCounterSerializerComponents {
+export type PNCounterSerializerComponents = {
 	getPCounter (): SerializableCRDT
 	getNCounter (): SerializableCRDT
 }
 
-export interface PNCounterSyncOpts {
+export interface PNCounterSerializerOpts {
 	protocol: string
 	subProtocol: string
 }
 
 export class PNCounterSerializer implements CRDTSerializer {
 	private readonly components: PNCounterSerializerComponents;
-	private readonly options: PNCounterSyncOpts;
+	private readonly options: PNCounterSerializerOpts;
 
-	constructor(components: PNCounterSerializerComponents, options: Partial<PNCounterSyncOpts> = {}) {
+	constructor(components: PNCounterSerializerComponents, options: Partial<PNCounterSerializerOpts> = {}) {
 		this.options = {
 			protocol: options.protocol ?? "/pn-counter/cbor/0.1.0",
 			subProtocol: options.subProtocol ?? "/g-counter/cbor/0.1.0"
@@ -43,4 +48,6 @@ export class PNCounterSerializer implements CRDTSerializer {
 	}
 }
 
-export const createPNCounterSerializer = (options?: Partial<PNCounterSyncOpts>) => (components: PNCounterSerializerComponents) => new PNCounterSerializer(components, options);
+export const createPNCounterSerializer =
+	(options?: Partial<PNCounterSerializerOpts>): CreateSerializer<PNCounterSerializer, PNCounterSerializerComponents> =>
+		(components: PNCounterSerializerComponents) => new PNCounterSerializer(components, options);

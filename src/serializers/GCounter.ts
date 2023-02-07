@@ -1,13 +1,13 @@
-import type { CRDTSerializer } from "../../../crdt-interfaces/src/index.js";
+import type { CRDTSerializer, CreateSerializer } from "../../../crdt-interfaces/src/index.js";
 import * as cborg from "cborg";
 
-export interface GCounterSerializerComponents {
+export type GCounterSerializerComponents = {
 	get (peer: Uint8Array): number
 	getPeers (): Iterable<Uint8Array>
 	set (peer: Uint8Array, count: number): void
 }
 
-export interface GCounterSyncOpts {
+export interface GCounterSerializerOpts {
 	protocol: string
 }
 
@@ -15,7 +15,7 @@ export class GCounterSerializer implements CRDTSerializer {
 	public readonly protocol: string;
 	private readonly components: GCounterSerializerComponents;
 
-	constructor(components: GCounterSerializerComponents, options: Partial<GCounterSyncOpts> = {}) {
+	constructor(components: GCounterSerializerComponents, options: Partial<GCounterSerializerOpts> = {}) {
 		this.protocol = options.protocol ?? "/g-counter/cbor/0.1.0";
 		this.components = components;
 	}
@@ -41,4 +41,6 @@ export class GCounterSerializer implements CRDTSerializer {
 	}
 }
 
-export const createGCounterSerializer = (options?: Partial<GCounterSyncOpts>) => (components: GCounterSerializerComponents) => new GCounterSerializer(components, options);
+export const createGCounterSerializer =
+	(options?: Partial<GCounterSerializerOpts>): CreateSerializer<GCounterSerializer, GCounterSerializerComponents> =>
+		(components: GCounterSerializerComponents) => new GCounterSerializer(components, options);
