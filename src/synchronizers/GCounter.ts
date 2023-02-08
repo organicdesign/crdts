@@ -1,4 +1,4 @@
-import type { CRDTSynchronizer, CreateSynchronizer } from "../../../crdt-interfaces/src/index.js";
+import type { CRDTSynchronizer, CreateSynchronizer } from "@organicdesign/crdt-interfaces";
 import * as cborg from "cborg";
 
 export type GCounterSyncComponents = {

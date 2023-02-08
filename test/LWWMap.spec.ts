@@ -1,6 +1,6 @@
 import { createLWWMap } from "../src/LWWMap.js";
 import createClock from "./logical-clock.js";
-import { createLWWMapTest } from "../../crdt-tests/src/lww-map.js";
+import { createLWWMapTest } from "@organicdesign/crdt-tests";
 
 const generateTimestamp = createClock();
 

@@ -3,7 +3,7 @@ import {
 	BroadcastableCRDT,
 	CreateBroadcaster,
 	getBroadcaster
-} from "../../../crdt-interfaces/src/index.js";
+} from "@organicdesign/crdt-interfaces";
 import * as cborg from "cborg";
 
 export type PNCounterBroadcasterComponents = {

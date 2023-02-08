@@ -1,4 +1,4 @@
 import { createPNCounter } from "../src/PNCounter.js";
-import { createPNCounterTest } from "../../crdt-tests/src/pn-counter.js";
+import { createPNCounterTest } from "@organicdesign/crdt-tests";
 
 createPNCounterTest(createPNCounter);

@@ -1,4 +1,4 @@
-import type { CRDTBroadcaster, CreateBroadcaster } from "../../../crdt-interfaces/src/index.js";
+import type { CRDTBroadcaster, CreateBroadcaster } from "@organicdesign/crdt-interfaces";
 import * as cborg from "cborg";
 
 export type GSetBroadcasterComponents = {

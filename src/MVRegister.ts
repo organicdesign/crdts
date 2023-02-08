@@ -2,7 +2,7 @@ import type {
 	CompleteCRDT,
 	CRDTConfig,
 	MVRegister as IMVRegister
-} from "../../crdt-interfaces/src/index.js";
+} from "@organicdesign/crdt-interfaces";
 import { CRDT } from "./CRDT.js";
 import { createMVRegisterSynchronizer, MVRegisterSyncComponents as SyncComps } from "./synchronizers/MVRegister.js";
 import { createMVRegisterSerializer, MVRegisterSerializerComponents as SerialComps } from "./serializers/MVRegister.js";

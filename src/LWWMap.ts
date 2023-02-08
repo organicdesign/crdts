@@ -2,7 +2,7 @@ import type {
 	SynchronizableCRDT,
 	CRDTConfig,
 	BMap
-} from "../../crdt-interfaces/src/index.js";
+} from "@organicdesign/crdt-interfaces";
 import { CRDT } from "./CRDT.js";
 import { LWWRegister, createLWWRegister } from "./LWWRegister.js";
 import { createLWWMapSynchronizer, LWWMapSyncComponents as SyncComps } from "./synchronizers/LWWMap.js";

@@ -3,7 +3,7 @@ import type {
 	CRDTConfig,
 	MCounter,
 	CreateCRDT
-} from "../../crdt-interfaces/src/index.js";
+} from "@organicdesign/crdt-interfaces";
 import { BufferMap } from "@organicdesign/buffer-collections";
 import { CRDT } from "./CRDT.js";
 import { createGCounterSynchronizer, GCounterSyncComponents as SyncComps } from "./synchronizers/GCounter.js";

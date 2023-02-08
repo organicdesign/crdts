@@ -3,7 +3,7 @@ import type {
 	CompleteCRDT,
 	CRDTConfig,
 	BRegister
-} from "../../crdt-interfaces/src/index.js";
+} from "@organicdesign/crdt-interfaces";
 import { CRDT } from "./CRDT.js";
 import { createLWWRegisterSynchronizer, LWWRegisterSyncComponents as SyncComps } from "./synchronizers/LWWRegister.js";
 import { createLWWRegisterSerializer, LWWRegisterSerializerComponents as SerialComps } from "./serializers/LWWRegister.js";

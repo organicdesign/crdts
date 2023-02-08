@@ -4,7 +4,7 @@ import type {
 	CRDTSerializer,
 	CRDTBroadcaster,
 	CompleteCRDT
-} from "../../crdt-interfaces/src/index.js";
+} from "@organicdesign/crdt-interfaces";
 
 type UMap = Record<string, unknown>
 

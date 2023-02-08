@@ -1,4 +1,4 @@
 import { createGSet } from "../src/GSet.js";
-import { createGSetTest } from "../../crdt-tests/src/g-set.js";
+import { createGSetTest } from "@organicdesign/crdt-tests";
 
 createGSetTest(createGSet);

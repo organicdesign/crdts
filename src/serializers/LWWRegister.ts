@@ -1,4 +1,4 @@
-import type { CRDTSerializer, CreateSerializer } from "../../../crdt-interfaces/src/index.js";
+import type { CRDTSerializer, CreateSerializer } from "@organicdesign/crdt-interfaces";
 import * as cborg from "cborg";
 
 export type LWWRegisterSerializerComponents = {

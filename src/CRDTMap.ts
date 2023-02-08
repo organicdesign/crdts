@@ -3,8 +3,8 @@ import type {
 	CRDTConfig,
 	MMap,
 	CRDT as ICRDT
-} from "../../crdt-interfaces/src/index.js";
-import { createCRDTMapSynchronizer, CRDTMapSyncComponents as SyncComps } from "../../crdt-map-synchronizer/src/index.js";
+} from "@organicdesign/crdt-interfaces";
+import { createCRDTMapSynchronizer, CRDTMapSyncComponents as SyncComps } from "@organicdesign/crdt-map-synchronizer";
 import { CRDT } from "./CRDT.js";
 
 export class CRDTMap<T extends ICRDT=ICRDT> extends CRDT<SyncComps> implements SynchronizableCRDT, MMap<T> {

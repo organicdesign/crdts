@@ -1,7 +1,7 @@
 import type {
 	CompleteCRDT,
 	CRDTConfig
-} from "../../crdt-interfaces/src/index.js";
+} from "@organicdesign/crdt-interfaces";
 import { CRDT } from "./CRDT.js";
 import { createGSetSynchronizer, GSetSyncComponents as SyncComps } from "./synchronizers/GSet.js";
 import { createGSetSerializer, GSetSerializerComponents as SerialComps } from "./serializers/GSet.js";

@@ -4,7 +4,7 @@ import {
 	SyncContext,
 	CreateSynchronizer,
 	getSynchronizer
-} from "../../../crdt-interfaces/src/index.js";
+} from "@organicdesign/crdt-interfaces";
 import * as cborg from "cborg";
 
 export type PNCounterSyncComponents = {

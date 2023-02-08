@@ -3,7 +3,7 @@ import type {
 	CRDTConfig,
 	BCounter,
 	CreateCRDT
-} from "../../crdt-interfaces/src/index.js";
+} from "@organicdesign/crdt-interfaces";
 import { GCounter } from "./GCounter.js";
 import { CRDT } from "./CRDT.js";
 import { createPNCounterSynchronizer, PNCounterSyncComponents as SyncComps } from "./synchronizers/PNCounter.js";
