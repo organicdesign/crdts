@@ -1,4 +1,4 @@
-## [0.2.0](https://github.com/organicdesign/crdts/compare/v0.1.4...v0.2.0) (2023-02-03)
+## [0.2.0](https://github.com/organicdesign/crdts/compare/v0.1.4...v0.2.0) (2023-02-08)
 
 ### Changed
 * Modified all the CRDTs to `@organicdesign/crdt-interfaces@0.4.0`
