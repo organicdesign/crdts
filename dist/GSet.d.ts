@@ -1,7 +1,13 @@
-import type { CRDT as ICRDT, MSet, CRDTConfig } from "@organicdesign/crdt-interfaces";
+import type { CompleteCRDT, CRDTConfig } from "@organicdesign/crdt-interfaces";
 import { CRDT } from "./CRDT.js";
-export declare class GSet<T = unknown> extends CRDT implements ICRDT, MSet<T> {
+import { GSetSyncComponents as SyncComps } from "./synchronizers/GSet.js";
+import { GSetSerializerComponents as SerialComps } from "./serializers/GSet.js";
+import { GSetBroadcasterComponents as BroadComps } from "./broadcasters/GSet.js";
+export declare class GSet<T = unknown> extends CRDT<SyncComps, BroadComps, SerialComps> implements CompleteCRDT, GSet<T> {
     private data;
+    protected readonly watchers: Map<string, (item: T) => void>;
+    constructor(config: CRDTConfig<SyncComps, BroadComps, SerialComps>);
+    protected change(item: T): void;
     [Symbol.iterator](): IterableIterator<T>;
     add(value: T): Set<T>;
     forEach(callbackfn: (value: T, value2: T, set: Set<T>) => void, thisArg?: any): void;
@@ -10,9 +16,6 @@ export declare class GSet<T = unknown> extends CRDT implements ICRDT, MSet<T> {
     entries(): IterableIterator<[T, T]>;
     keys(): IterableIterator<T>;
     values(): IterableIterator<T>;
-    sync(data?: Uint8Array): Uint8Array | undefined;
     toValue(): Set<T>;
-    serialize(): Uint8Array;
-    onBroadcast(data: Uint8Array): void;
 }
-export declare const createGSet: <T>(config: CRDTConfig) => GSet<T>;
+export declare const createGSet: <T>(config: CRDTConfig<SyncComps, BroadComps, SerialComps>) => GSet<T>;

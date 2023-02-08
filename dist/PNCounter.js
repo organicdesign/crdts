@@ -1,54 +1,24 @@
-import * as cborg from "cborg";
 import { GCounter } from "./GCounter.js";
 import { CRDT } from "./CRDT.js";
+import { createPNCounterSynchronizer } from "./synchronizers/PNCounter.js";
+import { createPNCounterSerializer } from "./serializers/PNCounter.js";
+import { createPNCounterBroadcaster } from "./broadcasters/PNCounter.js";
 export class PNCounter extends CRDT {
-    constructor(config) {
+    constructor(config, options = {}) {
+        var _a, _b, _c;
+        config.synchronizers = (_a = config.synchronizers) !== null && _a !== void 0 ? _a : [createPNCounterSynchronizer()];
+        config.serializers = (_b = config.serializers) !== null && _b !== void 0 ? _b : [createPNCounterSerializer()];
+        config.broadcasters = (_c = config.broadcasters) !== null && _c !== void 0 ? _c : [createPNCounterBroadcaster()];
+        if (options.dp == null) {
+            options.dp = 10;
+        }
         super(config);
-        this.pCounter = new GCounter(config);
-        this.nCounter = new GCounter(config);
-        this.pCounter.addBroadcaster((pData) => this.broadcast(cborg.encode({ pData })));
-        this.nCounter.addBroadcaster((nData) => this.broadcast(cborg.encode({ nData })));
-    }
-    sync(data) {
-        if (data == null) {
-            const pData = this.pCounter.sync();
-            const nData = this.nCounter.sync();
-            const syncObj = {};
-            if (pData != null) {
-                syncObj.pData = pData;
-            }
-            if (nData != null) {
-                syncObj.nData = nData;
-            }
-            return cborg.encode(syncObj);
-        }
-        const { pData, nData } = cborg.decode(data);
-        const syncObj = {};
-        if (pData != null) {
-            syncObj.pData = this.pCounter.sync(pData);
-        }
-        if (nData != null) {
-            syncObj.nData = this.nCounter.sync(nData);
-        }
-        if (pData == null && nData == null) {
-            return;
-        }
-        return cborg.encode(syncObj);
-    }
-    serialize() {
-        return cborg.encode({
-            pData: this.pCounter.serialize(),
-            nData: this.nCounter.serialize()
+        this.pCounter = new GCounter({ id: config.id }, options);
+        this.nCounter = new GCounter({ id: config.id }, options);
+        this.setup({
+            getPCounter: () => this.pCounter,
+            getNCounter: () => this.nCounter
         });
-    }
-    onBroadcast(data) {
-        const { pData, nData } = cborg.decode(data);
-        if (pData != null) {
-            this.pCounter.onBroadcast(pData);
-        }
-        if (nData != null) {
-            this.nCounter.onBroadcast(nData);
-        }
     }
     toValue() {
         return this.pCounter.toValue() - this.nCounter.toValue();

@@ -1,48 +1,39 @@
-import * as cborg from "cborg";
-import { CRDT } from "./CRDT.js";
 import { BufferMap } from "@organicdesign/buffer-collections";
+import { CRDT } from "./CRDT.js";
+import { createGCounterSynchronizer } from "./synchronizers/GCounter.js";
+import { createGCounterSerializer } from "./serializers/GCounter.js";
+import { createGCounterBroadcaster } from "./broadcasters/GCounter.js";
 export class GCounter extends CRDT {
     constructor(config, options = {}) {
+        var _a, _b, _c;
+        config.synchronizers = (_a = config.synchronizers) !== null && _a !== void 0 ? _a : [createGCounterSynchronizer()];
+        config.serializers = (_b = config.serializers) !== null && _b !== void 0 ? _b : [createGCounterSerializer()];
+        config.broadcasters = (_c = config.broadcasters) !== null && _c !== void 0 ? _c : [createGCounterBroadcaster()];
         super(config);
         this.data = new BufferMap();
         this.dp = 10;
         if (options === null || options === void 0 ? void 0 : options.dp) {
             this.dp = options.dp;
         }
-    }
-    sync(data) {
-        if (data == null) {
-            return this.serialize();
-        }
-        const counts = cborg.decode(data);
-        for (const iCount of counts) {
-            const { id, count } = iCount;
-            if (count == null) {
-                continue;
+        this.watchers = new Map();
+        this.setup({
+            getPeers: () => this.data.keys(),
+            get: (peer) => { var _a; return (_a = this.data.get(peer)) !== null && _a !== void 0 ? _a : 0; },
+            set: (peer, count) => {
+                var _a;
+                const existing = (_a = this.data.get(peer)) !== null && _a !== void 0 ? _a : 0;
+                if (existing < count) {
+                    this.data.set(peer, count);
+                }
+            },
+            onChange: (method) => {
+                this.watchers.set(Math.random().toString(), method);
             }
-            const lValue = this.data.get(id);
-            if (lValue == null || count > lValue) {
-                this.data.set(id, count);
-            }
-        }
+        });
     }
-    serialize() {
-        const data = [];
-        for (const [id, count] of this.data) {
-            data.push({ id, count });
-        }
-        return cborg.encode(data);
-    }
-    deserialize(data) {
-        this.sync(data);
-    }
-    onBroadcast(data) {
-        const { id, count } = cborg.decode(data);
-        if (count == null) {
-            return;
-        }
-        if (this.compareSelf(id, count)) {
-            this.data.set(id, count);
+    change(peer, count) {
+        for (const watcher of this.watchers.values()) {
+            watcher(peer, count);
         }
     }
     toValue() {
@@ -60,10 +51,7 @@ export class GCounter extends CRDT {
     update(value) {
         if (this.compareSelf(this.id, value)) {
             this.data.set(this.id, value);
-            this.broadcast(cborg.encode({
-                id: this.id,
-                count: value
-            }));
+            this.change(this.id, value);
         }
     }
     round(count) {

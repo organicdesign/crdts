@@ -1,14 +1,17 @@
-import type { CRDT as ICRDT, MVRegister as IMVRegister, CRDTConfig } from "@organicdesign/crdt-interfaces";
+import type { CompleteCRDT, CRDTConfig, MVRegister as IMVRegister } from "@organicdesign/crdt-interfaces";
 import { CRDT } from "./CRDT.js";
-export declare class MVRegister<T> extends CRDT implements ICRDT, IMVRegister<T> {
+import { MVRegisterSyncComponents as SyncComps } from "./synchronizers/MVRegister.js";
+import { MVRegisterSerializerComponents as SerialComps } from "./serializers/MVRegister.js";
+import { MVRegisterBroadcasterComponents as BroadComps } from "./broadcasters/MVRegister.js";
+export declare class MVRegister<T> extends CRDT<SyncComps, BroadComps, SerialComps> implements CompleteCRDT, IMVRegister<T> {
     private data;
     private logical;
+    protected readonly watchers: Map<string, (values: unknown[], logical: number) => void>;
+    constructor(config: CRDTConfig<SyncComps, BroadComps, SerialComps>);
+    protected change(values: unknown[], logical: number): void;
     get(): T[];
     set(value: T): void;
     clear(): void;
-    sync(data: Uint8Array | undefined): Uint8Array | undefined;
     toValue(): T[];
-    serialize(): Uint8Array;
-    onBroadcast(data: Uint8Array): void;
 }
-export declare const createMVRegister: <T>(config: CRDTConfig) => MVRegister<T>;
+export declare const createMVRegister: <T>(config: CRDTConfig<SyncComps, BroadComps, SerialComps>) => MVRegister<T>;

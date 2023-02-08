@@ -1,12 +1,15 @@
-import { CRDT as ICRDT, CRDTConfig, BCounter, CreateCRDT } from "@organicdesign/crdt-interfaces";
+import type { CompleteCRDT, CRDTConfig, BCounter, CreateCRDT } from "@organicdesign/crdt-interfaces";
 import { CRDT } from "./CRDT.js";
-export declare class PNCounter extends CRDT implements ICRDT, BCounter {
+import { PNCounterSyncComponents as SyncComps } from "./synchronizers/PNCounter.js";
+import { PNCounterSerializerComponents as SerialComps } from "./serializers/PNCounter.js";
+import { PNCounterBroadcasterComponents as BroadComps } from "./broadcasters/PNCounter.js";
+export interface PNCounterOpts {
+    dp: number;
+}
+export declare class PNCounter extends CRDT<SyncComps, BroadComps, SerialComps> implements CompleteCRDT, BCounter {
     private pCounter;
     private nCounter;
-    constructor(config: CRDTConfig);
-    sync(data?: Uint8Array): Uint8Array | undefined;
-    serialize(): Uint8Array;
-    onBroadcast(data: Uint8Array): void;
+    constructor(config: CRDTConfig<SyncComps, BroadComps, SerialComps>, options?: Partial<PNCounterOpts>);
     toValue(): number;
     increment(quantity: number): void;
     decrement(quantity: number): void;

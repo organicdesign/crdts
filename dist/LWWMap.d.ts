@@ -1,9 +1,14 @@
-import type { CRDT as ICRDT, BMap, CRDTConfig } from "@organicdesign/crdt-interfaces";
-import { MultiCRDT } from "./MultiCRDT.js";
+import type { SynchronizableCRDT, CRDTConfig, BMap } from "@organicdesign/crdt-interfaces";
+import { CRDT } from "./CRDT.js";
 import { LWWRegister } from "./LWWRegister.js";
-export declare class LWWMap<T> extends MultiCRDT<LWWRegister<T>> implements ICRDT, BMap<T> {
+import { LWWMapSyncComponents as SyncComps } from "./synchronizers/LWWMap.js";
+export declare class LWWMap<T> extends CRDT<SyncComps> implements SynchronizableCRDT, BMap<T> {
+    protected data: Map<string, LWWRegister<T>>;
     [Symbol.iterator](): IterableIterator<[string, T]>;
-    constructor(config: CRDTConfig);
+    constructor(config: CRDTConfig<SyncComps>);
+    protected assign(key: string, register: LWWRegister<T>): void;
+    get size(): number;
+    keys(): IterableIterator<string>;
     clear(): void;
     delete(key: string): boolean;
     forEach(callbackfn: (value: T, key: string, map: Map<string, T>) => void, thisArg?: any): void;
@@ -14,4 +19,4 @@ export declare class LWWMap<T> extends MultiCRDT<LWWRegister<T>> implements ICRD
     values(): IterableIterator<T>;
     toValue(): Map<string, T>;
 }
-export declare const createLWWMap: <T>(config: CRDTConfig) => LWWMap<T>;
+export declare const createLWWMap: <T>(config: CRDTConfig<SyncComps>) => LWWMap<T>;

@@ -1,17 +1,18 @@
-import type { CRDT as ICRDT, CRDTConfig, MCounter, CreateCRDT } from "@organicdesign/crdt-interfaces";
-import { CRDT } from "./CRDT.js";
+import type { CompleteCRDT, CRDTConfig, MCounter, CreateCRDT } from "@organicdesign/crdt-interfaces";
 import { BufferMap } from "@organicdesign/buffer-collections";
+import { CRDT } from "./CRDT.js";
+import { GCounterSyncComponents as SyncComps } from "./synchronizers/GCounter.js";
+import { GCounterSerializerComponents as SerialComps } from "./serializers/GCounter.js";
+import { GCounterBroadcasterComponents as BroadComps } from "./broadcasters/GCounter.js";
 export interface GCounterOpts {
     dp: number;
 }
-export declare class GCounter extends CRDT implements ICRDT, MCounter {
+export declare class GCounter extends CRDT<SyncComps, BroadComps, SerialComps> implements CompleteCRDT, MCounter {
     protected readonly data: BufferMap<number>;
     protected readonly dp: number;
-    constructor(config: CRDTConfig, options?: Partial<GCounterOpts>);
-    sync(data?: Uint8Array): Uint8Array | undefined;
-    serialize(): Uint8Array;
-    deserialize(data: Uint8Array): void;
-    onBroadcast(data: Uint8Array): void;
+    protected readonly watchers: Map<string, (peer: Uint8Array, count: number) => void>;
+    constructor(config: CRDTConfig<SyncComps, BroadComps, SerialComps>, options?: Partial<GCounterOpts>);
+    protected change(peer: Uint8Array, count: number): void;
     toValue(): number;
     increment(quantity: number): void;
     protected update(value: number): void;

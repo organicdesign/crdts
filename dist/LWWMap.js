@@ -1,6 +1,7 @@
-import { MultiCRDT } from "./MultiCRDT.js";
-import { LWWRegister } from "./LWWRegister.js";
-export class LWWMap extends MultiCRDT {
+import { CRDT } from "./CRDT.js";
+import { createLWWRegister } from "./LWWRegister.js";
+import { createLWWMapSynchronizer } from "./synchronizers/LWWMap.js";
+export class LWWMap extends CRDT {
     [Symbol.iterator]() {
         const data = this.data;
         function* itr() {
@@ -11,7 +12,42 @@ export class LWWMap extends MultiCRDT {
         return itr();
     }
     constructor(config) {
-        super(config, () => new LWWRegister(this.config));
+        var _a;
+        config.synchronizers = (_a = config.synchronizers) !== null && _a !== void 0 ? _a : [createLWWMapSynchronizer()];
+        super(config);
+        this.data = new Map();
+        this.setup({
+            keys: () => this.data.keys(),
+            get: (key) => {
+                // Create register if it does not exist.
+                if (!this.data.has(key)) {
+                    this.assign(key, createLWWRegister({ id: this.id }));
+                    return this.data.get(key);
+                }
+                return this.data.get(key);
+            }
+        });
+        // Disable serialization and broadcast.
+        Object.defineProperties(this, {
+            getSerializers: { value: undefined },
+            getBroadcasters: { value: undefined }
+        });
+    }
+    assign(key, register) {
+        /*
+        crdt.addBroadcaster?.((data: Uint8Array) => {
+            this.broadcast(cborg.encode({
+                [key]: data
+            }));
+        });
+        */
+        this.data.set(key, register);
+    }
+    get size() {
+        return this.data.size;
+    }
+    keys() {
+        return this.data.keys();
     }
     clear() {
         for (const reg of this.data.values()) {
@@ -45,7 +81,7 @@ export class LWWMap extends MultiCRDT {
     set(key, value) {
         let reg = this.data.get(key);
         if (reg == null) {
-            this.assign(key, new LWWRegister(this.config));
+            this.assign(key, createLWWRegister({ id: this.id }));
             reg = this.data.get(key);
         }
         reg.set(value);

@@ -1,17 +1,19 @@
-import type { CRDT as ICRDT, BRegister, CRDTConfig, SyncContext } from "@organicdesign/crdt-interfaces";
+import type { CompleteCRDT, CRDTConfig, BRegister } from "@organicdesign/crdt-interfaces";
 import { CRDT } from "./CRDT.js";
-export declare class LWWRegister<T> extends CRDT implements ICRDT, BRegister<T> {
+import { LWWRegisterSyncComponents as SyncComps } from "./synchronizers/LWWRegister.js";
+import { LWWRegisterSerializerComponents as SerialComps } from "./serializers/LWWRegister.js";
+import { LWWRegisterBroadcasterComponents as BroadComps } from "./broadcasters/LWWRegister.js";
+export declare class LWWRegister<T> extends CRDT<SyncComps, BroadComps, SerialComps> implements CompleteCRDT, BRegister<T> {
     private data;
     private physical;
     private logical;
     private lastId;
+    protected readonly watchers: Map<string, (value: unknown, physical: number, logical: number, id: Uint8Array) => void>;
+    constructor(config: CRDTConfig<SyncComps, BroadComps, SerialComps>);
+    protected change(value: unknown, physical: number, logical: number, id: Uint8Array): void;
     get(): T | undefined;
     set(value: T): void;
     clear(): void;
-    sync(data: Uint8Array | undefined, { id }: SyncContext): Uint8Array | undefined;
     toValue(): T | undefined;
-    serialize(): Uint8Array;
-    onBroadcast(data: Uint8Array): void;
-    private update;
 }
-export declare const createLWWRegister: <T>(config: CRDTConfig) => LWWRegister<T>;
+export declare const createLWWRegister: <T>(config: CRDTConfig<SyncComps, BroadComps, SerialComps>) => LWWRegister<T>;

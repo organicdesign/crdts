@@ -1,17 +1,35 @@
-import * as cborg from "cborg";
 import { CRDT } from "./CRDT.js";
+import { createGSetSynchronizer } from "./synchronizers/GSet.js";
+import { createGSetSerializer } from "./serializers/GSet.js";
+import { createGSetBroadcaster } from "./broadcasters/GSet.js";
 export class GSet extends CRDT {
-    constructor() {
-        super(...arguments);
+    constructor(config) {
+        var _a, _b, _c;
+        config.synchronizers = (_a = config.synchronizers) !== null && _a !== void 0 ? _a : [createGSetSynchronizer()];
+        config.serializers = (_b = config.serializers) !== null && _b !== void 0 ? _b : [createGSetSerializer()];
+        config.broadcasters = (_c = config.broadcasters) !== null && _c !== void 0 ? _c : [createGSetBroadcaster()];
+        super(config);
         this.data = new Set();
+        this.watchers = new Map();
+        this.setup({
+            get: () => this.data,
+            add: (item) => this.data.add(item),
+            onChange: (method) => {
+                this.watchers.set(Math.random().toString(), method);
+            }
+        });
+    }
+    change(item) {
+        for (const watcher of this.watchers.values()) {
+            watcher(item);
+        }
     }
     [Symbol.iterator]() {
         return this.data[Symbol.iterator]();
     }
     add(value) {
         this.data.add(value);
-        const encoded = cborg.encode(value);
-        this.broadcast(encoded);
+        this.change(value);
         return this.toValue();
     }
     forEach(callbackfn, thisArg) {
@@ -32,24 +50,8 @@ export class GSet extends CRDT {
     values() {
         return this.data.values();
     }
-    sync(data) {
-        if (data == null) {
-            return this.serialize();
-        }
-        const decoded = cborg.decode(data);
-        for (const value of decoded) {
-            this.data.add(value);
-        }
-    }
     toValue() {
         return new Set(this.data);
-    }
-    serialize() {
-        return cborg.encode([...this.data.values()]);
-    }
-    onBroadcast(data) {
-        const value = cborg.decode(data);
-        this.data.add(value);
     }
 }
 export const createGSet = (config) => new GSet(config);
