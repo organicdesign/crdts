@@ -39,6 +39,26 @@ If you are using these CRDTs with Libp2p you should use the peer ID as the CRDT 
 createCRDT({ id: libp2p.peerId.toBytes() });
 ```
 
+You may also pass custom synchronizers, serializers and broadcasters via the options:
+
+```javascript
+createCRDT({
+	synchronizers: [createSynchronizer()],
+	broadcasters: [createBroadcaster()],
+	serializers: [createSerializer()]
+});
+```
+
+These CRDTs provide methods for synchronization but of course will not automatically synchronize themselves, so you will need to create a system for synchronizing them or if you use Libp2p you can use `@organicdesign/libp2p-crdt-synchronizer`.
+
+```javascript
+import { createCRDTSynchronizer } from "@organicdesign/libp2p-crdt-synchronizer";
+
+const synchronizer = createCRDTSynchronizer()(libp2p);
+
+synchronizer.set("my-crdt", createCRDT({ id: libp2p.peerId.toBytes() }));
+```
+
 ### G-Counter
 
 ```javascript
