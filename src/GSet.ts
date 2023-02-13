@@ -7,11 +7,13 @@ import { createGSetSynchronizer, GSetSyncComponents as SyncComps } from "./synch
 import { createGSetSerializer, GSetSerializerComponents as SerialComps } from "./serializers/GSet.js";
 import { createGSetBroadcaster, GSetBroadcasterComponents as BroadComps } from "./broadcasters/GSet.js";
 
+export interface GSetConfig extends CRDTConfig<SyncComps, BroadComps, SerialComps> {}
+
 export class GSet<T=unknown> extends CRDT<SyncComps & BroadComps & SerialComps> implements CompleteCRDT, GSet<T> {
 	private data = new Set<T>();
 	protected readonly watchers: Map<string, (item: T) => void>;
 
-	constructor (config: CRDTConfig<SyncComps, BroadComps, SerialComps>) {
+	constructor (config: GSetConfig) {
 		config.synchronizers = config.synchronizers ?? [createGSetSynchronizer()];
 		config.serializers = config.serializers ?? [createGSetSerializer()];
 		config.broadcasters = config.broadcasters ?? [createGSetBroadcaster()];
@@ -78,4 +80,4 @@ export class GSet<T=unknown> extends CRDT<SyncComps & BroadComps & SerialComps> 
 	}
 }
 
-export const createGSet = <T>(config: CRDTConfig<SyncComps, BroadComps, SerialComps>) => new GSet<T>(config);
+export const createGSet = <T>(config: GSetConfig) => new GSet<T>(config);

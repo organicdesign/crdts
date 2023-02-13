@@ -8,12 +8,14 @@ import { createMVRegisterSynchronizer, MVRegisterSyncComponents as SyncComps } f
 import { createMVRegisterSerializer, MVRegisterSerializerComponents as SerialComps } from "./serializers/MVRegister.js";
 import { createMVRegisterBroadcaster, MVRegisterBroadcasterComponents as BroadComps } from "./broadcasters/MVRegister.js";
 
+export interface MVRegisterConfig extends CRDTConfig<SyncComps, BroadComps, SerialComps> {}
+
 export class MVRegister<T> extends CRDT<SyncComps & BroadComps & SerialComps> implements CompleteCRDT, IMVRegister<T> {
 	private data = new Set<T>();
 	private logical: number = 0;
 	protected readonly watchers: Map<string, (values: unknown[], logical: number) => void>;
 
-	constructor (config: CRDTConfig<SyncComps, BroadComps, SerialComps>) {
+	constructor (config: MVRegisterConfig) {
 		config.synchronizers = config.synchronizers ?? [createMVRegisterSynchronizer()];
 		config.serializers = config.serializers ?? [createMVRegisterSerializer()];
 		config.broadcasters = config.broadcasters ?? [createMVRegisterBroadcaster()];
@@ -76,4 +78,4 @@ export class MVRegister<T> extends CRDT<SyncComps & BroadComps & SerialComps> im
 	}
 }
 
-export const createMVRegister = <T>(config: CRDTConfig<SyncComps, BroadComps, SerialComps>) => new MVRegister<T>(config);
+export const createMVRegister = <T>(config: MVRegisterConfig) => new MVRegister<T>(config);

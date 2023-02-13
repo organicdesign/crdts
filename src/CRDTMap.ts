@@ -7,10 +7,12 @@ import type {
 import { createCRDTMapSynchronizer, CRDTMapSyncComponents as SyncComps } from "@organicdesign/crdt-map-synchronizer";
 import { CRDT } from "./CRDT.js";
 
+export interface GSetConfig extends CRDTConfig<SyncComps> {}
+
 export class CRDTMap<T extends ICRDT=ICRDT> extends CRDT<SyncComps> implements SynchronizableCRDT, MMap<T> {
 	protected data = new Map<string, T>();
 
-	constructor (config: CRDTConfig<SyncComps>) {
+	constructor (config: GSetConfig) {
 		config.synchronizers = config.synchronizers ?? [createCRDTMapSynchronizer()];
 
 		super(config);
@@ -84,4 +86,4 @@ export class CRDTMap<T extends ICRDT=ICRDT> extends CRDT<SyncComps> implements S
 }
 
 
-export const createCRDTMap = <T extends ICRDT=ICRDT>(config: CRDTConfig<SyncComps>) => new CRDTMap<T>(config);
+export const createCRDTMap = <T extends ICRDT=ICRDT>(config: GSetConfig) => new CRDTMap<T>(config);
