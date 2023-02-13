@@ -1,8 +1,7 @@
 import type {
 	CompleteCRDT,
 	CRDTConfig,
-	MCounter,
-	CreateCRDT
+	MCounter
 } from "@organicdesign/crdt-interfaces";
 import { BufferMap } from "@organicdesign/buffer-collections";
 import { CRDT } from "./CRDT.js";
@@ -93,6 +92,6 @@ export class GCounter extends CRDT<SyncComps & BroadComps & SerialComps> impleme
 	}
 }
 
-export const createGCounter: CreateCRDT<GCounter> =
+export const createGCounter =
 	(config: GCounterConfig, options: Partial<GCounterOpts> = {}) =>
 		new GCounter(config, options);

@@ -1,7 +1,8 @@
 import type {
 	SynchronizableCRDT,
 	CRDTConfig,
-	BMap
+	BMap,
+	CreateCRDT
 } from "@organicdesign/crdt-interfaces";
 import { CRDT } from "./CRDT.js";
 import { LWWRegister, LWWRegisterConfig, createLWWRegister } from "./LWWRegister.js";
@@ -10,7 +11,7 @@ import { createLWWMapSynchronizer, LWWMapSyncComponents as SyncComps } from "./s
 export interface LWWMapConfig extends CRDTConfig<SyncComps> {}
 
 export interface LWWMapOpts<T> {
-	createLWWRegister (config: LWWRegisterConfig): LWWRegister<T>
+	createLWWRegister: CreateCRDT<LWWRegister<T>, LWWRegisterConfig>
 }
 
 export class LWWMap<T> extends CRDT<SyncComps> implements SynchronizableCRDT, BMap<T> {
@@ -29,7 +30,7 @@ export class LWWMap<T> extends CRDT<SyncComps> implements SynchronizableCRDT, BM
 		return itr();
 	}
 
-	constructor (config: CRDTConfig<SyncComps>, settings: Partial<LWWMapOpts<T>>) {
+	constructor (config: CRDTConfig<SyncComps>, settings: Partial<LWWMapOpts<T>> = {}) {
 		config.synchronizers = config.synchronizers ?? [createLWWMapSynchronizer()];
 
 		super(config);
@@ -165,5 +166,5 @@ export class LWWMap<T> extends CRDT<SyncComps> implements SynchronizableCRDT, BM
 }
 
 export const createLWWMap =
-	<T>(config: LWWMapConfig, settings: Partial<LWWMapOpts<T>>) =>
+	<T>(config: LWWMapConfig, settings?: Partial<LWWMapOpts<T>>) =>
 		new LWWMap<T>(config, settings);
