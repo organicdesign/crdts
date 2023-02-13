@@ -4,33 +4,38 @@ import type {
 	BCounter,
 	CreateCRDT
 } from "@organicdesign/crdt-interfaces";
-import { GCounter } from "./GCounter.js";
+import { GCounter, GCounterConfig, createGCounter } from "./GCounter.js";
 import { CRDT } from "./CRDT.js";
 import { createPNCounterSynchronizer, PNCounterSyncComponents as SyncComps } from "./synchronizers/PNCounter.js";
 import { createPNCounterSerializer, PNCounterSerializerComponents as SerialComps } from "./serializers/PNCounter.js";
 import { createPNCounterBroadcaster, PNCounterBroadcasterComponents as BroadComps } from "./broadcasters/PNCounter.js";
 
+export interface PNCounterConfig extends CRDTConfig<SyncComps, BroadComps, SerialComps> {}
+
 export interface PNCounterOpts {
 	dp: number
+	createGCounter: CreateCRDT<GCounter, GCounterConfig>
 }
 
 export class PNCounter extends CRDT<SyncComps & BroadComps & SerialComps> implements CompleteCRDT, BCounter {
 	private pCounter: GCounter;
 	private nCounter: GCounter;
+	protected readonly options: PNCounterOpts;
 
-	constructor (config: CRDTConfig<SyncComps, BroadComps, SerialComps>, options: Partial<PNCounterOpts> = {}) {
+	constructor (config: PNCounterConfig, options: Partial<PNCounterOpts> = {}) {
 		config.synchronizers = config.synchronizers ?? [createPNCounterSynchronizer()];
 		config.serializers = config.serializers ?? [createPNCounterSerializer()];
 		config.broadcasters = config.broadcasters ?? [createPNCounterBroadcaster()];
 
-		if (options.dp == null) {
-			options.dp = 10;
-		}
-
 		super(config);
 
-		this.pCounter = new GCounter({ id: config.id }, options);
-		this.nCounter = new GCounter({ id: config.id }, options);
+		this.options = {
+			dp: options.dp ?? 10,
+			createGCounter: options.createGCounter ?? createGCounter
+		};
+
+		this.pCounter = this.options.createGCounter({ id: config.id }, { dp: this.options.dp });
+		this.nCounter = this.options.createGCounter({ id: config.id }, { dp: this.options.dp });
 	}
 
 	start () {
@@ -56,5 +61,5 @@ export class PNCounter extends CRDT<SyncComps & BroadComps & SerialComps> implem
 	}
 }
 
-export const createPNCounter: CreateCRDT<PNCounter> =
-	(config: CRDTConfig<SyncComps, BroadComps, SerialComps>) => new PNCounter(config);
+export const createPNCounter =
+	(config: PNCounterConfig, options?: Partial<PNCounterOpts>) => new PNCounter(config, options);
