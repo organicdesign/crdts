@@ -11,6 +11,13 @@ export class GSet extends CRDT {
         super(config);
         this.data = new Set();
         this.watchers = new Map();
+    }
+    change(item) {
+        for (const watcher of this.watchers.values()) {
+            watcher(item);
+        }
+    }
+    start() {
         this.setup({
             get: () => this.data,
             add: (item) => this.data.add(item),
@@ -18,11 +25,6 @@ export class GSet extends CRDT {
                 this.watchers.set(Math.random().toString(), method);
             }
         });
-    }
-    change(item) {
-        for (const watcher of this.watchers.values()) {
-            watcher(item);
-        }
     }
     [Symbol.iterator]() {
         return this.data[Symbol.iterator]();

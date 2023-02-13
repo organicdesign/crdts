@@ -7,6 +7,7 @@ export declare class LWWMap<T> extends CRDT<SyncComps> implements Synchronizable
     [Symbol.iterator](): IterableIterator<[string, T]>;
     constructor(config: CRDTConfig<SyncComps>);
     protected assign(key: string, register: LWWRegister<T>): void;
+    start(): void;
     get size(): number;
     keys(): IterableIterator<string>;
     clear(): void;

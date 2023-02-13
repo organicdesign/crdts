@@ -24,7 +24,15 @@ export class LWWRegister<T> extends CRDT<SyncComps, BroadComps, SerialComps> imp
 		super(config);
 
 		this.watchers = new Map<string, (value: unknown, physical: number, logical: number, id: Uint8Array) => void>();
+	}
 
+	protected change (value: unknown, physical: number, logical: number, id: Uint8Array) {
+		for (const watcher of this.watchers.values()) {
+			watcher(value, physical, logical, id);
+		}
+	}
+
+	start () {
 		this.setup({
 			get: () => ({
 				value: this.data,
@@ -52,12 +60,6 @@ export class LWWRegister<T> extends CRDT<SyncComps, BroadComps, SerialComps> imp
 				this.watchers.set(Math.random().toString(), method);
 			}
 		});
-	}
-
-	protected change (value: unknown, physical: number, logical: number, id: Uint8Array) {
-		for (const watcher of this.watchers.values()) {
-			watcher(value, physical, logical, id);
-		}
 	}
 
 	get(): T | undefined {

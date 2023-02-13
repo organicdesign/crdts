@@ -12,6 +12,13 @@ export class MVRegister extends CRDT {
         this.data = new Set();
         this.logical = 0;
         this.watchers = new Map();
+    }
+    change(values, logical) {
+        for (const watcher of this.watchers.values()) {
+            watcher(values, logical);
+        }
+    }
+    start() {
         this.setup({
             get: () => ({
                 values: [...this.data],
@@ -32,11 +39,6 @@ export class MVRegister extends CRDT {
                 this.watchers.set(Math.random().toString(), method);
             }
         });
-    }
-    change(values, logical) {
-        for (const watcher of this.watchers.values()) {
-            watcher(values, logical);
-        }
     }
     get() {
         return [...this.data];

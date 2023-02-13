@@ -15,12 +15,6 @@ export class CRDTMap<T extends ICRDT=ICRDT> extends CRDT<SyncComps> implements S
 
 		super(config);
 
-		this.setup({
-			keys: () => this.data.keys(),
-			get: (key: string) => this.data.get(key),
-			getId: () => this.id
-		});
-
 		// Disable serialization and broadcast.
 		Object.defineProperties(this, {
 			getSerializers: { value: undefined },
@@ -30,6 +24,14 @@ export class CRDTMap<T extends ICRDT=ICRDT> extends CRDT<SyncComps> implements S
 
 	protected assign (key: string, crdt: T) {
 		this.data.set(key, crdt);
+	}
+
+	start () {
+		this.setup({
+			keys: () => this.data.keys(),
+			get: (key: string) => this.data.get(key),
+			getId: () => this.id
+		});
 	}
 
 	[Symbol.iterator](): IterableIterator<[string, T]> {

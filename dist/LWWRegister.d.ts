@@ -11,6 +11,7 @@ export declare class LWWRegister<T> extends CRDT<SyncComps, BroadComps, SerialCo
     protected readonly watchers: Map<string, (value: unknown, physical: number, logical: number, id: Uint8Array) => void>;
     constructor(config: CRDTConfig<SyncComps, BroadComps, SerialComps>);
     protected change(value: unknown, physical: number, logical: number, id: Uint8Array): void;
+    start(): void;
     get(): T | undefined;
     set(value: T): void;
     clear(): void;

@@ -8,6 +8,7 @@ export declare class GSet<T = unknown> extends CRDT<SyncComps, BroadComps, Seria
     protected readonly watchers: Map<string, (item: T) => void>;
     constructor(config: CRDTConfig<SyncComps, BroadComps, SerialComps>);
     protected change(item: T): void;
+    start(): void;
     [Symbol.iterator](): IterableIterator<T>;
     add(value: T): Set<T>;
     forEach(callbackfn: (value: T, value2: T, set: Set<T>) => void, thisArg?: any): void;

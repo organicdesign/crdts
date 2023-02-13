@@ -31,7 +31,15 @@ export class GCounter extends CRDT<SyncComps, BroadComps, SerialComps> implement
 		}
 
 		this.watchers = new Map<string, (peer: Uint8Array, count: number) => void>();
+	}
 
+	protected change (peer: Uint8Array, count: number) {
+		for (const watcher of this.watchers.values()) {
+			watcher(peer, count);
+		}
+	}
+
+	start () {
 		this.setup({
 			getPeers: () => this.data.keys(),
 			get: (peer: Uint8Array) => this.data.get(peer) ?? 0,
@@ -48,12 +56,6 @@ export class GCounter extends CRDT<SyncComps, BroadComps, SerialComps> implement
 				this.watchers.set(Math.random().toString(), method);
 			}
 		});
-	}
-
-	protected change (peer: Uint8Array, count: number) {
-		for (const watcher of this.watchers.values()) {
-			watcher(peer, count);
-		}
 	}
 
 	toValue(): number {

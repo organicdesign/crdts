@@ -31,18 +31,16 @@ export class PNCounter extends CRDT<SyncComps, BroadComps, SerialComps> implemen
 
 		this.pCounter = new GCounter({ id: config.id }, options);
 		this.nCounter = new GCounter({ id: config.id }, options);
-
-		this.setup({
-			getPCounter: () => this.pCounter,
-			getNCounter: () => this.nCounter
-		});
 	}
 
 	start () {
 		this.pCounter.start();
 		this.nCounter.start();
 
-		super.start();
+		this.setup({
+			getPCounter: () => this.pCounter,
+			getNCounter: () => this.nCounter
+		});
 	}
 
 	toValue(): number {

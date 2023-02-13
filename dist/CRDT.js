@@ -7,7 +7,20 @@ export class CRDT {
         this.config = config;
     }
     setup(components) {
-        this.components = components;
+        var _a, _b, _c;
+        if (this.isStarted()) {
+            return;
+        }
+        for (const createSynchronizer of (_a = this.config.synchronizers) !== null && _a !== void 0 ? _a : []) {
+            this.synchronizers.push(createSynchronizer(components));
+        }
+        for (const createSerializer of (_b = this.config.serializers) !== null && _b !== void 0 ? _b : []) {
+            this.serializers.push(createSerializer(components));
+        }
+        for (const createBroadcaster of (_c = this.config.broadcasters) !== null && _c !== void 0 ? _c : []) {
+            this.broadcasters.push(createBroadcaster(components));
+        }
+        this.started = true;
     }
     get generateTimestamp() {
         var _a;
@@ -15,25 +28,6 @@ export class CRDT {
     }
     isStarted() {
         return this.started;
-    }
-    start() {
-        var _a, _b, _c;
-        if (this.components == null) {
-            throw new Error("CRDT has not defined any components");
-        }
-        if (this.isStarted()) {
-            return;
-        }
-        for (const createSynchronizer of (_a = this.config.synchronizers) !== null && _a !== void 0 ? _a : []) {
-            this.synchronizers.push(createSynchronizer(this.components));
-        }
-        for (const createSerializer of (_b = this.config.serializers) !== null && _b !== void 0 ? _b : []) {
-            this.serializers.push(createSerializer(this.components));
-        }
-        for (const createBroadcaster of (_c = this.config.broadcasters) !== null && _c !== void 0 ? _c : []) {
-            this.broadcasters.push(createBroadcaster(this.components));
-        }
-        this.started = true;
     }
     stop() {
         this.started = false;

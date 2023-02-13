@@ -1,7 +1,7 @@
 {
   "type": "module",
   "name": "@organicdesign/crdts",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "A group of useful CRDTs implementing interfaces from @organicdesign/crdt-interfaces.",
   "keywords": [
     "crdt",

@@ -9,6 +9,7 @@ export declare class MVRegister<T> extends CRDT<SyncComps, BroadComps, SerialCom
     protected readonly watchers: Map<string, (values: unknown[], logical: number) => void>;
     constructor(config: CRDTConfig<SyncComps, BroadComps, SerialComps>);
     protected change(values: unknown[], logical: number): void;
+    start(): void;
     get(): T[];
     set(value: T): void;
     clear(): void;

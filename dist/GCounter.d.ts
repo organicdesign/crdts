@@ -13,6 +13,7 @@ export declare class GCounter extends CRDT<SyncComps, BroadComps, SerialComps> i
     protected readonly watchers: Map<string, (peer: Uint8Array, count: number) => void>;
     constructor(config: CRDTConfig<SyncComps, BroadComps, SerialComps>, options?: Partial<GCounterOpts>);
     protected change(peer: Uint8Array, count: number): void;
+    start(): void;
     toValue(): number;
     increment(quantity: number): void;
     protected update(value: number): void;

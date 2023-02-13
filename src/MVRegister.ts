@@ -21,7 +21,15 @@ export class MVRegister<T> extends CRDT<SyncComps, BroadComps, SerialComps> impl
 		super(config);
 
 		this.watchers = new Map<string, (values: unknown[], logical: number) => void>();
+	}
 
+	protected change (values: unknown[], logical: number) {
+		for (const watcher of this.watchers.values()) {
+			watcher(values, logical);
+		}
+	}
+
+	start () {
 		this.setup({
 			get: () => ({
 				values: [...this.data],
@@ -43,12 +51,6 @@ export class MVRegister<T> extends CRDT<SyncComps, BroadComps, SerialComps> impl
 				this.watchers.set(Math.random().toString(), method);
 			}
 		});
-	}
-
-	protected change (values: unknown[], logical: number) {
-		for (const watcher of this.watchers.values()) {
-			watcher(values, logical);
-		}
 	}
 
 	get(): T[] {

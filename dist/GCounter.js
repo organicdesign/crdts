@@ -16,6 +16,13 @@ export class GCounter extends CRDT {
             this.dp = options.dp;
         }
         this.watchers = new Map();
+    }
+    change(peer, count) {
+        for (const watcher of this.watchers.values()) {
+            watcher(peer, count);
+        }
+    }
+    start() {
         this.setup({
             getPeers: () => this.data.keys(),
             get: (peer) => { var _a; return (_a = this.data.get(peer)) !== null && _a !== void 0 ? _a : 0; },
@@ -30,11 +37,6 @@ export class GCounter extends CRDT {
                 this.watchers.set(Math.random().toString(), method);
             }
         });
-    }
-    change(peer, count) {
-        for (const watcher of this.watchers.values()) {
-            watcher(peer, count);
-        }
     }
     toValue() {
         return this.round([...this.data.values()].reduce((p, c) => p + c, 0));

@@ -5,6 +5,7 @@ export declare class CRDTMap<T extends ICRDT = ICRDT> extends CRDT<SyncComps> im
     protected data: Map<string, T>;
     constructor(config: CRDTConfig<SyncComps>);
     protected assign(key: string, crdt: T): void;
+    start(): void;
     [Symbol.iterator](): IterableIterator<[string, T]>;
     get size(): number;
     keys(): IterableIterator<string>;

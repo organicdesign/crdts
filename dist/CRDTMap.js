@@ -6,11 +6,6 @@ export class CRDTMap extends CRDT {
         config.synchronizers = (_a = config.synchronizers) !== null && _a !== void 0 ? _a : [createCRDTMapSynchronizer()];
         super(config);
         this.data = new Map();
-        this.setup({
-            keys: () => this.data.keys(),
-            get: (key) => this.data.get(key),
-            getId: () => this.id
-        });
         // Disable serialization and broadcast.
         Object.defineProperties(this, {
             getSerializers: { value: undefined },
@@ -19,6 +14,13 @@ export class CRDTMap extends CRDT {
     }
     assign(key, crdt) {
         this.data.set(key, crdt);
+    }
+    start() {
+        this.setup({
+            keys: () => this.data.keys(),
+            get: (key) => this.data.get(key),
+            getId: () => this.id
+        });
     }
     [Symbol.iterator]() {
         return this.data[Symbol.iterator]();

@@ -14,6 +14,13 @@ export class LWWRegister extends CRDT {
         this.logical = 0;
         this.lastId = new Uint8Array();
         this.watchers = new Map();
+    }
+    change(value, physical, logical, id) {
+        for (const watcher of this.watchers.values()) {
+            watcher(value, physical, logical, id);
+        }
+    }
+    start() {
         this.setup({
             get: () => ({
                 value: this.data,
@@ -40,11 +47,6 @@ export class LWWRegister extends CRDT {
                 this.watchers.set(Math.random().toString(), method);
             }
         });
-    }
-    change(value, physical, logical, id) {
-        for (const watcher of this.watchers.values()) {
-            watcher(value, physical, logical, id);
-        }
     }
     get() {
         return this.data;

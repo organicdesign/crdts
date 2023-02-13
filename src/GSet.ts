@@ -19,7 +19,15 @@ export class GSet<T=unknown> extends CRDT<SyncComps, BroadComps, SerialComps> im
 		super(config);
 
 		this.watchers = new Map<string, (item: T) => void>();
+	}
 
+	protected change (item: T) {
+		for (const watcher of this.watchers.values()) {
+			watcher(item);
+		}
+	}
+
+	start () {
 		this.setup({
 			get: () => this.data,
 			add: (item: T) => this.data.add(item),
@@ -28,12 +36,6 @@ export class GSet<T=unknown> extends CRDT<SyncComps, BroadComps, SerialComps> im
 				this.watchers.set(Math.random().toString(), method);
 			}
 		});
-	}
-
-	protected change (item: T) {
-		for (const watcher of this.watchers.values()) {
-			watcher(item);
-		}
 	}
 
 	[Symbol.iterator](): IterableIterator<T> {

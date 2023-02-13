@@ -27,24 +27,6 @@ export class LWWMap<T> extends CRDT<SyncComps> implements SynchronizableCRDT, BM
 
 		super(config);
 
-		this.setup({
-			keys: () => this.data.keys(),
-
-			get: (key: string) => {
-				// Create register if it does not exist.
-				if (!this.data.has(key)) {
-					const newReg = createLWWRegister<T>({ id: this.id });
-
-					newReg.start();
-
-					this.assign(key, newReg);
-					return this.data.get(key) as LWWRegister<T>;
-				}
-
-				return this.data.get(key);
-			}
-		});
-
 		// Disable serialization and broadcast.
 		Object.defineProperties(this, {
 			getSerializers: { value: undefined },
@@ -62,6 +44,26 @@ export class LWWMap<T> extends CRDT<SyncComps> implements SynchronizableCRDT, BM
 		*/
 
 		this.data.set(key, register);
+	}
+
+	start () {
+		this.setup({
+			keys: () => this.data.keys(),
+
+			get: (key: string) => {
+				// Create register if it does not exist.
+				if (!this.data.has(key)) {
+					const newReg = createLWWRegister<T>({ id: this.id });
+
+					newReg.start();
+
+					this.assign(key, newReg);
+					return this.data.get(key) as LWWRegister<T>;
+				}
+
+				return this.data.get(key);
+			}
+		});
 	}
 
 	get size(): number {

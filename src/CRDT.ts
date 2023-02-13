@@ -12,20 +12,35 @@ export class CRDT<
 	SyncComps extends UMap = {},
 	BroadComps extends UMap = {},
 	SerialComps extends UMap = {}
-> implements Omit<CompleteCRDT, "toValue"> {
+> implements Omit<CompleteCRDT, "toValue" | "start"> {
 	protected readonly config: CRDTConfig<SyncComps, BroadComps, SerialComps>;
 	protected synchronizers: CRDTSynchronizer[] = [];
 	protected serializers: CRDTSerializer[] = [];
 	protected broadcasters: CRDTBroadcaster[] = [];
 	protected started = false;
-	private components: SyncComps & BroadComps & SerialComps;
 
 	constructor (config: CRDTConfig<SyncComps, BroadComps, SerialComps>) {
 		this.config = config;
 	}
 
 	protected setup (components: SyncComps & BroadComps & SerialComps) {
-		this.components = components;
+		if (this.isStarted()) {
+			return;
+		}
+
+		for (const createSynchronizer of this.config.synchronizers ?? []) {
+			this.synchronizers.push(createSynchronizer(components));
+		}
+
+		for (const createSerializer of this.config.serializers ?? []) {
+			this.serializers.push(createSerializer(components));
+		}
+
+		for (const createBroadcaster of this.config.broadcasters ?? []) {
+			this.broadcasters.push(createBroadcaster(components));
+		}
+
+		this.started = true;
 	}
 
 	protected get generateTimestamp () {
@@ -34,30 +49,6 @@ export class CRDT<
 
 	isStarted () {
 		return this.started;
-	}
-
-	start () {
-		if (this.components == null) {
-			throw new Error("CRDT has not defined any components");
-		}
-
-		if (this.isStarted()) {
-			return;
-		}
-
-		for (const createSynchronizer of this.config.synchronizers ?? []) {
-			this.synchronizers.push(createSynchronizer(this.components));
-		}
-
-		for (const createSerializer of this.config.serializers ?? []) {
-			this.serializers.push(createSerializer(this.components));
-		}
-
-		for (const createBroadcaster of this.config.broadcasters ?? []) {
-			this.broadcasters.push(createBroadcaster(this.components));
-		}
-
-		this.started = true;
 	}
 
 	stop () {
