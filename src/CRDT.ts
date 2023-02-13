@@ -9,21 +9,19 @@ import type {
 type UMap = Record<string, unknown>
 
 export class CRDT<
-	SyncComps extends UMap = {},
-	BroadComps extends UMap = {},
-	SerialComps extends UMap = {}
+	Components extends UMap = {}
 > implements Omit<CompleteCRDT, "toValue" | "start"> {
-	protected readonly config: CRDTConfig<SyncComps, BroadComps, SerialComps>;
+	protected readonly config: CRDTConfig<Components, Components, Components>;
 	protected synchronizers: CRDTSynchronizer[] = [];
 	protected serializers: CRDTSerializer[] = [];
 	protected broadcasters: CRDTBroadcaster[] = [];
 	protected started = false;
 
-	constructor (config: CRDTConfig<SyncComps, BroadComps, SerialComps>) {
+	constructor (config: CRDTConfig<Components, Components, Components>) {
 		this.config = config;
 	}
 
-	protected setup (components: SyncComps & BroadComps & SerialComps) {
+	protected setup (components: Components) {
 		if (this.isStarted()) {
 			return;
 		}

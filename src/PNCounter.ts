@@ -14,7 +14,7 @@ export interface PNCounterOpts {
 	dp: number
 }
 
-export class PNCounter extends CRDT<SyncComps, BroadComps, SerialComps> implements CompleteCRDT, BCounter {
+export class PNCounter extends CRDT<SyncComps & BroadComps & SerialComps> implements CompleteCRDT, BCounter {
 	private pCounter: GCounter;
 	private nCounter: GCounter;
 

@@ -7,7 +7,7 @@ import { createGSetSynchronizer, GSetSyncComponents as SyncComps } from "./synch
 import { createGSetSerializer, GSetSerializerComponents as SerialComps } from "./serializers/GSet.js";
 import { createGSetBroadcaster, GSetBroadcasterComponents as BroadComps } from "./broadcasters/GSet.js";
 
-export class GSet<T=unknown> extends CRDT<SyncComps, BroadComps, SerialComps> implements CompleteCRDT, GSet<T> {
+export class GSet<T=unknown> extends CRDT<SyncComps & BroadComps & SerialComps> implements CompleteCRDT, GSet<T> {
 	private data = new Set<T>();
 	protected readonly watchers: Map<string, (item: T) => void>;
 
