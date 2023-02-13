@@ -10,25 +10,27 @@ import { createGCounterSynchronizer, GCounterSyncComponents as SyncComps } from 
 import { createGCounterSerializer, GCounterSerializerComponents as SerialComps } from "./serializers/GCounter.js";
 import { createGCounterBroadcaster, GCounterBroadcasterComponents as BroadComps } from "./broadcasters/GCounter.js";
 
+export interface GCounterConfig extends CRDTConfig<SyncComps, BroadComps, SerialComps> {};
+
 export interface GCounterOpts {
 	dp: number
 }
 
 export class GCounter extends CRDT<SyncComps & BroadComps & SerialComps> implements CompleteCRDT, MCounter {
 	protected readonly data = new BufferMap<number>();
-	protected readonly dp: number = 10;
+	protected readonly options: GCounterOpts;
 	protected readonly watchers: Map<string, (peer: Uint8Array, count: number) => void>;
 
-	constructor (config: CRDTConfig<SyncComps, BroadComps, SerialComps>, options: Partial<GCounterOpts> = {}) {
+	constructor (config: GCounterConfig, options: Partial<GCounterOpts> = {}) {
 		config.synchronizers = config.synchronizers ?? [createGCounterSynchronizer()];
 		config.serializers = config.serializers ?? [createGCounterSerializer()];
 		config.broadcasters = config.broadcasters ?? [createGCounterBroadcaster()];
 
 		super(config);
 
-		if (options?.dp) {
-			this.dp = options.dp;
-		}
+		this.options = {
+			dp: options.dp ?? 10
+		};
 
 		this.watchers = new Map<string, (peer: Uint8Array, count: number) => void>();
 	}
@@ -82,7 +84,7 @@ export class GCounter extends CRDT<SyncComps & BroadComps & SerialComps> impleme
 	}
 
 	protected round (count: number) {
-		return Number(count.toFixed(this.dp));
+		return Number(count.toFixed(this.options.dp));
 	}
 
 	// Returns true if the value passed is larger than the one stored.
@@ -92,5 +94,5 @@ export class GCounter extends CRDT<SyncComps & BroadComps & SerialComps> impleme
 }
 
 export const createGCounter: CreateCRDT<GCounter> =
-	(config: CRDTConfig<SyncComps, BroadComps, SerialComps>, options: Partial<GCounterOpts> = {}) =>
+	(config: GCounterConfig, options: Partial<GCounterOpts> = {}) =>
 		new GCounter(config, options);
