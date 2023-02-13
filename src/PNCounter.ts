@@ -38,6 +38,13 @@ export class PNCounter extends CRDT<SyncComps, BroadComps, SerialComps> implemen
 		});
 	}
 
+	start () {
+		this.pCounter.start();
+		this.nCounter.start();
+
+		super.start();
+	}
+
 	toValue(): number {
 		return this.pCounter.toValue() - this.nCounter.toValue();
 	}

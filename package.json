@@ -1,7 +1,7 @@
 {
   "type": "module",
   "name": "@organicdesign/crdts",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "A group of useful CRDTs implementing interfaces from @organicdesign/crdt-interfaces.",
   "keywords": [
     "crdt",
@@ -29,7 +29,7 @@
   "author": "Saul Boyd",
   "license": "GPL-3.0-or-later",
   "devDependencies": {
-    "@organicdesign/crdt-tests": "^0.3.0",
+    "@organicdesign/crdt-tests": "^0.4.1",
     "@swc/core": "^1.3.14",
     "@types/jest": "^29.2.2",
     "@typescript-eslint/eslint-plugin": "^5.42.1",
@@ -43,7 +43,7 @@
   },
   "dependencies": {
     "@organicdesign/buffer-collections": "^0.1.1",
-    "@organicdesign/crdt-interfaces": "^4.0.0",
+    "@organicdesign/crdt-interfaces": "^5.0.0",
     "@organicdesign/crdt-map-synchronizer": "^0.1.0",
     "cborg": "^1.9.6",
     "uint8arrays": "^4.0.3"

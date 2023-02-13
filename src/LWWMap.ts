@@ -33,7 +33,11 @@ export class LWWMap<T> extends CRDT<SyncComps> implements SynchronizableCRDT, BM
 			get: (key: string) => {
 				// Create register if it does not exist.
 				if (!this.data.has(key)) {
-					this.assign(key, createLWWRegister({ id: this.id }));
+					const newReg = createLWWRegister<T>({ id: this.id });
+
+					newReg.start();
+
+					this.assign(key, newReg);
 					return this.data.get(key) as LWWRegister<T>;
 				}
 
@@ -105,7 +109,11 @@ export class LWWMap<T> extends CRDT<SyncComps> implements SynchronizableCRDT, BM
 		let reg = this.data.get(key);
 
 		if (reg == null) {
-			this.assign(key, createLWWRegister({ id: this.id }));
+			const newReg = createLWWRegister<T>({ id: this.id });
+
+			newReg.start();
+
+			this.assign(key, newReg);
 			reg = this.data.get(key) as LWWRegister<T>;
 		}
 

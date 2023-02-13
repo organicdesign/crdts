@@ -2,12 +2,17 @@ import type { CRDTConfig, CRDTSynchronizer, CRDTSerializer, CRDTBroadcaster, Com
 type UMap = Record<string, unknown>;
 export declare class CRDT<SyncComps extends UMap = {}, BroadComps extends UMap = {}, SerialComps extends UMap = {}> implements Omit<CompleteCRDT, "toValue"> {
     protected readonly config: CRDTConfig<SyncComps, BroadComps, SerialComps>;
-    protected readonly synchronizers: CRDTSynchronizer[];
-    protected readonly serializers: CRDTSerializer[];
-    protected readonly broadcasters: CRDTBroadcaster[];
+    protected synchronizers: CRDTSynchronizer[];
+    protected serializers: CRDTSerializer[];
+    protected broadcasters: CRDTBroadcaster[];
+    protected started: boolean;
+    private components;
     constructor(config: CRDTConfig<SyncComps, BroadComps, SerialComps>);
     protected setup(components: SyncComps & BroadComps & SerialComps): void;
     protected get generateTimestamp(): () => number;
+    isStarted(): boolean;
+    start(): void;
+    stop(): void;
     get id(): Uint8Array;
     getSynchronizers(): Iterable<CRDTSynchronizer>;
     getSerializers(): Iterable<CRDTSerializer>;

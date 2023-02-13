@@ -14,31 +14,57 @@ export class CRDT<
 	SerialComps extends UMap = {}
 > implements Omit<CompleteCRDT, "toValue"> {
 	protected readonly config: CRDTConfig<SyncComps, BroadComps, SerialComps>;
-	protected readonly synchronizers: CRDTSynchronizer[] = [];
-	protected readonly serializers: CRDTSerializer[] = [];
-	protected readonly broadcasters: CRDTBroadcaster[] = [];
+	protected synchronizers: CRDTSynchronizer[] = [];
+	protected serializers: CRDTSerializer[] = [];
+	protected broadcasters: CRDTBroadcaster[] = [];
+	protected started = false;
+	private components: SyncComps & BroadComps & SerialComps;
 
 	constructor (config: CRDTConfig<SyncComps, BroadComps, SerialComps>) {
 		this.config = config;
 	}
 
-	// Setup is separated from the constructor so that subclasses can access 'this' before setting up components.
 	protected setup (components: SyncComps & BroadComps & SerialComps) {
-		for (const createSynchronizer of this.config.synchronizers ?? []) {
-			this.synchronizers.push(createSynchronizer(components));
-		}
-
-		for (const createSerializer of this.config.serializers ?? []) {
-			this.serializers.push(createSerializer(components));
-		}
-
-		for (const createBroadcaster of this.config.broadcasters ?? []) {
-			this.broadcasters.push(createBroadcaster(components));
-		}
+		this.components = components;
 	}
 
 	protected get generateTimestamp () {
 		return this.config.generateTimestamp ?? Date.now;
+	}
+
+	isStarted () {
+		return this.started;
+	}
+
+	start () {
+		if (this.components == null) {
+			throw new Error("CRDT has not defined any components");
+		}
+
+		if (this.isStarted()) {
+			return;
+		}
+
+		for (const createSynchronizer of this.config.synchronizers ?? []) {
+			this.synchronizers.push(createSynchronizer(this.components));
+		}
+
+		for (const createSerializer of this.config.serializers ?? []) {
+			this.serializers.push(createSerializer(this.components));
+		}
+
+		for (const createBroadcaster of this.config.broadcasters ?? []) {
+			this.broadcasters.push(createBroadcaster(this.components));
+		}
+
+		this.started = true;
+	}
+
+	stop () {
+		this.started = false;
+		this.synchronizers = [];
+		this.serializers = [];
+		this.broadcasters = [];
 	}
 
 	get id () : Uint8Array {

@@ -10,6 +10,7 @@ export declare class PNCounter extends CRDT<SyncComps, BroadComps, SerialComps> 
     private pCounter;
     private nCounter;
     constructor(config: CRDTConfig<SyncComps, BroadComps, SerialComps>, options?: Partial<PNCounterOpts>);
+    start(): void;
     toValue(): number;
     increment(quantity: number): void;
     decrement(quantity: number): void;

@@ -20,6 +20,11 @@ export class PNCounter extends CRDT {
             getNCounter: () => this.nCounter
         });
     }
+    start() {
+        this.pCounter.start();
+        this.nCounter.start();
+        super.start();
+    }
     toValue() {
         return this.pCounter.toValue() - this.nCounter.toValue();
     }

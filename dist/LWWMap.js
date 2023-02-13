@@ -21,7 +21,9 @@ export class LWWMap extends CRDT {
             get: (key) => {
                 // Create register if it does not exist.
                 if (!this.data.has(key)) {
-                    this.assign(key, createLWWRegister({ id: this.id }));
+                    const newReg = createLWWRegister({ id: this.id });
+                    newReg.start();
+                    this.assign(key, newReg);
                     return this.data.get(key);
                 }
                 return this.data.get(key);
@@ -81,7 +83,9 @@ export class LWWMap extends CRDT {
     set(key, value) {
         let reg = this.data.get(key);
         if (reg == null) {
-            this.assign(key, createLWWRegister({ id: this.id }));
+            const newReg = createLWWRegister({ id: this.id });
+            newReg.start();
+            this.assign(key, newReg);
             reg = this.data.get(key);
         }
         reg.set(value);

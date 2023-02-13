@@ -1,3 +1,9 @@
+## [0.3.0](https://github.com/organicdesign/crdts/compare/v0.2.0...v0.3.0) (2023-02-13)
+
+### Changed
+
+* Update interfaces and make CRDTs startable.
+
 ## [0.2.0](https://github.com/organicdesign/crdts/compare/v0.1.4...v0.2.0) (2023-02-09)
 
 ### Changed
