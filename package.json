@@ -43,7 +43,7 @@
   },
   "dependencies": {
     "@organicdesign/buffer-collections": "^0.1.1",
-    "@organicdesign/crdt-interfaces": "^5.0.0",
+    "@organicdesign/crdt-interfaces": "^5.1.0",
     "@organicdesign/crdt-map-synchronizer": "^0.1.0",
     "cborg": "^1.9.6",
     "uint8arrays": "^4.0.3"
