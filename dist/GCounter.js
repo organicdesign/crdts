@@ -3,18 +3,18 @@ import { CRDT } from "./CRDT.js";
 import { createGCounterSynchronizer } from "./synchronizers/GCounter.js";
 import { createGCounterSerializer } from "./serializers/GCounter.js";
 import { createGCounterBroadcaster } from "./broadcasters/GCounter.js";
+;
 export class GCounter extends CRDT {
     constructor(config, options = {}) {
-        var _a, _b, _c;
+        var _a, _b, _c, _d;
         config.synchronizers = (_a = config.synchronizers) !== null && _a !== void 0 ? _a : [createGCounterSynchronizer()];
         config.serializers = (_b = config.serializers) !== null && _b !== void 0 ? _b : [createGCounterSerializer()];
         config.broadcasters = (_c = config.broadcasters) !== null && _c !== void 0 ? _c : [createGCounterBroadcaster()];
         super(config);
         this.data = new BufferMap();
-        this.dp = 10;
-        if (options === null || options === void 0 ? void 0 : options.dp) {
-            this.dp = options.dp;
-        }
+        this.options = {
+            dp: (_d = options.dp) !== null && _d !== void 0 ? _d : 10
+        };
         this.watchers = new Map();
     }
     change(peer, count) {
@@ -57,7 +57,7 @@ export class GCounter extends CRDT {
         }
     }
     round(count) {
-        return Number(count.toFixed(this.dp));
+        return Number(count.toFixed(this.options.dp));
     }
     // Returns true if the value passed is larger than the one stored.
     compareSelf(key, value) {

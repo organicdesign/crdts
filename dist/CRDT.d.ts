@@ -1,13 +1,13 @@
 import type { CRDTConfig, CRDTSynchronizer, CRDTSerializer, CRDTBroadcaster, CompleteCRDT } from "@organicdesign/crdt-interfaces";
 type UMap = Record<string, unknown>;
-export declare class CRDT<SyncComps extends UMap = {}, BroadComps extends UMap = {}, SerialComps extends UMap = {}> implements Omit<CompleteCRDT, "toValue" | "start"> {
-    protected readonly config: CRDTConfig<SyncComps, BroadComps, SerialComps>;
+export declare class CRDT<Components extends UMap = {}> implements Omit<CompleteCRDT, "toValue" | "start"> {
+    protected readonly config: CRDTConfig<Components, Components, Components>;
     protected synchronizers: CRDTSynchronizer[];
     protected serializers: CRDTSerializer[];
     protected broadcasters: CRDTBroadcaster[];
     protected started: boolean;
-    constructor(config: CRDTConfig<SyncComps, BroadComps, SerialComps>);
-    protected setup(components: SyncComps & BroadComps & SerialComps): void;
+    constructor(config: CRDTConfig<Components, Components, Components>);
+    protected setup(components: Components): void;
     protected get generateTimestamp(): () => number;
     isStarted(): boolean;
     stop(): void;

@@ -1,11 +1,17 @@
-import type { SynchronizableCRDT, CRDTConfig, BMap } from "@organicdesign/crdt-interfaces";
+import type { SynchronizableCRDT, CRDTConfig, BMap, CreateCRDT } from "@organicdesign/crdt-interfaces";
 import { CRDT } from "./CRDT.js";
-import { LWWRegister } from "./LWWRegister.js";
+import { LWWRegister, LWWRegisterConfig } from "./LWWRegister.js";
 import { LWWMapSyncComponents as SyncComps } from "./synchronizers/LWWMap.js";
+export interface LWWMapConfig extends CRDTConfig<SyncComps> {
+}
+export interface LWWMapOpts<T> {
+    createLWWRegister: CreateCRDT<LWWRegister<T>, LWWRegisterConfig>;
+}
 export declare class LWWMap<T> extends CRDT<SyncComps> implements SynchronizableCRDT, BMap<T> {
     protected data: Map<string, LWWRegister<T>>;
+    protected readonly options: LWWMapOpts<T>;
     [Symbol.iterator](): IterableIterator<[string, T]>;
-    constructor(config: CRDTConfig<SyncComps>);
+    constructor(config: CRDTConfig<SyncComps>, settings?: Partial<LWWMapOpts<T>>);
     protected assign(key: string, register: LWWRegister<T>): void;
     start(): void;
     get size(): number;
@@ -20,4 +26,4 @@ export declare class LWWMap<T> extends CRDT<SyncComps> implements Synchronizable
     values(): IterableIterator<T>;
     toValue(): Map<string, T>;
 }
-export declare const createLWWMap: <T>(config: CRDTConfig<SyncComps>) => LWWMap<T>;
+export declare const createLWWMap: <T>(config: LWWMapConfig, settings?: Partial<LWWMapOpts<T>> | undefined) => LWWMap<T>;

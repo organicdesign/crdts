@@ -1,3 +1,10 @@
+## [0.3.2](https://github.com/organicdesign/crdts/compare/v0.3.1...v0.3.2) (2023-02-14)
+
+### Added
+
+* Config types for all CRDTs.
+* Creation method options for CRDTs with sub-CRDTs.
+
 ## [0.3.1](https://github.com/organicdesign/crdts/compare/v0.3.0...v0.3.1) (2023-02-13)
 
 ### Fixed

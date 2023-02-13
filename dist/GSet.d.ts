@@ -3,10 +3,12 @@ import { CRDT } from "./CRDT.js";
 import { GSetSyncComponents as SyncComps } from "./synchronizers/GSet.js";
 import { GSetSerializerComponents as SerialComps } from "./serializers/GSet.js";
 import { GSetBroadcasterComponents as BroadComps } from "./broadcasters/GSet.js";
-export declare class GSet<T = unknown> extends CRDT<SyncComps, BroadComps, SerialComps> implements CompleteCRDT, GSet<T> {
+export interface GSetConfig extends CRDTConfig<SyncComps, BroadComps, SerialComps> {
+}
+export declare class GSet<T = unknown> extends CRDT<SyncComps & BroadComps & SerialComps> implements CompleteCRDT, GSet<T> {
     private data;
     protected readonly watchers: Map<string, (item: T) => void>;
-    constructor(config: CRDTConfig<SyncComps, BroadComps, SerialComps>);
+    constructor(config: GSetConfig);
     protected change(item: T): void;
     start(): void;
     [Symbol.iterator](): IterableIterator<T>;
@@ -19,4 +21,4 @@ export declare class GSet<T = unknown> extends CRDT<SyncComps, BroadComps, Seria
     values(): IterableIterator<T>;
     toValue(): Set<T>;
 }
-export declare const createGSet: <T>(config: CRDTConfig<SyncComps, BroadComps, SerialComps>) => GSet<T>;
+export declare const createGSet: <T>(config: GSetConfig) => GSet<T>;

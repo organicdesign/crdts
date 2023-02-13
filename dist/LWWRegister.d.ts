@@ -3,7 +3,9 @@ import { CRDT } from "./CRDT.js";
 import { LWWRegisterSyncComponents as SyncComps } from "./synchronizers/LWWRegister.js";
 import { LWWRegisterSerializerComponents as SerialComps } from "./serializers/LWWRegister.js";
 import { LWWRegisterBroadcasterComponents as BroadComps } from "./broadcasters/LWWRegister.js";
-export declare class LWWRegister<T> extends CRDT<SyncComps, BroadComps, SerialComps> implements CompleteCRDT, BRegister<T> {
+export interface LWWRegisterConfig extends CRDTConfig<SyncComps, BroadComps, SerialComps> {
+}
+export declare class LWWRegister<T> extends CRDT<SyncComps & BroadComps & SerialComps> implements CompleteCRDT, BRegister<T> {
     private data;
     private physical;
     private logical;
@@ -17,4 +19,4 @@ export declare class LWWRegister<T> extends CRDT<SyncComps, BroadComps, SerialCo
     clear(): void;
     toValue(): T | undefined;
 }
-export declare const createLWWRegister: <T>(config: CRDTConfig<SyncComps, BroadComps, SerialComps>) => LWWRegister<T>;
+export declare const createLWWRegister: <T>(config: LWWRegisterConfig) => LWWRegister<T>;

@@ -11,11 +11,14 @@ export class LWWMap extends CRDT {
         }
         return itr();
     }
-    constructor(config) {
-        var _a;
+    constructor(config, settings = {}) {
+        var _a, _b;
         config.synchronizers = (_a = config.synchronizers) !== null && _a !== void 0 ? _a : [createLWWMapSynchronizer()];
         super(config);
         this.data = new Map();
+        this.options = {
+            createLWWRegister: (_b = settings.createLWWRegister) !== null && _b !== void 0 ? _b : createLWWRegister
+        };
         // Disable serialization and broadcast.
         Object.defineProperties(this, {
             getSerializers: { value: undefined },
@@ -38,7 +41,7 @@ export class LWWMap extends CRDT {
             get: (key) => {
                 // Create register if it does not exist.
                 if (!this.data.has(key)) {
-                    const newReg = createLWWRegister({ id: this.id });
+                    const newReg = this.options.createLWWRegister({ id: this.id });
                     newReg.start();
                     this.assign(key, newReg);
                     return this.data.get(key);
@@ -85,7 +88,7 @@ export class LWWMap extends CRDT {
     set(key, value) {
         let reg = this.data.get(key);
         if (reg == null) {
-            const newReg = createLWWRegister({ id: this.id });
+            const newReg = this.options.createLWWRegister({ id: this.id });
             newReg.start();
             this.assign(key, newReg);
             reg = this.data.get(key);
@@ -115,4 +118,4 @@ export class LWWMap extends CRDT {
         return output;
     }
 }
-export const createLWWMap = (config) => new LWWMap(config);
+export const createLWWMap = (config, settings) => new LWWMap(config, settings);
