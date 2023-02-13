@@ -9,7 +9,9 @@ import { createLWWRegisterSynchronizer, LWWRegisterSyncComponents as SyncComps }
 import { createLWWRegisterSerializer, LWWRegisterSerializerComponents as SerialComps } from "./serializers/LWWRegister.js";
 import { createLWWRegisterBroadcaster, LWWRegisterBroadcasterComponents as BroadComps } from "./broadcasters/LWWRegister.js";
 
-export class LWWRegister<T> extends CRDT<SyncComps, BroadComps, SerialComps> implements CompleteCRDT, BRegister<T> {
+export interface LWWRegisterConfig extends CRDTConfig<SyncComps, BroadComps, SerialComps> {}
+
+export class LWWRegister<T> extends CRDT<SyncComps & BroadComps & SerialComps> implements CompleteCRDT, BRegister<T> {
 	private data: T | undefined;
 	private physical: number = 0;
 	private logical: number = 0;
@@ -103,4 +105,4 @@ export class LWWRegister<T> extends CRDT<SyncComps, BroadComps, SerialComps> imp
 	}
 }
 
-export const createLWWRegister = <T>(config: CRDTConfig<SyncComps, BroadComps, SerialComps>) => new LWWRegister<T>(config);
+export const createLWWRegister = <T>(config: LWWRegisterConfig) => new LWWRegister<T>(config);

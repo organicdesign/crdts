@@ -4,11 +4,18 @@ import type {
 	BMap
 } from "@organicdesign/crdt-interfaces";
 import { CRDT } from "./CRDT.js";
-import { LWWRegister, createLWWRegister } from "./LWWRegister.js";
+import { LWWRegister, LWWRegisterConfig, createLWWRegister } from "./LWWRegister.js";
 import { createLWWMapSynchronizer, LWWMapSyncComponents as SyncComps } from "./synchronizers/LWWMap.js";
+
+export interface LWWMapConfig extends CRDTConfig<SyncComps> {}
+
+export interface LWWMapOpts<T> {
+	createLWWRegister (config: LWWRegisterConfig): LWWRegister<T>
+}
 
 export class LWWMap<T> extends CRDT<SyncComps> implements SynchronizableCRDT, BMap<T> {
 	protected data = new Map<string, LWWRegister<T>>();
+	protected readonly options: LWWMapOpts<T>;
 
 	[Symbol.iterator](): IterableIterator<[string, T]> {
 		const data = this.data;
@@ -22,10 +29,14 @@ export class LWWMap<T> extends CRDT<SyncComps> implements SynchronizableCRDT, BM
 		return itr();
 	}
 
-	constructor (config: CRDTConfig<SyncComps>) {
+	constructor (config: CRDTConfig<SyncComps>, settings: Partial<LWWMapOpts<T>>) {
 		config.synchronizers = config.synchronizers ?? [createLWWMapSynchronizer()];
 
 		super(config);
+
+		this.options = {
+			createLWWRegister: settings.createLWWRegister ?? createLWWRegister
+		};
 
 		// Disable serialization and broadcast.
 		Object.defineProperties(this, {
@@ -53,7 +64,7 @@ export class LWWMap<T> extends CRDT<SyncComps> implements SynchronizableCRDT, BM
 			get: (key: string) => {
 				// Create register if it does not exist.
 				if (!this.data.has(key)) {
-					const newReg = createLWWRegister<T>({ id: this.id });
+					const newReg = this.options.createLWWRegister({ id: this.id });
 
 					newReg.start();
 
@@ -111,7 +122,7 @@ export class LWWMap<T> extends CRDT<SyncComps> implements SynchronizableCRDT, BM
 		let reg = this.data.get(key);
 
 		if (reg == null) {
-			const newReg = createLWWRegister<T>({ id: this.id });
+			const newReg = this.options.createLWWRegister({ id: this.id });
 
 			newReg.start();
 
@@ -153,4 +164,6 @@ export class LWWMap<T> extends CRDT<SyncComps> implements SynchronizableCRDT, BM
 	}
 }
 
-export const createLWWMap = <T>(config: CRDTConfig<SyncComps>) => new LWWMap<T>(config);
+export const createLWWMap =
+	<T>(config: LWWMapConfig, settings: Partial<LWWMapOpts<T>>) =>
+		new LWWMap<T>(config, settings);
