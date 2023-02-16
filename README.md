@@ -30,6 +30,8 @@ Each CRDT exposes a class and an instantiation method. Most of these CRDTs use a
 // 'createCRDT' is a placeholder for a specific CRDT creation method.
 const crdt = createCRDT({ id: new Uint8Array([1]) });
 
+await crdt.start();
+
 console.log(crdt.toValue());
 ```
 
@@ -55,8 +57,11 @@ These CRDTs provide methods for synchronization but of course will not automatic
 import { createCRDTSynchronizer } from "@organicdesign/libp2p-crdt-synchronizer";
 
 const synchronizer = createCRDTSynchronizer()(libp2p);
+const crdt = createCRDT({ id: libp2p.peerId.toBytes() });
 
-synchronizer.set("my-crdt", createCRDT({ id: libp2p.peerId.toBytes() }));
+await Promise.all([synchronizer.start(), crdt.start()]);
+
+synchronizer.set("my-crdt", crdt);
 ```
 
 ### G-Counter

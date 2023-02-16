@@ -1,3 +1,9 @@
+## [0.3.3](https://github.com/organicdesign/crdts/compare/v0.3.2...v0.3.3) (2023-02-17)
+
+### Fixed
+
+* Added the start method to the documentation.
+
 ## [0.3.2](https://github.com/organicdesign/crdts/compare/v0.3.1...v0.3.2) (2023-02-14)
 
 ### Added
