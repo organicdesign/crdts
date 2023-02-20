@@ -1,3 +1,9 @@
+## [0.3.4](https://github.com/organicdesign/crdts/compare/v0.3.3...v0.3.4) (2023-02-21)
+
+### Fixed
+
+* Fixed LWWMap `keys`, `entries` and `[symbol.iterator]` methods returning values for empty registers.
+
 ## [0.3.3](https://github.com/organicdesign/crdts/compare/v0.3.2...v0.3.3) (2023-02-17)
 
 ### Fixed

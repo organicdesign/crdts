@@ -6,7 +6,9 @@ export class LWWMap extends CRDT {
         const data = this.data;
         function* itr() {
             for (const [key, reg] of data) {
-                yield [key, reg.get()];
+                if (reg.get() != null) {
+                    yield [key, reg.get()];
+                }
             }
         }
         return itr();
@@ -54,7 +56,15 @@ export class LWWMap extends CRDT {
         return this.data.size;
     }
     keys() {
-        return this.data.keys();
+        const data = this.data;
+        function* itr() {
+            for (const [key, value] of data.entries()) {
+                if (value.get() != null) {
+                    yield key;
+                }
+            }
+        }
+        return itr();
     }
     clear() {
         for (const reg of this.data.values()) {
@@ -113,7 +123,9 @@ export class LWWMap extends CRDT {
     toValue() {
         const output = new Map();
         for (const [key, reg] of this.data) {
-            output.set(key, reg.get());
+            if (reg.get() != null) {
+                output.set(key, reg.get());
+            }
         }
         return output;
     }

@@ -23,7 +23,9 @@ export class LWWMap<T> extends CRDT<SyncComps> implements SynchronizableCRDT, BM
 
 		function* itr () {
 			for (const [key, reg] of data) {
-				yield [key, reg.get()] as [string, T];
+				if (reg.get() != null ) {
+					yield [key, reg.get()] as [string, T];
+				}
 			}
 		}
 
@@ -83,7 +85,17 @@ export class LWWMap<T> extends CRDT<SyncComps> implements SynchronizableCRDT, BM
 	}
 
 	keys(): IterableIterator<string> {
-		return this.data.keys();
+		const data = this.data;
+
+		function* itr () {
+			for (const [key, value] of data.entries()) {
+				if (value.get() != null) {
+					yield key;
+				}
+			}
+		}
+
+		return itr();
 	}
 
 	clear(): void {
@@ -158,7 +170,9 @@ export class LWWMap<T> extends CRDT<SyncComps> implements SynchronizableCRDT, BM
 		const output = new Map();
 
 		for (const [key, reg] of this.data) {
-			output.set(key, reg.get());
+			if (reg.get() != null) {
+				output.set(key, reg.get());
+			}
 		}
 
 		return output;
